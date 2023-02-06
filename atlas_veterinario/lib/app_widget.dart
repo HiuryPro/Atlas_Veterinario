@@ -14,7 +14,6 @@ class Core extends StatelessWidget {
 
 class AppWidget extends StatelessWidget {
   const AppWidget({Key? key}) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
@@ -34,9 +33,7 @@ class AppWidget extends StatelessWidget {
                       ? Brightness.dark
                       : Brightness.light),
               initialRoute: '/home',
-              routes: {
-                '/home': (context) => const Home(),
-              });
+              routes: {'/home': (context) => const Home()});
         });
   }
 }

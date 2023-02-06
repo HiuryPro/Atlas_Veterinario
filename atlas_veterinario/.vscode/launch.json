@@ -8,13 +8,7 @@
             "name": "atlas_veterinario",
             "request": "launch",
             "type": "dart",
-            "flutterMode": "debug",
-
-            "args": [
-                "-d",
-                "chrome",
-            ]
-            
+            "flutterMode": "debug"
         },
         {
             "name": "atlas_veterinario (profile mode)",
