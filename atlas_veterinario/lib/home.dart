@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'app_controller.dart';
-import 'dart:math' as math;
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -10,7 +9,11 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  final GlobalKey<ScaffoldState> _keyS = GlobalKey();
   double tamanhoFonte = 12;
+
+  double pagina = 1;
+  double totalPaginas = 145;
 
   Color corFonte = AppController.instance.theme1;
 
@@ -24,126 +27,122 @@ class _HomeState extends State<Home> {
             shrinkWrap: true,
             children: [
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                Flexible(
-                    flex: 1, child: Image.asset('assets/images/unipam.png')),
-                const Flexible(
-                    flex: 4,
+                IconButton(
+                    iconSize: 48,
+                    tooltip: 'Abre opções do Aplicativo',
+                    onPressed: () => _keyS.currentState!.openDrawer(),
+                    icon: Image.asset('assets/images/unipam.png')),
+                const SizedBox(
+                  width: 5,
+                ),
+                const Expanded(
                     child: TextField(
-                      decoration: InputDecoration(
-                          border: OutlineInputBorder(),
-                          prefixIcon: Icon(Icons.search)),
-                    )),
-                Flexible(
-                  flex: 1,
-                  child: PopupMenuButton(
-                      icon: const Icon(Icons.menu),
-                      itemBuilder: (BuildContext context) => <PopupMenuEntry>[
-                            PopupMenuItem(child: StatefulBuilder(
-                              builder: ((context, setState) {
-                                return Column(children: [
-                                  const Text('Digite o tamanho da fonte'),
-                                  Center(
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        TextButton(
-                                            onPressed: () {
-                                              this.setState(() {
-                                                tamanhoFonte -= 1;
-                                              });
-                                            },
-                                            child: const Icon(
-                                                Icons.text_decrease)),
-                                        TextButton(
-                                            onPressed: () {
-                                              this.setState(() {
-                                                tamanhoFonte += 1;
-                                              });
-                                            },
-                                            child: const Icon(
-                                                Icons.text_increase)),
-                                      ],
-                                    ),
-                                  ),
-                                  const SizedBox(
-                                    height: 5,
-                                  ),
-                                  Center(
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        GestureDetector(
-                                          onTap: (() {
-                                            this.setState(() {
-                                              corFonte = Colors.orange;
-                                            });
-                                          }),
-                                          child: Container(
-                                            width: 40,
-                                            height: 40,
-                                            decoration: BoxDecoration(
-                                              border: Border.all(width: 2),
-                                              color: Colors.orange,
-                                              shape: BoxShape.circle,
-                                            ),
+                  decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(50))),
+                      prefixIcon: Icon(Icons.search)),
+                )),
+                const SizedBox(
+                  width: 5,
+                ),
+                PopupMenuButton(
+                    iconSize: 48,
+                    tooltip: "Abre opções de Texto",
+                    icon: const Icon(Icons.menu, color: Colors.grey),
+                    itemBuilder: (BuildContext context) => <PopupMenuEntry>[
+                          PopupMenuItem(child: StatefulBuilder(
+                            builder: ((context, setState) {
+                              return Column(children: [
+                                const Text('Tamanho da fonte'),
+                                Center(
+                                    child: Slider(
+                                  value: tamanhoFonte,
+                                  min: 9,
+                                  max: 100,
+                                  onChanged: ((newTF) {
+                                    this.setState(() {
+                                      tamanhoFonte = newTF;
+                                    });
+                                    setState(() {
+                                      tamanhoFonte = newTF;
+                                    });
+                                  }),
+                                )),
+                                const SizedBox(
+                                  height: 5,
+                                ),
+                                Center(
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      GestureDetector(
+                                        onTap: (() {
+                                          this.setState(() {
+                                            corFonte = Colors.orange;
+                                          });
+                                        }),
+                                        child: Container(
+                                          width: 40,
+                                          height: 40,
+                                          decoration: BoxDecoration(
+                                            border: Border.all(width: 2),
+                                            color: Colors.orange,
+                                            shape: BoxShape.circle,
                                           ),
                                         ),
-                                        const SizedBox(
-                                          width: 5,
+                                      ),
+                                      const SizedBox(
+                                        width: 5,
+                                      ),
+                                      GestureDetector(
+                                        onTap: (() {
+                                          this.setState(() {
+                                            corFonte =
+                                                AppController.instance.theme1;
+                                          });
+                                        }),
+                                        child: Container(
+                                          width: 40,
+                                          height: 40,
+                                          decoration: BoxDecoration(
+                                            border: Border.all(width: 2),
+                                            color:
+                                                AppController.instance.theme1,
+                                            shape: BoxShape.circle,
+                                          ),
                                         ),
-                                        GestureDetector(
-                                          onTap: (() {
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(
+                                  height: 5,
+                                ),
+                                Center(
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      const Text('Modo Noturno'),
+                                      Switch(
+                                          value: AppController
+                                              .instance.isDarkTheme,
+                                          onChanged: ((value) {
+                                            setState(() {
+                                              AppController.instance
+                                                  .changeTheme();
+                                            });
                                             this.setState(() {
                                               corFonte =
                                                   AppController.instance.theme1;
                                             });
-                                          }),
-                                          child: Container(
-                                            width: 40,
-                                            height: 40,
-                                            decoration: BoxDecoration(
-                                              border: Border.all(width: 2),
-                                              color:
-                                                  AppController.instance.theme1,
-                                              shape: BoxShape.circle,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
+                                          }))
+                                    ],
                                   ),
-                                  const SizedBox(
-                                    height: 5,
-                                  ),
-                                  Center(
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        const Text('Modo Noturno'),
-                                        Switch(
-                                            value: AppController
-                                                .instance.isDarkTheme,
-                                            onChanged: ((value) {
-                                              setState(() {
-                                                AppController.instance
-                                                    .changeTheme();
-                                              });
-                                              this.setState(() {
-                                                corFonte = AppController
-                                                    .instance.theme1;
-                                              });
-                                            }))
-                                      ],
-                                    ),
-                                  ),
-                                ]);
-                              }),
-                            )),
-                          ]),
-                )
+                                ),
+                              ]);
+                            }),
+                          )),
+                        ]),
               ]),
               const SizedBox(
                 height: 15,
@@ -154,6 +153,25 @@ class _HomeState extends State<Home> {
                 style: TextStyle(fontSize: tamanhoFonte, color: corFonte),
                 textAlign: TextAlign.justify,
               )),
+              const SizedBox(
+                height: 15,
+              ),
+              Center(child: Text("$pagina de $totalPaginas")),
+              Slider(
+                value: pagina,
+                label: pagina.round().toString(),
+                onChanged: (novaPagina) {
+                  setState(() {
+                    pagina = novaPagina.round().toDouble();
+                  });
+                },
+                onChangeEnd: (novaPagina) {
+                  print(pagina);
+                },
+                min: 1,
+                max: totalPaginas,
+                divisions: totalPaginas.toInt(),
+              )
             ],
           )),
     );
@@ -161,11 +179,26 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    Color cores = Colors.black;
     return AnimatedBuilder(
         animation: AppController.instance,
         builder: (context, snapshot) {
-          return Scaffold(body: body());
+          return Scaffold(
+              key: _keyS,
+              drawer: Drawer(
+                  child: ListView(shrinkWrap: true, children: [
+                const UserAccountsDrawerHeader(
+                    accountName: Text('Teste Nome'),
+                    accountEmail: Text('Teste Email')),
+                Tooltip(
+                  message: 'Clique para acessar o Sumário',
+                  child: ListTile(
+                    onTap: () {},
+                    leading: const Icon(Icons.manage_search),
+                    title: const Text('Sumário'),
+                  ),
+                )
+              ])),
+              body: body());
         });
   }
 }
