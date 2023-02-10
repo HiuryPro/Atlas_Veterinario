@@ -33,7 +33,11 @@ class AppWidget extends StatelessWidget {
                       ? Brightness.dark
                       : Brightness.light),
               initialRoute: '/home',
-              routes: {'/home': (context) => const Home()});
+              routes: {
+                '/home': (context) => const Home(
+                      pagina: 1,
+                    )
+              });
         });
   }
 }
