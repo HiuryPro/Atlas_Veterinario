@@ -38,33 +38,37 @@ class _HomeState extends State<Home> {
           padding: const EdgeInsets.all(8.0),
           child: GestureDetector(
             onHorizontalDragDown: (details) {
+              print(details.globalPosition.dy);
               if (details.globalPosition.dx >
-                  (MediaQuery.of(context).size.width / 2)) {
+                      (MediaQuery.of(context).size.width / 2) &&
+                  details.globalPosition.dy > 100) {
                 if (pagina < totalPaginas) {
                   Navigator.of(context).push(
                     // Use TurnPageRoute instead of MaterialPageRoute.
                     TurnPageRoute(
-                      barrierColor: Colors.white,
+                      barrierColor: const Color(0xFFfafafa),
                       fullscreenDialog: true,
                       direction: TurnDirection.rightToLeft,
-                      overleafColor: Colors.grey,
+                      overleafColor: const Color(0xFFfafafa),
                       turningPoint: 0.2,
-                      transitionDuration: const Duration(milliseconds: 1000),
+                      transitionDuration: const Duration(milliseconds: 1200),
                       builder: (context) => Home(pagina: (pagina + 1).toInt()),
                     ),
                   );
                 }
-              } else {
+              } else if (details.globalPosition.dx <=
+                      (MediaQuery.of(context).size.width / 2) &&
+                  details.globalPosition.dy > 100) {
                 if (pagina > 1) {
                   Navigator.of(context).push(
                     // Use TurnPageRoute instead of MaterialPageRoute.
                     TurnPageRoute(
-                      barrierColor: Colors.white,
+                      barrierColor: const Color(0xFFfafafa),
                       fullscreenDialog: true,
                       direction: TurnDirection.leftToRight,
-                      overleafColor: Colors.grey,
+                      overleafColor: const Color(0xFFfafafa),
                       turningPoint: 0.2,
-                      transitionDuration: const Duration(milliseconds: 1000),
+                      transitionDuration: const Duration(milliseconds: 1200),
                       builder: (context) => Home(pagina: (pagina - 1).toInt()),
                     ),
                   );
@@ -207,7 +211,7 @@ class _HomeState extends State<Home> {
                 ),
                 Center(
                     child: Text(
-                  "$pagina",
+                  "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
                   style: TextStyle(fontSize: tamanhoFonte, color: corFonte),
                   textAlign: TextAlign.justify,
                 )),
@@ -216,6 +220,8 @@ class _HomeState extends State<Home> {
                 ),
                 Center(child: Text("$pagina de $totalPaginas")),
                 Slider(
+                  activeColor: const Color(0xFFf38e00),
+                  inactiveColor: const Color(0xFFf38e00),
                   value: pagina,
                   label: pagina.round().toString(),
                   onChanged: (novaPagina) {

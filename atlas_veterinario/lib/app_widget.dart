@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'app_controller.dart';
 import 'home.dart';
+import 'hometeste.dart';
 
 class Core extends StatelessWidget {
   const Core({Key? key}) : super(key: key);
@@ -32,9 +33,12 @@ class AppWidget extends StatelessWidget {
                   brightness: AppController.instance.isDarkTheme
                       ? Brightness.dark
                       : Brightness.light),
-              initialRoute: '/home',
+              initialRoute: '/hometeste',
               routes: {
                 '/home': (context) => const Home(
+                      pagina: 1,
+                    ),
+                '/hometeste': (context) => const HomeTeste(
                       pagina: 1,
                     )
               });
