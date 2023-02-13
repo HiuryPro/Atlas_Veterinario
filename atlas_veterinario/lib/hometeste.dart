@@ -91,51 +91,11 @@ class _HomeTesteState extends State<HomeTeste> {
                                       const SizedBox(
                                         height: 5,
                                       ),
-                                      Center(
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            GestureDetector(
-                                              onTap: (() {
-                                                this.setState(() {
-                                                  corFonte = Colors.orange;
-                                                });
-                                              }),
-                                              child: Container(
-                                                width: 40,
-                                                height: 40,
-                                                decoration: BoxDecoration(
-                                                  border: Border.all(width: 2),
-                                                  color: Colors.orange,
-                                                  shape: BoxShape.circle,
-                                                ),
-                                              ),
-                                            ),
-                                            const SizedBox(
-                                              width: 5,
-                                            ),
-                                            GestureDetector(
-                                              onTap: (() {
-                                                this.setState(() {
-                                                  corFonte = AppController
-                                                      .instance.theme1;
-                                                });
-                                              }),
-                                              child: Container(
-                                                width: 40,
-                                                height: 40,
-                                                decoration: BoxDecoration(
-                                                  border: Border.all(width: 2),
-                                                  color: AppController
-                                                      .instance.theme1,
-                                                  shape: BoxShape.circle,
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
+                                      coresFonte(),
+                                      const SizedBox(
+                                        height: 5,
                                       ),
+                                      escolheThemas(),
                                       const SizedBox(
                                         height: 5,
                                       ),
@@ -153,6 +113,7 @@ class _HomeTesteState extends State<HomeTeste> {
                                                     AppController.instance
                                                         .changeTheme();
                                                   });
+                                                  // ignore: unnecessary_this
                                                   this.setState(() {
                                                     corFonte = AppController
                                                         .instance.theme1;
@@ -160,7 +121,7 @@ class _HomeTesteState extends State<HomeTeste> {
                                                 }))
                                           ],
                                         ),
-                                      ),
+                                      )
                                     ]);
                                   }),
                                 )),
@@ -277,6 +238,108 @@ class _HomeTesteState extends State<HomeTeste> {
             )));
   }
 
+  coresFonte() {
+    return Center(
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            GestureDetector(
+              onTap: (() {
+                // ignore: unnecessary_this
+                this.setState(() {
+                  corFonte = Colors.orange;
+                });
+              }),
+              child: Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  border: Border.all(width: 2),
+                  color: Colors.orange,
+                  shape: BoxShape.circle,
+                ),
+              ),
+            ),
+            const SizedBox(
+              width: 5,
+            ),
+            GestureDetector(
+              onTap: (() {
+                // ignore: unnecessary_this
+                this.setState(() {
+                  corFonte = AppController.instance.theme1;
+                });
+              }),
+              child: Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  border: Border.all(width: 2),
+                  color: AppController.instance.theme1,
+                  shape: BoxShape.circle,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  escolheThemas() {
+    return Center(
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            GestureDetector(
+              onTap: (() {
+                // ignore: unnecessary_this
+
+                setState(() {
+                  AppController.instance.ativaTema();
+                  AppController.instance.CorVerde();
+                });
+              }),
+              child: Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  border: Border.all(width: 2),
+                  color: Colors.green,
+                  shape: BoxShape.circle,
+                ),
+              ),
+            ),
+            const SizedBox(
+              width: 5,
+            ),
+            GestureDetector(
+              onTap: (() {
+                // ignore: unnecessary_this
+                setState(() {
+                  AppController.instance.desativaTema();
+                });
+              }),
+              child: Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  border: Border.all(width: 2),
+                  color: AppController.instance.theme2,
+                  shape: BoxShape.circle,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
@@ -287,6 +350,12 @@ class _HomeTesteState extends State<HomeTeste> {
               drawer: Drawer(
                   child: ListView(shrinkWrap: true, children: [
                 const UserAccountsDrawerHeader(
+                    decoration: BoxDecoration(
+                        image: DecorationImage(
+                      image: AssetImage(
+                        'assets/images/vetAtletica.png',
+                      ),
+                    )),
                     accountName: Text('Teste Nome'),
                     accountEmail: Text('Teste Email')),
                 Tooltip(

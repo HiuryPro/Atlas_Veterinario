@@ -28,11 +28,12 @@ class AppWidget extends StatelessWidget {
                 GlobalWidgetsLocalizations.delegate
               ],
               supportedLocales: const [Locale('pt', 'BR')],
-              theme: ThemeData(
-                  primarySwatch: Colors.blue,
-                  brightness: AppController.instance.isDarkTheme
-                      ? Brightness.dark
-                      : Brightness.light),
+              theme: AppController.instance.isTema
+                  ? AppController.instance.temaEmUso
+                  : ThemeData(
+                      brightness: AppController.instance.isDarkTheme
+                          ? Brightness.dark
+                          : Brightness.light),
               initialRoute: '/hometeste',
               routes: {
                 '/home': (context) => const Home(
