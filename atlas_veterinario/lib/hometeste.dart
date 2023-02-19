@@ -301,7 +301,7 @@ class _HomeTesteState extends State<HomeTeste> {
 
                 setState(() {
                   AppController.instance.ativaTema();
-                  AppController.instance.CorVerde();
+                  AppController.instance.corVerde();
                 });
               }),
               child: Container(

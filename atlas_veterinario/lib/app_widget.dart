@@ -1,3 +1,4 @@
+import 'package:atlas_veterinario/testes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'app_controller.dart';
@@ -34,14 +35,15 @@ class AppWidget extends StatelessWidget {
                       brightness: AppController.instance.isDarkTheme
                           ? Brightness.dark
                           : Brightness.light),
-              initialRoute: '/hometeste',
+              initialRoute: '/testefile',
               routes: {
                 '/home': (context) => const Home(
                       pagina: 1,
                     ),
                 '/hometeste': (context) => const HomeTeste(
                       pagina: 1,
-                    )
+                    ),
+                '/testefile': (context) => const TesteFile()
               });
         });
   }

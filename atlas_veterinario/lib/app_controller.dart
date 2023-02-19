@@ -34,7 +34,7 @@ class AppController extends ChangeNotifier {
     notifyListeners();
   }
 
-  CorVerde() {
+  corVerde() {
     temaEmUso = temas.temaVerde();
     notifyListeners();
   }
