@@ -9,6 +9,8 @@ import 'dart:convert';
 
 import 'package:path_provider/path_provider.dart';
 
+import 'app_controller.dart';
+
 class TesteFile extends StatefulWidget {
   const TesteFile({super.key});
 
@@ -17,14 +19,17 @@ class TesteFile extends StatefulWidget {
 }
 
 class _TesteFileState extends State<TesteFile> {
+  final GlobalKey<ScaffoldState> _keyS = GlobalKey();
   TextEditingController fileText = TextEditingController();
   String image = '1';
+  double tamanhoFonte = 12;
+
   Widget body() {
     return SizedBox(
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
         child: Padding(
-            padding: EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(8.0),
             child: ListView(
               children: [
                 TextField(
@@ -43,7 +48,7 @@ class _TesteFileState extends State<TesteFile> {
 
                       // pickImageFromGallery();
                     },
-                    child: Text('Pega File')),
+                    child: const Text('Pega File')),
                 if (image != '1')
                   Center(
                     child: Image.memory(
@@ -76,6 +81,80 @@ class _TesteFileState extends State<TesteFile> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _keyS,
+      extendBodyBehindAppBar: true,
+      extendBody: true,
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        actions: [
+          IconButton(
+              iconSize: 48,
+              tooltip: 'Abre opções do Aplicativo',
+              onPressed: () => _keyS.currentState!.openDrawer(),
+              icon: Image.asset('assets/images/unipam.png')),
+          const Expanded(
+            child: TextField(
+              decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(50))),
+                  prefixIcon: Icon(Icons.search)),
+            ),
+          ),
+          PopupMenuButton(
+              iconSize: 48,
+              tooltip: "Abre opções de Texto",
+              icon: const Icon(Icons.menu, color: Colors.grey),
+              itemBuilder: (BuildContext context) => <PopupMenuEntry>[
+                    PopupMenuItem(child: StatefulBuilder(
+                      builder: ((context, setState) {
+                        return Column(children: [
+                          const Text('Tamanho da fonte'),
+                          Center(
+                              child: Slider(
+                            value: tamanhoFonte,
+                            min: 9,
+                            max: 100,
+                            onChanged: ((newTF) {
+                              this.setState(() {
+                                tamanhoFonte = newTF;
+                              });
+                              setState(() {
+                                tamanhoFonte = newTF;
+                              });
+                            }),
+                          )),
+                          const SizedBox(
+                            height: 5,
+                          ),
+                          const SizedBox(
+                            height: 5,
+                          ),
+                          const SizedBox(
+                            height: 5,
+                          ),
+                          Center(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Text('Modo Noturno'),
+                                Switch(
+                                    value: AppController.instance.isDarkTheme,
+                                    onChanged: ((value) {
+                                      setState(() {
+                                        AppController.instance.changeTheme();
+                                      });
+                                      // ignore: unnecessary_this
+                                      this.setState(() {});
+                                    }))
+                              ],
+                            ),
+                          )
+                        ]);
+                      }),
+                    )),
+                  ]),
+        ],
+      ),
       body: body(),
     );
   }
