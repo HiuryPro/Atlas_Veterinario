@@ -49,6 +49,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.3.3+4"
+  crypto:
+    dependency: transitive
+    description:
+      name: crypto
+      sha256: aa274aa7774f8964e4f4f38cc994db7b6158dd36e9187aaceaddc994b35c6c67
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.2"
   cupertino_icons:
     dependency: "direct main"
     description:
@@ -86,6 +94,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_dotenv:
+    dependency: "direct main"
+    description:
+      name: flutter_dotenv
+      sha256: d9283d92059a22e9834bc0a31336658ffba77089fb6f3cc36751f1fc7c6661a3
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.0.2"
   flutter_lints:
     dependency: "direct dev"
     description:
@@ -117,6 +133,22 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  functions_client:
+    dependency: transitive
+    description:
+      name: functions_client
+      sha256: "7e8bb50b13bcf76405addc406a5987bb067a9ec3b49307eab44fc145c67105d1"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.2"
+  gotrue:
+    dependency: transitive
+    description:
+      name: gotrue
+      sha256: b266845913346d6c1bd3424f3c3913ab18a03d17ffb01dfa84c5547caa15ccf2
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.5.1"
   http:
     dependency: "direct main"
     description:
@@ -189,6 +221,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.6.5"
+  jwt_decode:
+    dependency: transitive
+    description:
+      name: jwt_decode
+      sha256: d2e9f68c052b2225130977429d30f187aa1981d789c76ad104a32243cfdebfbb
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.3.1"
   lints:
     dependency: transitive
     description:
@@ -197,6 +237,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.1"
+  logging:
+    dependency: transitive
+    description:
+      name: logging
+      sha256: "04094f2eb032cbb06c6f6e8d3607edcfcb0455e2bb6cbc010cb01171dcb64e6d"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.1"
+  mailer:
+    dependency: "direct main"
+    description:
+      name: mailer
+      sha256: dae17f4c6a360de380fe6c3981f806fa8df69c94533bd6f347075e4f14417bf2
+      url: "https://pub.dev"
+    source: hosted
+    version: "6.0.0"
   matcher:
     dependency: transitive
     description:
@@ -221,6 +277,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.8.0"
+  mime:
+    dependency: transitive
+    description:
+      name: mime
+      sha256: e4ff8e8564c03f255408decd16e7899da1733852a9110a58fe6d1b817684a63e
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.4"
   path:
     dependency: transitive
     description:
@@ -293,6 +357,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.3"
+  postgrest:
+    dependency: transitive
+    description:
+      name: postgrest
+      sha256: "9a411e62fdc00e02e35a4c4d2979d1632a6e9ea7a21ec7f3627d6eac322c7b7f"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.2.2"
   process:
     dependency: transitive
     description:
@@ -301,6 +373,30 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.2.4"
+  realtime_client:
+    dependency: transitive
+    description:
+      name: realtime_client
+      sha256: f50f3dce6ac48de7a6d29f6b9b0b8864c1ecdebf322a1724b0aa70e95babd109
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.2"
+  retry:
+    dependency: transitive
+    description:
+      name: retry
+      sha256: "45dfeebaf095b606fdb9dbfb4c114cc204449bc274783b452658365e03afdbab"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.1.0"
+  rxdart:
+    dependency: transitive
+    description:
+      name: rxdart
+      sha256: "0c7c0cedd93788d996e33041ffecda924cc54389199cde4e6a34b440f50044cb"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.27.7"
   sky_engine:
     dependency: transitive
     description: flutter
@@ -322,6 +418,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.11.0"
+  storage_client:
+    dependency: transitive
+    description:
+      name: storage_client
+      sha256: "58eebe33fba221499afc18008b4e8ea4205cc0d4024021c0badd6d662bcdb87c"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.2.2"
   stream_channel:
     dependency: transitive
     description:
@@ -338,6 +442,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.2.0"
+  supabase:
+    dependency: "direct main"
+    description:
+      name: supabase
+      sha256: "14a36f512596abec7a59ea8ed63e4b98ea18db80299dcf9576fd53fea5f3e5b4"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.5.1"
   term_glyph:
     dependency: transitive
     description:
@@ -370,6 +482,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.3.1"
+  universal_io:
+    dependency: transitive
+    description:
+      name: universal_io
+      sha256: "06866290206d196064fd61df4c7aea1ffe9a4e7c4ccaa8fcded42dd41948005d"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.2.0"
   vector_math:
     dependency: transitive
     description:
@@ -378,6 +498,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.4"
+  web_socket_channel:
+    dependency: transitive
+    description:
+      name: web_socket_channel
+      sha256: ca49c0bc209c687b887f30527fb6a9d80040b072cc2990f34b9bec3e7663101b
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.3.0"
   win32:
     dependency: transitive
     description:
@@ -394,6 +522,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.0"
+  yet_another_json_isolate:
+    dependency: transitive
+    description:
+      name: yet_another_json_isolate
+      sha256: cfaaaf91a1a7f4b226a4fbc72b6db2adadccea1bfa337aef9827d2d0cce6d79a
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.2"
 sdks:
   dart: ">=2.19.1 <3.0.0"
   flutter: ">=3.0.0"

@@ -1,14 +1,21 @@
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:atlas_veterinario/SendEmail/enviaemail.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:http/http.dart' as http;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:mailer/mailer.dart';
+import 'package:mailer/smtp_server/gmail.dart';
 import 'dart:convert';
 
 import 'package:path_provider/path_provider.dart';
 
+import 'DadosDB/supa.dart';
 import 'app_controller.dart';
 
 class TesteFile extends StatefulWidget {
@@ -38,6 +45,7 @@ class _TesteFileState extends State<TesteFile> {
                 ),
                 ElevatedButton(
                     onPressed: () async {
+                      /*
                       var file = await DefaultAssetBundle.of(context)
                           .load("assets/paginas/Teste.txt");
                       print(file.buffer.asUint8List());
@@ -47,6 +55,39 @@ class _TesteFileState extends State<TesteFile> {
                       print(file2);
 
                       // pickImageFromGallery();
+                      
+                      final headers = {'Content-Type': 'application/json'};
+                      print(json.encode({
+                        'email': 'ickydangerbr13@gmail.com',
+                      }));
+                      dynamic body;
+                      var url = Uri.parse("http://127.0.0.1:5000/crud");
+                      http.Response response = await http.post(url,
+                          headers: headers,
+                          body: json.encode({
+                            'pagina': '10',
+                            'caminho': 'C:\\Users\\Hiury G\\Desktop\\Teste.txt',
+                          }));
+
+                      body = jsonDecode(response.body);
+                      print(body);
+                      */
+
+                      var email = EnviaEmail();
+                      email.enviaEmailConfirmacao(
+                          'ickydangerbr13@gmail.com', 461286);
+
+                      Directory appDocDir =
+                          await getApplicationDocumentsDirectory();
+                      List dados;
+                      String appDocPath = appDocDir.path;
+                      var dir = await File('$appDocPath\\paginas\\teste.txt')
+                          .create(recursive: true);
+
+                      dados = await SupaDB.instance.select();
+                      print(appDocPath);
+                      print(dir);
+                      print(dados[0]);
                     },
                     child: const Text('Pega File')),
                 if (image != '1')
