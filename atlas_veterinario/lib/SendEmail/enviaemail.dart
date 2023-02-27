@@ -5,7 +5,7 @@ import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server/gmail.dart';
 
 class EnviaEmail {
-  enviaEmailConfirmacao(String email, int codigo) async {
+  enviaEmailConfirmacao(String email, String codigo) async {
     final smtpServer = gmail(dotenv.env['EMAIL']!, dotenv.env['PASSWORD']!);
 
     final message = Message()

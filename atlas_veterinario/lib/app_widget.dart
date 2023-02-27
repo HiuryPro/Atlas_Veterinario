@@ -1,6 +1,8 @@
+import 'package:atlas_veterinario/Login_Cadastro/cadastrar.dart';
 import 'package:atlas_veterinario/testes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'Login_Cadastro/Login.dart';
 import 'app_controller.dart';
 import 'home.dart';
 import 'hometeste.dart';
@@ -35,7 +37,7 @@ class AppWidget extends StatelessWidget {
                       brightness: AppController.instance.isDarkTheme
                           ? Brightness.dark
                           : Brightness.light),
-              initialRoute: '/testefile',
+              initialRoute: '/cadastro',
               routes: {
                 '/home': (context) => const Home(
                       pagina: 1,
@@ -43,7 +45,8 @@ class AppWidget extends StatelessWidget {
                 '/hometeste': (context) => const HomeTeste(
                       pagina: 1,
                     ),
-                '/testefile': (context) => const TesteFile()
+                '/cadastro': (context) => const Cadastro(),
+                '/login': (context) => const Login()
               });
         });
   }

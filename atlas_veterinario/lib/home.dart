@@ -16,7 +16,6 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   final GlobalKey<ScaffoldState> _keyS = GlobalKey();
-  double tamanhoFonte = 12;
   double paginaAntes = 1;
 
   @override
@@ -66,107 +65,7 @@ class _HomeState extends State<Home> {
                       const SizedBox(
                         width: 5,
                       ),
-                      PopupMenuButton(
-                          iconSize: 48,
-                          tooltip: "Abre opções de Texto",
-                          icon: const Icon(Icons.menu, color: Colors.grey),
-                          itemBuilder: (BuildContext context) =>
-                              <PopupMenuEntry>[
-                                PopupMenuItem(child: StatefulBuilder(
-                                  builder: ((context, setState) {
-                                    return Column(children: [
-                                      const Text('Tamanho da fonte'),
-                                      Center(
-                                          child: Slider(
-                                        value: tamanhoFonte,
-                                        min: 9,
-                                        max: 100,
-                                        onChanged: ((newTF) {
-                                          this.setState(() {
-                                            tamanhoFonte = newTF;
-                                          });
-                                          setState(() {
-                                            tamanhoFonte = newTF;
-                                          });
-                                        }),
-                                      )),
-                                      const SizedBox(
-                                        height: 5,
-                                      ),
-                                      Center(
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            GestureDetector(
-                                              onTap: (() {
-                                                this.setState(() {
-                                                  corFonte = Colors.orange;
-                                                });
-                                              }),
-                                              child: Container(
-                                                width: 40,
-                                                height: 40,
-                                                decoration: BoxDecoration(
-                                                  border: Border.all(width: 2),
-                                                  color: Colors.orange,
-                                                  shape: BoxShape.circle,
-                                                ),
-                                              ),
-                                            ),
-                                            const SizedBox(
-                                              width: 5,
-                                            ),
-                                            GestureDetector(
-                                              onTap: (() {
-                                                this.setState(() {
-                                                  corFonte = AppController
-                                                      .instance.theme1;
-                                                });
-                                              }),
-                                              child: Container(
-                                                width: 40,
-                                                height: 40,
-                                                decoration: BoxDecoration(
-                                                  border: Border.all(width: 2),
-                                                  color: AppController
-                                                      .instance.theme1,
-                                                  shape: BoxShape.circle,
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      const SizedBox(
-                                        height: 5,
-                                      ),
-                                      Center(
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            const Text('Modo Noturno'),
-                                            Switch(
-                                                value: AppController
-                                                    .instance.isDarkTheme,
-                                                onChanged: ((value) {
-                                                  setState(() {
-                                                    AppController.instance
-                                                        .changeTheme();
-                                                  });
-                                                  this.setState(() {
-                                                    corFonte = AppController
-                                                        .instance.theme1;
-                                                  });
-                                                }))
-                                          ],
-                                        ),
-                                      ),
-                                    ]);
-                                  }),
-                                )),
-                              ]),
+                      opcoesdaPagina(),
                     ]),
                 const SizedBox(height: 15),
                 Expanded(
@@ -179,13 +78,21 @@ class _HomeState extends State<Home> {
                           Navigator.of(context).push(
                             // Use TurnPageRoute instead of MaterialPageRoute.
                             TurnPageRoute(
-                              barrierColor: const Color(0xFFfafafa),
+                              barrierColor: AppController.instance.isTema
+                                  ? AppController.instance.themeCustom
+                                  : AppController.instance.isDarkTheme
+                                      ? const Color(0xff303030)
+                                      : const Color(0xFFfafafa),
                               fullscreenDialog: true,
                               direction: TurnDirection.rightToLeft,
-                              overleafColor: const Color(0xFFfafafa),
+                              overleafColor: AppController.instance.isTema
+                                  ? AppController.instance.themeCustom
+                                  : AppController.instance.isDarkTheme
+                                      ? const Color(0xff303030)
+                                      : const Color(0xFFfafafa),
                               turningPoint: 0.2,
                               transitionDuration:
-                                  const Duration(milliseconds: 1200),
+                                  const Duration(milliseconds: 1300),
                               builder: (context) =>
                                   Home(pagina: (pagina + 1).toInt()),
                             ),
@@ -198,13 +105,23 @@ class _HomeState extends State<Home> {
                           Navigator.of(context).push(
                             // Use TurnPageRoute instead of MaterialPageRoute.
                             TurnPageRoute(
-                              barrierColor: const Color(0xFFfafafa),
                               fullscreenDialog: true,
+                              opaque: false,
                               direction: TurnDirection.leftToRight,
-                              overleafColor: const Color(0xFFfafafa),
+                              barrierColor: AppController.instance.isTema
+                                  ? AppController.instance.themeCustom
+                                  : AppController.instance.isDarkTheme
+                                      ? const Color(0xff303030)
+                                      : const Color(0xFFfafafa),
+                              overleafColor: AppController.instance.isTema
+                                  ? AppController.instance.themeCustom
+                                  : AppController.instance.isDarkTheme
+                                      ? const Color(0xff303030)
+                                      : const Color(0xFFfafafa),
                               turningPoint: 0.2,
+                              barrierDismissible: false,
                               transitionDuration:
-                                  const Duration(milliseconds: 1200),
+                                  const Duration(milliseconds: 1300),
                               builder: (context) =>
                                   Home(pagina: (pagina - 1).toInt()),
                             ),
@@ -219,7 +136,8 @@ class _HomeState extends State<Home> {
                             child: Text(
                           "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1300s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1300s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1300s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1300s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1300s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1300s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1300s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1300s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1300s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1300s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1300s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
                           style: TextStyle(
-                              fontSize: tamanhoFonte, color: corFonte),
+                              fontSize: AppController.instance.tamanhoFonte,
+                              color: corFonte),
                           textAlign: TextAlign.justify,
                         )),
                       ],
@@ -237,115 +155,271 @@ class _HomeState extends State<Home> {
                         setState(() {
                           isOpen = !isOpen;
                         });
-                        showModalBottomSheet(
-                            transitionAnimationController:
-                                bottomSheetController,
-                            context: context,
-                            builder: (ctx) {
-                              return StatefulBuilder(
-                                builder: (context, setState) {
-                                  return ClipRRect(
-                                    borderRadius: const BorderRadius.only(
-                                      topRight: Radius.circular(20),
-                                      topLeft: Radius.circular(20),
-                                    ),
-                                    child: SizedBox(
-                                        height: 150,
-                                        child: Column(
-                                          children: [
-                                            IconButton(
-                                                iconSize: 36,
-                                                onPressed: () {
-                                                  Navigator.of(context).pop();
-                                                },
-                                                icon: const Icon(
-                                                    Icons.arrow_drop_down)),
-                                            Center(
-                                                child: Text(
-                                                    "$pagina de $totalPaginas")),
-                                            Slider(
-                                              activeColor:
-                                                  const Color(0xFFf38e00),
-                                              inactiveColor:
-                                                  const Color(0xFFf38e00),
-                                              value: pagina,
-                                              label: pagina.round().toString(),
-                                              onChanged: (novaPagina) {
-                                                setState(() {
-                                                  pagina = novaPagina
-                                                      .round()
-                                                      .toDouble();
-                                                });
-                                                this.setState(() {});
-                                              },
-                                              onChangeEnd: (novaPagina) {
-                                                if (paginaAntes < pagina) {
-                                                  Navigator.of(context).pop();
-                                                  Navigator.of(context).push(
-                                                    // Use TurnPageRoute instead of MaterialPageRoute.
-                                                    TurnPageRoute(
-                                                      barrierColor: const Color(
-                                                          0xFFfafafa),
-                                                      fullscreenDialog: true,
-                                                      direction: TurnDirection
-                                                          .rightToLeft,
-                                                      overleafColor:
-                                                          const Color(
-                                                              0xFFfafafa),
-                                                      turningPoint: 0.1,
-                                                      transitionDuration:
-                                                          const Duration(
-                                                              milliseconds:
-                                                                  1300),
-                                                      builder: (context) =>
-                                                          Home(
-                                                              pagina: (pagina)
-                                                                  .toInt()),
-                                                    ),
-                                                  );
-                                                } else if (paginaAntes >
-                                                    pagina) {
-                                                  Navigator.of(context).pop();
-                                                  Navigator.of(context).push(
-                                                    // Use TurnPageRoute instead of MaterialPageRoute.
-                                                    TurnPageRoute(
-                                                      barrierColor: const Color(
-                                                          0xFFfafafa),
-                                                      fullscreenDialog: true,
-                                                      direction: TurnDirection
-                                                          .leftToRight,
-                                                      overleafColor:
-                                                          const Color(
-                                                              0xFFfafafa),
-                                                      turningPoint: 0.1,
-                                                      transitionDuration:
-                                                          const Duration(
-                                                              milliseconds:
-                                                                  1300),
-                                                      builder: (context) =>
-                                                          Home(
-                                                              pagina: (pagina)
-                                                                  .toInt()),
-                                                    ),
-                                                  );
-                                                } else {}
-                                              },
-                                              min: 1,
-                                              max: totalPaginas,
-                                              divisions: totalPaginas.toInt(),
-                                            )
-                                          ],
-                                        )),
-                                  );
-                                },
-                              );
-                            });
+                        paginaSelector();
                       },
                     ),
                   ),
                 )
               ],
             )));
+  }
+
+  PopupMenuButton<dynamic> opcoesdaPagina() {
+    return PopupMenuButton(
+        iconSize: 48,
+        tooltip: "Abre opções de Texto",
+        icon: const Icon(Icons.menu),
+        itemBuilder: (BuildContext context) => <PopupMenuEntry>[
+              PopupMenuItem(child: StatefulBuilder(
+                builder: ((context, setState) {
+                  return Column(children: [
+                    const Text('Tamanho da fonte'),
+                    Center(
+                        child: Slider(
+                      value: AppController.instance.tamanhoFonte,
+                      min: 9,
+                      max: 100,
+                      onChanged: ((newTF) {
+                        this.setState(() {
+                          AppController.instance.tamanhoFonte = newTF;
+                        });
+                        setState(() {
+                          AppController.instance.tamanhoFonte = newTF;
+                        });
+                      }),
+                    )),
+                    const SizedBox(
+                      height: 5,
+                    ),
+                    coresFonte(),
+                    const SizedBox(
+                      height: 5,
+                    ),
+                    escolheThemas(),
+                    const SizedBox(
+                      height: 5,
+                    ),
+                    Center(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text('Modo Noturno'),
+                          Switch(
+                              value: AppController.instance.isDarkTheme,
+                              onChanged: ((value) {
+                                setState(() {
+                                  AppController.instance.changeTheme();
+                                });
+                                this.setState(() {
+                                  corFonte = AppController.instance.theme1;
+                                });
+                              }))
+                        ],
+                      ),
+                    ),
+                  ]);
+                }),
+              )),
+            ]);
+  }
+
+  Future<dynamic> paginaSelector() {
+    return showModalBottomSheet(
+        transitionAnimationController: bottomSheetController,
+        context: context,
+        builder: (ctx) {
+          return StatefulBuilder(
+            builder: (context, setState) {
+              return ClipRRect(
+                borderRadius: const BorderRadius.only(
+                  topRight: Radius.circular(20),
+                  topLeft: Radius.circular(20),
+                ),
+                child: SizedBox(
+                    height: 150,
+                    child: Column(
+                      children: [
+                        IconButton(
+                            iconSize: 36,
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            icon: const Icon(Icons.arrow_drop_down)),
+                        Center(
+                            child: Text(
+                                "${pagina.toInt()} de ${totalPaginas.toInt()}")),
+                        Slider(
+                          value: pagina,
+                          label: pagina.round().toString(),
+                          onChanged: (novaPagina) {
+                            setState(() {
+                              pagina = novaPagina.round().toDouble();
+                            });
+                            this.setState(() {});
+                          },
+                          onChangeEnd: (novaPagina) {
+                            if (paginaAntes < pagina) {
+                              Navigator.of(context).pop();
+                              Navigator.of(context).push(
+                                // Use TurnPageRoute instead of MaterialPageRoute.
+                                TurnPageRoute(
+                                  barrierColor: AppController.instance.isTema
+                                      ? AppController.instance.themeCustom
+                                      : AppController.instance.isDarkTheme
+                                          ? const Color(0xff303030)
+                                          : const Color(0xFFfafafa),
+                                  fullscreenDialog: true,
+                                  direction: TurnDirection.rightToLeft,
+                                  overleafColor: AppController.instance.isTema
+                                      ? AppController.instance.themeCustom
+                                      : AppController.instance.isDarkTheme
+                                          ? const Color(0xff303030)
+                                          : const Color(0xFFfafafa),
+                                  turningPoint: 0.1,
+                                  transitionDuration:
+                                      const Duration(milliseconds: 1300),
+                                  builder: (context) =>
+                                      Home(pagina: (pagina).toInt()),
+                                ),
+                              );
+                            } else if (paginaAntes > pagina) {
+                              Navigator.of(context).pop();
+                              Navigator.of(context).push(
+                                // Use TurnPageRoute instead of MaterialPageRoute.
+                                TurnPageRoute(
+                                  barrierColor: AppController.instance.isTema
+                                      ? AppController.instance.themeCustom
+                                      : AppController.instance.isDarkTheme
+                                          ? const Color(0xff303030)
+                                          : const Color(0xFFfafafa),
+                                  fullscreenDialog: true,
+                                  direction: TurnDirection.leftToRight,
+                                  overleafColor: AppController.instance.isTema
+                                      ? AppController.instance.themeCustom
+                                      : AppController.instance.isDarkTheme
+                                          ? const Color(0xff303030)
+                                          : const Color(0xFFfafafa),
+                                  turningPoint: 0.1,
+                                  transitionDuration:
+                                      const Duration(milliseconds: 1300),
+                                  builder: (context) =>
+                                      Home(pagina: (pagina).toInt()),
+                                ),
+                              );
+                            } else {}
+                          },
+                          min: 1,
+                          max: totalPaginas,
+                          divisions: totalPaginas.toInt(),
+                        )
+                      ],
+                    )),
+              );
+            },
+          );
+        });
+  }
+
+  coresFonte() {
+    return Center(
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            GestureDetector(
+              onTap: (() {
+                // ignore: unnecessary_this
+                this.setState(() {
+                  corFonte = Colors.orange;
+                });
+              }),
+              child: Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  border: Border.all(width: 2),
+                  color: Colors.orange,
+                  shape: BoxShape.circle,
+                ),
+              ),
+            ),
+            const SizedBox(
+              width: 5,
+            ),
+            GestureDetector(
+              onTap: (() {
+                // ignore: unnecessary_this
+                this.setState(() {
+                  corFonte = AppController.instance.theme1;
+                });
+              }),
+              child: Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  border: Border.all(width: 2),
+                  color: AppController.instance.theme1,
+                  shape: BoxShape.circle,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  escolheThemas() {
+    return Center(
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            GestureDetector(
+              onTap: (() {
+                // ignore: unnecessary_this
+
+                setState(() {
+                  AppController.instance.ativaTema();
+                  AppController.instance.corVerde();
+                });
+              }),
+              child: Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  border: Border.all(width: 2),
+                  color: Colors.green,
+                  shape: BoxShape.circle,
+                ),
+              ),
+            ),
+            const SizedBox(
+              width: 5,
+            ),
+            GestureDetector(
+              onTap: (() {
+                // ignore: unnecessary_this
+                setState(() {
+                  AppController.instance.desativaTema();
+                });
+              }),
+              child: Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  border: Border.all(width: 2),
+                  color: AppController.instance.theme2,
+                  shape: BoxShape.circle,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   @override
@@ -357,7 +431,11 @@ class _HomeState extends State<Home> {
               key: _keyS,
               drawer: Drawer(
                   child: ListView(shrinkWrap: true, children: [
-                const UserAccountsDrawerHeader(
+                UserAccountsDrawerHeader(
+                    decoration: AppController.instance.isTema
+                        ? BoxDecoration(
+                            color: AppController.instance.themeCustom2)
+                        : null,
                     accountName: Text('Teste Nome'),
                     accountEmail: Text('Teste Email')),
                 Tooltip(

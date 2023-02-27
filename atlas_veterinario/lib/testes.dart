@@ -17,6 +17,7 @@ import 'package:path_provider/path_provider.dart';
 
 import 'DadosDB/supa.dart';
 import 'app_controller.dart';
+import 'home.dart';
 
 class TesteFile extends StatefulWidget {
   const TesteFile({super.key});
@@ -71,11 +72,11 @@ class _TesteFileState extends State<TesteFile> {
 
                       body = jsonDecode(response.body);
                       print(body);
-                      */
+                      
 
                       var email = EnviaEmail();
                       email.enviaEmailConfirmacao(
-                          'ickydangerbr13@gmail.com', 461286);
+                          'hiurylucas@unipam.edu.br', 461286);
 
                       Directory appDocDir =
                           await getApplicationDocumentsDirectory();
@@ -88,6 +89,9 @@ class _TesteFileState extends State<TesteFile> {
                       print(appDocPath);
                       print(dir);
                       print(dados[0]);
+*/
+
+                      // ignore: use_build_context_synchronously
                     },
                     child: const Text('Pega File')),
                 if (image != '1')

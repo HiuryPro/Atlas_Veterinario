@@ -77,10 +77,10 @@ packages:
     dependency: transitive
     description:
       name: ffi
-      sha256: a38574032c5f1dd06c4aee541789906c12ccaab8ba01446e800d9c5b79c4a978
+      sha256: "13a6ccf6a459a125b3fcdb6ec73bd5ff90822e071207c663bfd1f70062d51d18"
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.1"
+    version: "1.2.1"
   file:
     dependency: transitive
     description:
@@ -89,6 +89,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "6.1.4"
+  flip_renderer:
+    dependency: transitive
+    description:
+      name: flip_renderer
+      sha256: f9e27ab95540b1ac31c238fb0246126c4af46f5f9a12014a8bca68299e4072ea
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.2"
+  flip_widget:
+    dependency: "direct main"
+    description:
+      name: flip_widget
+      sha256: "8c31077b9f9e2d44563305d910363ddd957904633d7c1abba28a82027aeb90fc"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.11"
   flutter:
     dependency: "direct main"
     description: flutter
@@ -102,6 +118,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.0.2"
+  flutter_image_compress:
+    dependency: "direct main"
+    description:
+      name: flutter_image_compress
+      sha256: "37f1b26399098e5f97b74c1483f534855e7dff68ead6ddaccf747029fb03f29f"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.3"
   flutter_lints:
     dependency: "direct dev"
     description:
@@ -141,6 +165,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.2"
+  gl_canvas:
+    dependency: transitive
+    description:
+      name: gl_canvas
+      sha256: "42ea7a347935650acaa2e13ebb074a4b7ebca2116c078418ffd82106045470f8"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.6"
   gotrue:
     dependency: transitive
     description:
@@ -285,6 +317,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.4"
+  opengl_es_bindings:
+    dependency: transitive
+    description:
+      name: opengl_es_bindings
+      sha256: a7c4ea773fba6c9a7360465bd3d105bc5446b21eb75bc6e65e86a8b581822121
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0-pre.1"
   path:
     dependency: transitive
     description:
@@ -337,10 +377,10 @@ packages:
     dependency: transitive
     description:
       name: path_provider_windows
-      sha256: bcabbe399d4042b8ee687e17548d5d3f527255253b4a639f5f8d2094a9c2b45c
+      sha256: a34ecd7fb548f8e57321fd8e50d865d266941b54e6c3b7758cf8f37c24116905
       url: "https://pub.dev"
     source: hosted
-    version: "2.1.3"
+    version: "2.0.7"
   platform:
     dependency: transitive
     description:
@@ -510,10 +550,10 @@ packages:
     dependency: transitive
     description:
       name: win32
-      sha256: c9ebe7ee4ab0c2194e65d3a07d8c54c5d00bb001b76081c4a04cdb8448b59e46
+      sha256: c0e3a4f7be7dae51d8f152230b86627e3397c1ba8c3fa58e63d44a9f3edc9cef
       url: "https://pub.dev"
     source: hosted
-    version: "3.1.3"
+    version: "2.6.1"
   xdg_directories:
     dependency: transitive
     description:

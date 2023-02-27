@@ -11,6 +11,9 @@ class AppController extends ChangeNotifier {
   bool isTema = false;
   Color theme1 = Colors.black;
   Color theme2 = Colors.white;
+  Color themeCustom = Colors.white;
+  Color themeCustom2 = Colors.white;
+  double tamanhoFonte = 12;
 
   changeTheme() {
     isDarkTheme = !isDarkTheme;
@@ -36,6 +39,8 @@ class AppController extends ChangeNotifier {
 
   corVerde() {
     temaEmUso = temas.temaVerde();
+    themeCustom = const Color(0xff6fb43d);
+    themeCustom2 = const Color(0xff026534);
     notifyListeners();
   }
 }
