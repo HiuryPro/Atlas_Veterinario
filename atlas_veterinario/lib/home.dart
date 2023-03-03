@@ -1,9 +1,11 @@
 // ignore: implementation_imports
 // ignore: implementation_imports
+import 'package:flutter/services.dart';
 import 'package:turn_page_transition/src/turn_direction.dart';
 import 'package:flutter/material.dart';
 import 'package:turn_page_transition/turn_page_transition.dart';
-import 'app_controller.dart';
+
+import 'Auxiliadores/app_controller.dart';
 
 class Home extends StatefulWidget {
   final int pagina;
@@ -17,6 +19,14 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   final GlobalKey<ScaffoldState> _keyS = GlobalKey();
   double paginaAntes = 1;
+  double pagina = 1;
+  double totalPaginas = 145;
+  bool isOpen = false;
+  TextEditingController fontController = TextEditingController();
+
+  AnimationController? bottomSheetController;
+
+  Color corFonte = AppController.instance.theme1;
 
   @override
   void initState() {
@@ -24,16 +34,10 @@ class _HomeState extends State<Home> {
     setState(() {
       pagina = widget.pagina.toDouble();
       paginaAntes = pagina;
+      fontController.text =
+          AppController.instance.tamanhoFonte.toInt().toString();
     });
   }
-
-  double pagina = 1;
-  double totalPaginas = 145;
-  bool isOpen = false;
-
-  AnimationController? bottomSheetController;
-
-  Color corFonte = AppController.instance.theme1;
 
   Widget body() {
     return SizedBox(
@@ -173,21 +177,61 @@ class _HomeState extends State<Home> {
               PopupMenuItem(child: StatefulBuilder(
                 builder: ((context, setState) {
                   return Column(children: [
-                    const Text('Tamanho da fonte'),
+                    Row(
+                      children: [
+                        const Text('Tamanho da fonte'),
+                        const SizedBox(
+                          width: 5,
+                        ),
+                        Expanded(
+                            child: TextField(
+                          onChanged: (value) {
+                            if (value != '') {
+                              int fonte = int.parse(value);
+                              if (fonte >= 12 && fonte <= 100) {
+                                this.setState(() {
+                                  AppController.instance.tamanhoFonte =
+                                      fonte.toDouble();
+                                });
+                              }
+                            }
+                          },
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly
+                          ],
+                          controller: fontController,
+                        ))
+                      ],
+                    ),
                     Center(
-                        child: Slider(
-                      value: AppController.instance.tamanhoFonte,
-                      min: 9,
-                      max: 100,
-                      onChanged: ((newTF) {
-                        this.setState(() {
-                          AppController.instance.tamanhoFonte = newTF;
-                        });
-                        setState(() {
-                          AppController.instance.tamanhoFonte = newTF;
-                        });
-                      }),
-                    )),
+                      child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            IconButton(
+                                icon: const Icon(Icons.text_decrease),
+                                onPressed: () {
+                                  this.setState(() {
+                                    AppController.instance.tamanhoFonte -= 1;
+                                    fontController.text = AppController
+                                        .instance.tamanhoFonte
+                                        .toInt()
+                                        .toString();
+                                  });
+                                }),
+                            const SizedBox(width: 5),
+                            IconButton(
+                                icon: const Icon(Icons.text_increase),
+                                onPressed: () {
+                                  this.setState(() {
+                                    AppController.instance.tamanhoFonte += 1;
+                                    fontController.text = AppController
+                                        .instance.tamanhoFonte
+                                        .toInt()
+                                        .toString();
+                                  });
+                                }),
+                          ]),
+                    ),
                     const SizedBox(
                       height: 5,
                     ),
@@ -436,8 +480,8 @@ class _HomeState extends State<Home> {
                         ? BoxDecoration(
                             color: AppController.instance.themeCustom2)
                         : null,
-                    accountName: Text('Teste Nome'),
-                    accountEmail: Text('Teste Email')),
+                    accountName: Text(AppController.instance.email),
+                    accountEmail: Text(AppController.instance.nome)),
                 Tooltip(
                   message: 'Clique para acessar o Sumário',
                   child: ListTile(
@@ -445,7 +489,7 @@ class _HomeState extends State<Home> {
                     leading: const Icon(Icons.manage_search),
                     title: const Text('Sumário'),
                   ),
-                )
+                ),
               ])),
               body: body());
         });

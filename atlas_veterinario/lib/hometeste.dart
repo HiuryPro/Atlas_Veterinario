@@ -2,7 +2,7 @@
 import 'package:turn_page_transition/src/turn_direction.dart';
 import 'package:flutter/material.dart';
 import 'package:turn_page_transition/turn_page_transition.dart';
-import 'app_controller.dart';
+import 'Auxiliadores/app_controller.dart';
 
 class HomeTeste extends StatefulWidget {
   final int pagina;

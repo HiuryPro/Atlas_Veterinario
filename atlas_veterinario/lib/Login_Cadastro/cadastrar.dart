@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 
+import '../Auxiliadores/mensagens.dart';
+import '../Auxiliadores/telacarregamento.dart';
 import '../SendEmail/enviaemail.dart';
 
 class Cadastro extends StatefulWidget {
@@ -21,6 +23,18 @@ class _CadastroState extends State<Cadastro> {
   TextEditingController nomeController = TextEditingController();
   String? erroemail;
   String? errosenha;
+
+  bool carregando = false;
+  late TelaCarregamento telaCarregamento;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    setState(() {
+      telaCarregamento = TelaCarregamento();
+    });
+  }
 
   Widget body() {
     return SizedBox(
@@ -68,6 +82,7 @@ class _CadastroState extends State<Cadastro> {
                     errosenha = null;
                   });
                 },
+                obscureText: true,
                 decoration: InputDecoration(
                     border: const OutlineInputBorder(),
                     labelText: 'Senha',
@@ -76,6 +91,7 @@ class _CadastroState extends State<Cadastro> {
             ElevatedButton(
                 onPressed: () async {
                   var enviaemail = EnviaEmail();
+                  var mensagem = Mensagem();
                   RegExp emailRegex = RegExp(
                       r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
 
@@ -87,6 +103,9 @@ class _CadastroState extends State<Cadastro> {
 
                   if (email.endsWith('@unipam.edu.br') && emailValid) {
                     if (senha.length >= 8) {
+                      setState(() {
+                        carregando = true;
+                      });
                       var random = Random();
                       String codigo = '';
                       for (int i = 0; i < 6; i++) {
@@ -105,9 +124,20 @@ class _CadastroState extends State<Cadastro> {
                           'IsAtivo': false
                         });
                         await enviaemail.enviaEmailConfirmacao(email, codigo);
+                        // ignore: use_build_context_synchronously
+                        await mensagem.mensagem(
+                            context,
+                            'Usuário criado com Sucesso!!',
+                            'Um email com codigo de acesso foi enviado para o seu email. Utilize-o ao fazer o primeiro login',
+                            '/login');
+                        setState(() {
+                          carregando = false;
+                        });
                       } catch (e) {
+                        print(e);
                         setState(() {
                           erroemail = 'Esse email já está em uso';
+                          carregando = false;
                         });
                       }
                     } else {
@@ -132,8 +162,8 @@ class _CadastroState extends State<Cadastro> {
 
   Widget alert() {
     return AlertDialog(
-      title: Text("Usuário Cadastrado com Sucesso!!"),
-      content: Text(
+      title: const Text("Usuário Cadastrado com Sucesso!!"),
+      content: const Text(
           'Um email com código de acesso foi enviado para o seu email! Use o ao fazer seu primeiro login.'),
       actions: [
         TextButton(
@@ -177,7 +207,9 @@ class _CadastroState extends State<Cadastro> {
             fit: BoxFit.cover,
           ),
         ),
-        body()
+        body(),
+        if (carregando) telaCarregamento.telaCarrega(context)[0],
+        if (carregando) telaCarregamento.telaCarrega(context)[1]
       ]),
     );
   }

@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 
+import '../Auxiliadores/app_controller.dart';
 import '../SendEmail/enviaemail.dart';
 
 class Login extends StatefulWidget {
@@ -50,6 +51,7 @@ class _LoginState extends State<Login> {
             const SizedBox(height: 10),
             TextField(
                 controller: senhaController,
+                obscureText: true,
                 onChanged: (value) {
                   setState(() {
                     errosenha = null;
@@ -62,7 +64,9 @@ class _LoginState extends State<Login> {
             Align(
                 alignment: Alignment.centerRight,
                 child: TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.of(context).pushNamed('/novasenha');
+                    },
                     child: const Text('Esqueceu a senha?',
                         style: TextStyle(fontSize: 20)))),
             const SizedBox(height: 10),
@@ -83,9 +87,19 @@ class _LoginState extends State<Login> {
                         .match({'Email': email, 'Senha': senha});
                     if (user.isEmpty) {
                       setState(() {
-                        erroemail = 'Email/Senha Incorretos';
+                        erroemail = 'Email/Senha Incorreto';
                       });
-                    } else {}
+                    } else {
+                      AppController.instance.email = email;
+                      AppController.instance.senha = senha;
+                      AppController.instance.nome = user[0]['Nome'];
+
+                      if (user[0]['IsAtivo']) {
+                        Navigator.of(context).pushNamed('/home');
+                      } else {
+                        Navigator.of(context).pushNamed('/confirmarCadastro');
+                      }
+                    }
                   } else {
                     print('Email invalido');
                     setState(() {

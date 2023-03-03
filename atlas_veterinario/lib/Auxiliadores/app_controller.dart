@@ -13,7 +13,12 @@ class AppController extends ChangeNotifier {
   Color theme2 = Colors.white;
   Color themeCustom = Colors.white;
   Color themeCustom2 = Colors.white;
+
   double tamanhoFonte = 12;
+
+  String email = '';
+  String senha = '';
+  String nome = '';
 
   changeTheme() {
     isDarkTheme = !isDarkTheme;

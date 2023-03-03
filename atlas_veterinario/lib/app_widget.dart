@@ -1,9 +1,11 @@
 import 'package:atlas_veterinario/Login_Cadastro/cadastrar.dart';
+import 'package:atlas_veterinario/Login_Cadastro/confirmarcadastro.dart';
 import 'package:atlas_veterinario/testes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'Login_Cadastro/Login.dart';
-import 'app_controller.dart';
+import 'Auxiliadores/app_controller.dart';
+import 'Login_Cadastro/novasenha.dart';
 import 'home.dart';
 import 'hometeste.dart';
 
@@ -37,7 +39,7 @@ class AppWidget extends StatelessWidget {
                       brightness: AppController.instance.isDarkTheme
                           ? Brightness.dark
                           : Brightness.light),
-              initialRoute: '/cadastro',
+              initialRoute: '/login',
               routes: {
                 '/home': (context) => const Home(
                       pagina: 1,
@@ -46,7 +48,9 @@ class AppWidget extends StatelessWidget {
                       pagina: 1,
                     ),
                 '/cadastro': (context) => const Cadastro(),
-                '/login': (context) => const Login()
+                '/login': (context) => const Login(),
+                '/confirmarCadastro': (context) => const ConfirmarCadastro(),
+                '/novasenha': (context) => const NovaSenha()
               });
         });
   }
