@@ -1,4 +1,4 @@
-import 'package:atlas_veterinario/vetthemes.dart';
+import 'package:atlas_veterinario/Auxiliadores/vetthemes.dart';
 import 'package:flutter/material.dart';
 
 class AppController extends ChangeNotifier {
@@ -14,7 +14,8 @@ class AppController extends ChangeNotifier {
   Color themeCustom = Colors.white;
   Color themeCustom2 = Colors.white;
 
-  double tamanhoFonte = 12;
+  int tamanhoFonte = 12;
+  int totalPaginas = 2017;
 
   String email = '';
   String senha = '';

@@ -5,6 +5,7 @@ import 'package:atlas_veterinario/SendEmail/enviaemail.dart';
 import 'package:flutter/material.dart';
 
 import '../Auxiliadores/telacarregamento.dart';
+import '../Auxiliadores/vetthemes.dart';
 import '../DadosDB/supa.dart';
 
 class NovaSenha extends StatefulWidget {
@@ -19,12 +20,13 @@ class _NovaSenhaState extends State<NovaSenha> {
   TextEditingController emailController = TextEditingController();
   TextEditingController senhaController = TextEditingController();
   TextEditingController confirmaSenhaController = TextEditingController();
+  VetThemes temas = VetThemes();
 
   String? emailError;
+  String? senhaError;
   late TelaCarregamento telaCarregamento;
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     setState(() {
       telaCarregamento = TelaCarregamento();
@@ -42,7 +44,9 @@ class _NovaSenhaState extends State<NovaSenha> {
           padding: const EdgeInsets.all(8.0),
           child: ListView(shrinkWrap: true, children: [
             const Text(
-                'Digite seu email para que seja enviado um codigo para alterar sua senha.'),
+              'Digite seu email para que seja enviado um codigo para alterar sua senha.',
+              style: TextStyle(color: Colors.black),
+            ),
             const SizedBox(
               height: 10,
             ),
@@ -55,7 +59,7 @@ class _NovaSenhaState extends State<NovaSenha> {
               },
               decoration: InputDecoration(
                   border: const OutlineInputBorder(),
-                  label: const Text('Codigo'),
+                  label: const Text('Email'),
                   errorText: emailError),
             ),
             ElevatedButton(
@@ -133,7 +137,10 @@ class _NovaSenhaState extends State<NovaSenha> {
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: ListView(shrinkWrap: true, children: [
-            const Text('Digite seu código de Redefinção de Senha'),
+            const Text('Digite seu código de Redefinção de Senha',
+                style: TextStyle(
+                  color: Colors.black,
+                )),
             const SizedBox(
               height: 10,
             ),
@@ -148,8 +155,15 @@ class _NovaSenhaState extends State<NovaSenha> {
             TextField(
               obscureText: true,
               controller: senhaController,
-              decoration: const InputDecoration(
-                  border: OutlineInputBorder(), label: Text('Senha')),
+              onChanged: (value) {
+                setState(() {
+                  senhaError = null;
+                });
+              },
+              decoration: InputDecoration(
+                  errorText: senhaError,
+                  border: const OutlineInputBorder(),
+                  label: const Text('Senha')),
             ),
             const SizedBox(
               height: 10,
@@ -157,30 +171,47 @@ class _NovaSenhaState extends State<NovaSenha> {
             TextField(
               obscureText: true,
               controller: confirmaSenhaController,
-              decoration: const InputDecoration(
-                  border: OutlineInputBorder(), label: Text('Confirmar Senha')),
+              onChanged: (value) {
+                setState(() {
+                  senhaError = null;
+                });
+              },
+              decoration: InputDecoration(
+                border: const OutlineInputBorder(),
+                label: const Text('Confirmar Senha'),
+                errorText: senhaError,
+              ),
             ),
             ElevatedButton(
                 onPressed: () async {
                   try {
                     var mensagem = Mensagem();
+                    String senha = senhaController.text;
+                    String senhaConfirma = confirmaSenhaController.text;
 
-                    await SupaDB.instance.clienteSupaBase
-                        .from('usuario')
-                        .update({
-                      'Senha': senhaController.text,
-                      'Codigo': null
-                    }).match({
-                      'Email': emailController.text,
-                      'Codigo': codigoController.text
-                    });
+                    if (senha == senhaConfirma) {
+                      await SupaDB.instance.clienteSupaBase
+                          .from('usuario')
+                          .update({
+                        'Senha': senhaController.text,
+                        'Codigo': null
+                      }).match({
+                        'Email': emailController.text,
+                        'Codigo': codigoController.text
+                      });
+                      // ignore: use_build_context_synchronously
+                      await mensagem.mensagem(
+                          context,
+                          'Sua Senha foi alterada com sucesso',
+                          'A senha de seu usuário foi alterada',
+                          '/login');
+                    } else {
+                      setState(() {
+                        senhaError = 'Senhas não são iguais';
+                      });
+                    }
 
                     // ignore: use_build_context_synchronously
-                    await mensagem.mensagem(
-                        context,
-                        'Sua Senha foi alterada com sucesso',
-                        'A senha de seu usuário foi alterada',
-                        '/login');
                   } catch (e) {
                     print(e);
                   }
@@ -204,19 +235,22 @@ class _NovaSenhaState extends State<NovaSenha> {
           },
         ),
       ),
-      body: Stack(children: [
-        SizedBox(
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height,
-          child: Image.asset(
-            'assets/images/loginback.jpg',
-            fit: BoxFit.cover,
+      body: Theme(
+        data: temas.loginCad(),
+        child: Stack(children: [
+          SizedBox(
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height,
+            child: Image.asset(
+              'assets/images/loginback.jpg',
+              fit: BoxFit.cover,
+            ),
           ),
-        ),
-        isEmailVerdadeiro ? novasenha() : email(),
-        if (carregando) telaCarregamento.telaCarrega(context)[0],
-        if (carregando) telaCarregamento.telaCarrega(context)[1]
-      ]),
+          isEmailVerdadeiro ? novasenha() : email(),
+          if (carregando) telaCarregamento.telaCarrega(context)[0],
+          if (carregando) telaCarregamento.telaCarrega(context)[1]
+        ]),
+      ),
     );
   }
 }

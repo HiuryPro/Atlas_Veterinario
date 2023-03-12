@@ -1,10 +1,8 @@
 import 'package:atlas_veterinario/DadosDB/supa.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
-
 import '../Auxiliadores/app_controller.dart';
 import '../Auxiliadores/mensagens.dart';
+import '../Auxiliadores/vetthemes.dart';
 
 class ConfirmarCadastro extends StatefulWidget {
   const ConfirmarCadastro({super.key});
@@ -15,6 +13,7 @@ class ConfirmarCadastro extends StatefulWidget {
 
 class _ConfirmarCadastroState extends State<ConfirmarCadastro> {
   TextEditingController condigoController = TextEditingController();
+  VetThemes temas = VetThemes();
 
   Widget body() {
     return SizedBox(
@@ -23,12 +22,22 @@ class _ConfirmarCadastroState extends State<ConfirmarCadastro> {
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: ListView(shrinkWrap: true, children: [
-            const Text('Digite seu código de Acesso para ativar seu Usuário!!'),
+            const Center(
+                child: Text(
+                    'Digite seu código de Acesso para ativar seu Usuário!!',
+                    style: TextStyle(
+                      color: Colors.black,
+                    ))),
             const SizedBox(
               height: 10,
             ),
-            const Text(
-                'Obs: Essa ação é necessaria apenas uma vez, depois disto você terá total acesso ao Atlas Veterinário'),
+            const Center(
+              child: Text(
+                  'Obs: Essa ação é necessaria apenas uma vez, depois disto você terá total acesso ao Atlas Veterinário',
+                  style: TextStyle(
+                    color: Colors.black,
+                  )),
+            ),
             const SizedBox(
               height: 10,
             ),
@@ -107,7 +116,7 @@ class _ConfirmarCadastroState extends State<ConfirmarCadastro> {
             fit: BoxFit.cover,
           ),
         ),
-        body()
+        Theme(data: temas.loginCad(), child: body())
       ]),
     );
   }

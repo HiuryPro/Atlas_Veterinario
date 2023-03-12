@@ -1,6 +1,6 @@
 import 'package:atlas_veterinario/Login_Cadastro/cadastrar.dart';
 import 'package:atlas_veterinario/Login_Cadastro/confirmarcadastro.dart';
-import 'package:atlas_veterinario/testes.dart';
+import 'package:atlas_veterinario/sumario.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'Login_Cadastro/Login.dart';
@@ -50,7 +50,8 @@ class AppWidget extends StatelessWidget {
                 '/cadastro': (context) => const Cadastro(),
                 '/login': (context) => const Login(),
                 '/confirmarCadastro': (context) => const ConfirmarCadastro(),
-                '/novasenha': (context) => const NovaSenha()
+                '/novasenha': (context) => const NovaSenha(),
+                '/sumario': (context) => const Sumario()
               });
         });
   }

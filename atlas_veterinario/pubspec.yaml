@@ -46,6 +46,7 @@ dependencies:
   mailer: ^6.0.0
   flutter_image_compress: ^1.1.3
   flip_widget: ^0.1.11
+  auto_size_text: ^3.0.0
 
 dev_dependencies:
   flutter_test:

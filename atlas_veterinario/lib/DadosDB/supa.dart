@@ -1,6 +1,5 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:supabase/supabase.dart';
-import 'package:supabase/supabase.dart';
 
 class SupaDB {
   static SupaDB instance = SupaDB();

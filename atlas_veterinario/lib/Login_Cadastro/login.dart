@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:io';
 import 'dart:math';
 
@@ -7,6 +9,7 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 
 import '../Auxiliadores/app_controller.dart';
+import '../Auxiliadores/vetthemes.dart';
 import '../SendEmail/enviaemail.dart';
 
 class Login extends StatefulWidget {
@@ -19,6 +22,7 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   TextEditingController emailController = TextEditingController();
   TextEditingController senhaController = TextEditingController();
+  VetThemes temas = VetThemes();
   String? erroemail;
   String? errosenha;
 
@@ -55,6 +59,7 @@ class _LoginState extends State<Login> {
                 onChanged: (value) {
                   setState(() {
                     errosenha = null;
+                    erroemail = null;
                   });
                 },
                 decoration: InputDecoration(
@@ -81,24 +86,28 @@ class _LoginState extends State<Login> {
                   final bool emailValid = emailRegex.hasMatch(email);
 
                   if (emailValid) {
-                    List user = await SupaDB.instance.clienteSupaBase
-                        .from('usuario')
-                        .select('*')
-                        .match({'Email': email, 'Senha': senha});
-                    if (user.isEmpty) {
-                      setState(() {
-                        erroemail = 'Email/Senha Incorreto';
-                      });
-                    } else {
-                      AppController.instance.email = email;
-                      AppController.instance.senha = senha;
-                      AppController.instance.nome = user[0]['Nome'];
-
-                      if (user[0]['IsAtivo']) {
-                        Navigator.of(context).pushNamed('/home');
+                    try {
+                      List user = await SupaDB.instance.clienteSupaBase
+                          .from('Usuario')
+                          .select('*')
+                          .match({'Email': email, 'Senha': senha});
+                      if (user.isEmpty) {
+                        setState(() {
+                          erroemail = 'Email/Senha Incorreto';
+                        });
                       } else {
-                        Navigator.of(context).pushNamed('/confirmarCadastro');
+                        AppController.instance.email = email;
+                        AppController.instance.senha = senha;
+                        AppController.instance.nome = user[0]['Nome'];
+
+                        if (user[0]['IsAtivo']) {
+                          Navigator.of(context).pushNamed('/home');
+                        } else {
+                          Navigator.of(context).pushNamed('/confirmarCadastro');
+                        }
                       }
+                    } catch (e) {
+                      print(e);
                     }
                   } else {
                     print('Email invalido');
@@ -140,7 +149,7 @@ class _LoginState extends State<Login> {
             fit: BoxFit.cover,
           ),
         ),
-        body()
+        Theme(data: temas.loginCad(), child: body())
       ]),
     );
   }

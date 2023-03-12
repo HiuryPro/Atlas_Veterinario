@@ -28,4 +28,16 @@ class VetThemes {
           overlayColor: Color(0xff026534),
         ));
   }
+
+  ThemeData loginCad() {
+    return ThemeData(
+      brightness: Brightness.light,
+      inputDecorationTheme: const InputDecorationTheme(
+          border: OutlineInputBorder(),
+          focusColor: Colors.black,
+          prefixIconColor: Colors.black,
+          focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: Color(0xFF2196f3), width: 2))),
+    );
+  }
 }

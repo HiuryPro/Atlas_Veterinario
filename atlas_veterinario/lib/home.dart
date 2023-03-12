@@ -1,5 +1,6 @@
 // ignore: implementation_imports
 // ignore: implementation_imports
+import 'package:atlas_veterinario/Auxiliadores/mensagens.dart';
 import 'package:flutter/services.dart';
 import 'package:turn_page_transition/src/turn_direction.dart';
 import 'package:flutter/material.dart';
@@ -18,11 +19,11 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   final GlobalKey<ScaffoldState> _keyS = GlobalKey();
-  double paginaAntes = 1;
-  double pagina = 1;
-  double totalPaginas = 145;
+  int paginaAntes = 1;
+  int pagina = 1;
   bool isOpen = false;
   TextEditingController fontController = TextEditingController();
+  TextEditingController paginaController = TextEditingController();
 
   AnimationController? bottomSheetController;
 
@@ -32,7 +33,8 @@ class _HomeState extends State<Home> {
   void initState() {
     super.initState();
     setState(() {
-      pagina = widget.pagina.toDouble();
+      pagina = widget.pagina;
+      print(pagina);
       paginaAntes = pagina;
       fontController.text =
           AppController.instance.tamanhoFonte.toInt().toString();
@@ -78,58 +80,22 @@ class _HomeState extends State<Home> {
                       if (details.globalPosition.dx >
                               (MediaQuery.of(context).size.width / 2) &&
                           details.globalPosition.dy > 100) {
-                        if (pagina < totalPaginas) {
-                          Navigator.of(context).push(
-                            // Use TurnPageRoute instead of MaterialPageRoute.
-                            TurnPageRoute(
-                              barrierColor: AppController.instance.isTema
-                                  ? AppController.instance.themeCustom
-                                  : AppController.instance.isDarkTheme
-                                      ? const Color(0xff303030)
-                                      : const Color(0xFFfafafa),
-                              fullscreenDialog: true,
-                              direction: TurnDirection.rightToLeft,
-                              overleafColor: AppController.instance.isTema
-                                  ? AppController.instance.themeCustom
-                                  : AppController.instance.isDarkTheme
-                                      ? const Color(0xff303030)
-                                      : const Color(0xFFfafafa),
-                              turningPoint: 0.2,
-                              transitionDuration:
-                                  const Duration(milliseconds: 1300),
-                              builder: (context) =>
-                                  Home(pagina: (pagina + 1).toInt()),
-                            ),
-                          );
+                        if (pagina < AppController.instance.totalPaginas) {
+                          setState(() {
+                            pagina += 1;
+                          });
+                          Navigator.of(context)
+                              .push(passaPagina(TurnDirection.rightToLeft));
                         }
                       } else if (details.globalPosition.dx <=
                               (MediaQuery.of(context).size.width / 2) &&
                           details.globalPosition.dy > 100) {
                         if (pagina > 1) {
-                          Navigator.of(context).push(
-                            // Use TurnPageRoute instead of MaterialPageRoute.
-                            TurnPageRoute(
-                              fullscreenDialog: true,
-                              opaque: false,
-                              direction: TurnDirection.leftToRight,
-                              barrierColor: AppController.instance.isTema
-                                  ? AppController.instance.themeCustom
-                                  : AppController.instance.isDarkTheme
-                                      ? const Color(0xff303030)
-                                      : const Color(0xFFfafafa),
-                              overleafColor: AppController.instance.isTema
-                                  ? AppController.instance.themeCustom
-                                  : AppController.instance.isDarkTheme
-                                      ? const Color(0xff303030)
-                                      : const Color(0xFFfafafa),
-                              turningPoint: 0.2,
-                              barrierDismissible: false,
-                              transitionDuration:
-                                  const Duration(milliseconds: 1300),
-                              builder: (context) =>
-                                  Home(pagina: (pagina - 1).toInt()),
-                            ),
-                          );
+                          setState(() {
+                            pagina -= 1;
+                          });
+                          Navigator.of(context)
+                              .push(passaPagina(TurnDirection.leftToRight));
                         }
                       }
                     },
@@ -140,7 +106,8 @@ class _HomeState extends State<Home> {
                             child: Text(
                           "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1300s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1300s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1300s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1300s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1300s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1300s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1300s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1300s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1300s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1300s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1300s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
                           style: TextStyle(
-                              fontSize: AppController.instance.tamanhoFonte,
+                              fontSize: AppController.instance.tamanhoFonte
+                                  .toDouble(),
                               color: corFonte),
                           textAlign: TextAlign.justify,
                         )),
@@ -151,7 +118,7 @@ class _HomeState extends State<Home> {
                 const SizedBox(height: 15),
                 Center(
                   child: Tooltip(
-                    message: 'Abre slider de páginas',
+                    message: 'Abre opções de passagem de página',
                     child: IconButton(
                       iconSize: 36,
                       icon: const Icon(Icons.arrow_drop_up),
@@ -188,10 +155,9 @@ class _HomeState extends State<Home> {
                           onChanged: (value) {
                             if (value != '') {
                               int fonte = int.parse(value);
-                              if (fonte >= 12 && fonte <= 100) {
+                              if (fonte >= 9 && fonte <= 100) {
                                 this.setState(() {
-                                  AppController.instance.tamanhoFonte =
-                                      fonte.toDouble();
+                                  AppController.instance.tamanhoFonte = fonte;
                                 });
                               }
                             }
@@ -267,6 +233,26 @@ class _HomeState extends State<Home> {
             ]);
   }
 
+  TurnPageRoute passaPagina(var direcao) {
+    return TurnPageRoute(
+      barrierColor: AppController.instance.isTema
+          ? AppController.instance.themeCustom
+          : AppController.instance.isDarkTheme
+              ? const Color(0xff303030)
+              : const Color(0xFFfafafa),
+      fullscreenDialog: true,
+      direction: direcao,
+      overleafColor: AppController.instance.isTema
+          ? AppController.instance.themeCustom
+          : AppController.instance.isDarkTheme
+              ? const Color(0xff303030)
+              : const Color(0xFFfafafa),
+      turningPoint: 0.1,
+      transitionDuration: const Duration(milliseconds: 1300),
+      builder: (context) => Home(pagina: (pagina).toInt()),
+    );
+  }
+
   Future<dynamic> paginaSelector() {
     return showModalBottomSheet(
         transitionAnimationController: bottomSheetController,
@@ -281,81 +267,89 @@ class _HomeState extends State<Home> {
                 ),
                 child: SizedBox(
                     height: 150,
-                    child: Column(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        IconButton(
-                            iconSize: 36,
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                            icon: const Icon(Icons.arrow_drop_down)),
-                        Center(
-                            child: Text(
-                                "${pagina.toInt()} de ${totalPaginas.toInt()}")),
-                        Slider(
-                          value: pagina,
-                          label: pagina.round().toString(),
-                          onChanged: (novaPagina) {
-                            setState(() {
-                              pagina = novaPagina.round().toDouble();
-                            });
-                            this.setState(() {});
-                          },
-                          onChangeEnd: (novaPagina) {
-                            if (paginaAntes < pagina) {
-                              Navigator.of(context).pop();
-                              Navigator.of(context).push(
-                                // Use TurnPageRoute instead of MaterialPageRoute.
-                                TurnPageRoute(
-                                  barrierColor: AppController.instance.isTema
-                                      ? AppController.instance.themeCustom
-                                      : AppController.instance.isDarkTheme
-                                          ? const Color(0xff303030)
-                                          : const Color(0xFFfafafa),
-                                  fullscreenDialog: true,
-                                  direction: TurnDirection.rightToLeft,
-                                  overleafColor: AppController.instance.isTema
-                                      ? AppController.instance.themeCustom
-                                      : AppController.instance.isDarkTheme
-                                          ? const Color(0xff303030)
-                                          : const Color(0xFFfafafa),
-                                  turningPoint: 0.1,
-                                  transitionDuration:
-                                      const Duration(milliseconds: 1300),
-                                  builder: (context) =>
-                                      Home(pagina: (pagina).toInt()),
-                                ),
-                              );
-                            } else if (paginaAntes > pagina) {
-                              Navigator.of(context).pop();
-                              Navigator.of(context).push(
-                                // Use TurnPageRoute instead of MaterialPageRoute.
-                                TurnPageRoute(
-                                  barrierColor: AppController.instance.isTema
-                                      ? AppController.instance.themeCustom
-                                      : AppController.instance.isDarkTheme
-                                          ? const Color(0xff303030)
-                                          : const Color(0xFFfafafa),
-                                  fullscreenDialog: true,
-                                  direction: TurnDirection.leftToRight,
-                                  overleafColor: AppController.instance.isTema
-                                      ? AppController.instance.themeCustom
-                                      : AppController.instance.isDarkTheme
-                                          ? const Color(0xff303030)
-                                          : const Color(0xFFfafafa),
-                                  turningPoint: 0.1,
-                                  transitionDuration:
-                                      const Duration(milliseconds: 1300),
-                                  builder: (context) =>
-                                      Home(pagina: (pagina).toInt()),
-                                ),
-                              );
-                            } else {}
-                          },
-                          min: 1,
-                          max: totalPaginas,
-                          divisions: totalPaginas.toInt(),
-                        )
+                        Expanded(
+                          child: IconButton(
+                              iconSize: 50,
+                              onPressed: () {
+                                setState(() {
+                                  pagina -= 1;
+                                });
+                                Navigator.of(context).pop();
+                                Navigator.of(context).push(
+                                    passaPagina(TurnDirection.leftToRight));
+                              },
+                              icon: const Icon(Icons.arrow_back)),
+                        ),
+                        Expanded(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                  '$pagina de ${AppController.instance.totalPaginas}'),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              TextField(
+                                textAlign: TextAlign.center,
+                                controller: paginaController,
+                                decoration: const InputDecoration(
+                                    border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(50)))),
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.digitsOnly
+                                ],
+                              ),
+                              const SizedBox(
+                                height: 20,
+                              ),
+                              ElevatedButton(
+                                  onPressed: () {
+                                    String value = paginaController.text;
+                                    if (value != '') {
+                                      int paginaDigitada = int.parse(value);
+                                      if (paginaDigitada >= 1 &&
+                                          paginaDigitada <=
+                                              AppController
+                                                  .instance.totalPaginas) {
+                                        setState(() {
+                                          pagina = paginaDigitada;
+                                        });
+
+                                        if (pagina < paginaAntes) {
+                                          Navigator.of(context).pop();
+                                          Navigator.of(context).push(
+                                              passaPagina(
+                                                  TurnDirection.leftToRight));
+                                        } else if (pagina > paginaAntes) {
+                                          Navigator.of(context).pop();
+                                          Navigator.of(context).push(
+                                              passaPagina(
+                                                  TurnDirection.rightToLeft));
+                                        }
+                                      }
+                                    }
+                                  },
+                                  child: const Text('Passar Pagina'))
+                            ],
+                          ),
+                        ),
+                        Expanded(
+                          child: IconButton(
+                              iconSize: 50,
+                              onPressed: () {
+                                setState(() {
+                                  pagina += 1;
+                                });
+                                Navigator.of(context).pop();
+                                Navigator.of(context).push(
+                                    passaPagina(TurnDirection.rightToLeft));
+                              },
+                              icon: const Icon(Icons.arrow_forward)),
+                        ),
                       ],
                     )),
               );
@@ -474,20 +468,43 @@ class _HomeState extends State<Home> {
           return Scaffold(
               key: _keyS,
               drawer: Drawer(
-                  child: ListView(shrinkWrap: true, children: [
+                  child: Column(children: [
                 UserAccountsDrawerHeader(
-                    decoration: AppController.instance.isTema
-                        ? BoxDecoration(
-                            color: AppController.instance.themeCustom2)
-                        : null,
-                    accountName: Text(AppController.instance.email),
-                    accountEmail: Text(AppController.instance.nome)),
+                    decoration: BoxDecoration(
+                        color: AppController.instance.theme2,
+                        image: const DecorationImage(
+                            fit: BoxFit.fill,
+                            image: AssetImage('assets/images/PatoUlt.png'))),
+                    accountName: Padding(
+                        padding: const EdgeInsets.only(left: 10),
+                        child: Text(AppController.instance.email)),
+                    accountEmail: Padding(
+                        padding: const EdgeInsets.only(left: 10),
+                        child: Text(AppController.instance.nome))),
+                Expanded(
+                  child: ListView(shrinkWrap: true, children: [
+                    Tooltip(
+                      message: 'Clique para acessar o Sumário',
+                      child: ListTile(
+                        onTap: () {
+                          Navigator.of(context).pushNamed('/sumario');
+                        },
+                        leading: const Icon(Icons.manage_search),
+                        title: const Text('Sumário'),
+                      ),
+                    ),
+                  ]),
+                ),
                 Tooltip(
-                  message: 'Clique para acessar o Sumário',
+                  message: 'Clique para fazer Logout',
                   child: ListTile(
-                    onTap: () {},
-                    leading: const Icon(Icons.manage_search),
-                    title: const Text('Sumário'),
+                    onTap: () async {
+                      var mensagem = Mensagem();
+                      await mensagem.mensagemOpcao(context, 'Fazer Logout',
+                          'Deseja realmente fazer logout?', '/login');
+                    },
+                    leading: const Icon(Icons.logout),
+                    title: const Text('Logout'),
                   ),
                 ),
               ])),

@@ -8,6 +8,7 @@ import 'package:flutter/src/widgets/placeholder.dart';
 
 import '../Auxiliadores/mensagens.dart';
 import '../Auxiliadores/telacarregamento.dart';
+import '../Auxiliadores/vetthemes.dart';
 import '../SendEmail/enviaemail.dart';
 
 class Cadastro extends StatefulWidget {
@@ -23,6 +24,7 @@ class _CadastroState extends State<Cadastro> {
   TextEditingController nomeController = TextEditingController();
   String? erroemail;
   String? errosenha;
+  VetThemes temas = VetThemes();
 
   bool carregando = false;
   late TelaCarregamento telaCarregamento;
@@ -101,55 +103,60 @@ class _CadastroState extends State<Cadastro> {
 
                   final bool emailValid = emailRegex.hasMatch(email);
 
-                  if (email.endsWith('@unipam.edu.br') && emailValid) {
-                    if (senha.length >= 8) {
-                      setState(() {
-                        carregando = true;
-                      });
-                      var random = Random();
-                      String codigo = '';
-                      for (int i = 0; i < 6; i++) {
-                        var randomNumber = random.nextInt(
-                            10); // gera um número aleatório entre 0 e 9
-                        codigo += randomNumber.toString();
-                      }
-                      try {
-                        await SupaDB.instance.clienteSupaBase
-                            .from('usuario')
-                            .insert({
-                          'Nome': nome,
-                          'Email': email,
-                          'Senha': senha,
-                          'Codigo': codigo,
-                          'IsAtivo': false
-                        });
-                        await enviaemail.enviaEmailConfirmacao(email, codigo);
-                        // ignore: use_build_context_synchronously
-                        await mensagem.mensagem(
-                            context,
-                            'Usuário criado com Sucesso!!',
-                            'Um email com codigo de acesso foi enviado para o seu email. Utilize-o ao fazer o primeiro login',
-                            '/login');
+                  if (emailValid) {
+                    if (email.endsWith('@unipam.edu.br')) {
+                      if (senha.length >= 8) {
                         setState(() {
-                          carregando = false;
+                          carregando = true;
                         });
-                      } catch (e) {
-                        print(e);
+                        var random = Random();
+                        String codigo = '';
+                        for (int i = 0; i < 6; i++) {
+                          var randomNumber = random.nextInt(
+                              10); // gera um número aleatório entre 0 e 9
+                          codigo += randomNumber.toString();
+                        }
+                        try {
+                          await SupaDB.instance.clienteSupaBase
+                              .from('usuario')
+                              .insert({
+                            'Nome': nome,
+                            'Email': email,
+                            'Senha': senha,
+                            'Codigo': codigo,
+                            'IsAtivo': false
+                          });
+                          await enviaemail.enviaEmailConfirmacao(email, codigo);
+                          // ignore: use_build_context_synchronously
+                          await mensagem.mensagem(
+                              context,
+                              'Usuário criado com Sucesso!!',
+                              'Um email com codigo de acesso foi enviado para o seu email. Utilize-o ao fazer o primeiro login',
+                              '/login');
+                          setState(() {
+                            carregando = false;
+                          });
+                        } catch (e) {
+                          print(e);
+                          setState(() {
+                            erroemail = 'Esse email já está em uso';
+                            carregando = false;
+                          });
+                        }
+                      } else {
                         setState(() {
-                          erroemail = 'Esse email já está em uso';
-                          carregando = false;
+                          errosenha =
+                              'Senha dever ser maior ou igual a 8 caracteres';
                         });
                       }
                     } else {
                       setState(() {
-                        errosenha =
-                            'Senha dever ser maior ou igual a 8 caracteres';
+                        erroemail = 'Este email não é do dominio Unipam';
                       });
                     }
                   } else {
-                    print('Email não unipam');
                     setState(() {
-                      erroemail = 'Email invalido';
+                      erroemail = 'Este email é invalido';
                     });
                   }
                 },
@@ -198,19 +205,22 @@ class _CadastroState extends State<Cadastro> {
           },
         ),
       ),
-      body: Stack(children: [
-        SizedBox(
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height,
-          child: Image.asset(
-            'assets/images/loginback.jpg',
-            fit: BoxFit.cover,
+      body: Theme(
+        data: temas.loginCad(),
+        child: Stack(children: [
+          SizedBox(
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height,
+            child: Image.asset(
+              'assets/images/loginback.jpg',
+              fit: BoxFit.cover,
+            ),
           ),
-        ),
-        body(),
-        if (carregando) telaCarregamento.telaCarrega(context)[0],
-        if (carregando) telaCarregamento.telaCarrega(context)[1]
-      ]),
+          body(),
+          if (carregando) telaCarregamento.telaCarrega(context)[0],
+          if (carregando) telaCarregamento.telaCarrega(context)[1]
+        ]),
+      ),
     );
   }
 }
