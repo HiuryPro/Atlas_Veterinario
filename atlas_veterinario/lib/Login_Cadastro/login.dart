@@ -91,6 +91,7 @@ class _LoginState extends State<Login> {
                           .from('Usuario')
                           .select('*')
                           .match({'Email': email, 'Senha': senha});
+
                       if (user.isEmpty) {
                         setState(() {
                           erroemail = 'Email/Senha Incorreto';
@@ -99,6 +100,7 @@ class _LoginState extends State<Login> {
                         AppController.instance.email = email;
                         AppController.instance.senha = senha;
                         AppController.instance.nome = user[0]['Nome'];
+                        AppController.instance.isAdmin = user[0]['IsAdmin'];
 
                         if (user[0]['IsAtivo']) {
                           Navigator.of(context).pushNamed('/home');

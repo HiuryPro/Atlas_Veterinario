@@ -140,71 +140,10 @@ class _SumarioState extends State<Sumario> {
                 ),
             ],
           ),
-          title: const Text('Sumario'),
+          title: const Text('Sumário'),
         ),
         body: body(),
       ),
     );
   }
 }
-
-
-/*
-Padding(
-        padding: const EdgeInsets.all(8.0),
-        child:  ListView(
-          shrinkWrap: true,
-          children: [
-            ElevatedButton(
-                onPressed: () async {
-                  Set partes = {};
-                  var res = await SupaDB.instance.clienteSupaBase
-                      .from('Capitulo')
-                      .select(
-                          'NumCapitulo, NomeCapitulo, Unidade!inner(NumUnidade, NomeUnidade ,Parte!inner(Parte))');
-
-                  for (var pegaPartes in res) {
-                    partes.add(pegaPartes['Unidade']['Parte']['Parte']);
-                  }
-
-                  List conteudoPartes = [];
-                  print(conteudoPartes);
-                  List dados = [];
-                  for (int i = 0; i < partes.length; i++) {
-                    conteudoPartes.add([]);
-                    for (var items in res) {
-                      if (items['Unidade']['Parte']['Parte'] == (i + 1)) {
-                        print(items['Unidade']['Parte']['Parte']);
-                        conteudoPartes[i].add(items);
-                      }
-                    }
-                  }
-
-                  print(conteudoPartes[0]);
-                },
-                child: const Text('Faz select'))
-          ],
-        ),
-      ),
-
-
-
-
- var partesSupa = await SupaDB.instance.clienteSupaBase
-                      .from('Parte')
-                      .select('Parte');
-
-                  for(var parte in partesSupa){
-                    partes.add(parte['Parte']);
-                  }
-
-                  for(var parte in partes){
-                    
-                  }
-                  var unidadesCap = await SupaDB.instance.clienteSupaBase
-                      .from('Capitulo')
-                      .select(
-                          'NumCapitulo, NomeCapitulo, Unidade!inner(NumUnidade, NomeUnidade ,Parte!inner(Parte))')
-                      .match({'Unidade.Parte.Parte': 2});
-                  print(unidadesCap);
-*/

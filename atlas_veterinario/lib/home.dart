@@ -493,6 +493,17 @@ class _HomeState extends State<Home> {
                         title: const Text('Sumário'),
                       ),
                     ),
+                    if (AppController.instance.isAdmin)
+                      Tooltip(
+                        message: 'Clique para cadastrar o Sumário',
+                        child: ListTile(
+                          onTap: () {
+                            Navigator.of(context).pushNamed('/cadastrasumario');
+                          },
+                          leading: const Icon(Icons.edit_document),
+                          title: const Text('Sumário'),
+                        ),
+                      ),
                   ]),
                 ),
                 Tooltip(

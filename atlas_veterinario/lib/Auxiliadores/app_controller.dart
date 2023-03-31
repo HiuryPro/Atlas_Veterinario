@@ -9,6 +9,7 @@ class AppController extends ChangeNotifier {
   bool isDarkTheme = false;
   ThemeData? temaEmUso;
   bool isTema = false;
+  bool isAdmin = false;
   Color theme1 = Colors.black;
   Color theme2 = Colors.white;
   Color themeCustom = Colors.white;
