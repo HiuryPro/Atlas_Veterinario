@@ -1,8 +1,12 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:atlas_veterinario/DadosDB/supa.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
+
+import 'Auxiliadores/mensagens.dart';
 
 class CadastraSumario extends StatefulWidget {
   const CadastraSumario({super.key});
@@ -18,6 +22,7 @@ class _CadastraSumarioState extends State<CadastraSumario> {
   TextEditingController nomeUnidadeController = TextEditingController();
   TextEditingController numCapituloController = TextEditingController();
   TextEditingController nomeCapituloController = TextEditingController();
+  Mensagem mensagem = Mensagem();
 
   Map<String, List<String>> mapPartes = {'IdParte': [], 'Parte': []};
   Map<String, List<String>> mapUnidades = {
@@ -103,11 +108,23 @@ class _CadastraSumarioState extends State<CadastraSumario> {
         ),
         ElevatedButton(
             onPressed: () async {
-              await SupaDB.instance.clienteSupaBase.from("Parte").insert({
-                "Parte": int.parse(parteController.text),
-                "Descricao": descricaoParteController.text
-              });
-              await partesSelect();
+              List resultado = await SupaDB.instance.clienteSupaBase
+                  .from('Parte')
+                  .select('*')
+                  .match({"Parte": int.parse(parteController.text)});
+              if (resultado.isEmpty) {
+                await SupaDB.instance.clienteSupaBase.from("Parte").insert({
+                  "Parte": int.parse(parteController.text),
+                  "Descricao": descricaoParteController.text
+                });
+                await partesSelect();
+                await mensagem.mensagem(context, 'Cadastro feito com sucesso',
+                    'A parte foi cadastrada com sucesso', null);
+              } else {
+                print('Essa parte já existe');
+                await mensagem.mensagem(context, 'Falha ao Cadastrar',
+                    'Essa parte já está cadastrada', null);
+              }
             },
             child: const Text('Cadastrar Parte'))
       ],
@@ -181,15 +198,19 @@ class _CadastraSumarioState extends State<CadastraSumario> {
                 'IdParte': idParte,
                 'NumUnidade': int.parse(numUnidadeController.text)
               });
-              if (resultado.isNotEmpty) {
-                print('Já existe');
-              } else {
+              if (resultado.isEmpty) {
                 print(mapPartes['IdParte']![index]);
                 await SupaDB.instance.clienteSupaBase.from('Unidade').insert({
                   'IdParte': idParte,
                   "NumUnidade": int.parse(numUnidadeController.text),
                   'NomeUnidade': nomeUnidadeController.text
                 });
+                await mensagem.mensagem(context, 'Cadastro feito com sucesso',
+                    'A unidade foi cadastrada com sucesso', null);
+              } else {
+                print('Já existe');
+                await mensagem.mensagem(context, 'Falha ao Cadastrar',
+                    'Essa unidade já está cadastrada nesta parte', null);
               }
             },
             child: const Text('Cadastrar Unidade'))
@@ -306,14 +327,18 @@ class _CadastraSumarioState extends State<CadastraSumario> {
                 'NumCapitulo': int.parse(numCapituloController.text)
               });
               print(resultado);
-              if (resultado.isNotEmpty) {
-                print('Já existe');
-              } else {
+              if (resultado.isEmpty) {
                 await SupaDB.instance.clienteSupaBase.from('Capitulo').insert({
                   'IdUnidade': idUnidade,
                   "NumCapitulo": int.parse(numCapituloController.text),
                   'NomeCapitulo': nomeCapituloController.text
                 });
+                await mensagem.mensagem(context, 'Cadastro feito com sucesso',
+                    'O capítulo foi cadastrada com sucesso', null);
+              } else {
+                print('Já existe');
+                await mensagem.mensagem(context, 'Falha ao Cadastrar',
+                    'Esse capítulo já está cadastrada nesta unidade', null);
               }
             },
             child: const Text('Cadastrar Capítulo'))

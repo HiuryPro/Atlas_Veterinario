@@ -1,8 +1,12 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:atlas_veterinario/DadosDB/supa.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
+
+import 'Auxiliadores/mensagens.dart';
 
 class AtualizaSumario extends StatefulWidget {
   const AtualizaSumario({super.key});
@@ -18,6 +22,7 @@ class _AtualizaSumarioState extends State<AtualizaSumario> {
   TextEditingController nomeUnidadeController = TextEditingController();
   TextEditingController numCapituloController = TextEditingController();
   TextEditingController nomeCapituloController = TextEditingController();
+  Mensagem mensagem = Mensagem();
 
   Map<String, List<String>> mapPartes = {
     'IdParte': ['1'],
@@ -174,8 +179,10 @@ class _AtualizaSumarioState extends State<AtualizaSumario> {
                   .update({"Descricao": descricaoParteController.text}).match(
                       {'IdParte': idParte});
               await partesSelect();
+              await mensagem.mensagem(context, 'Atualização feita com sucesso',
+                  'A parte foi atulizada com sucesso', null);
             },
-            child: const Text('Cadastrar Parte'))
+            child: const Text('Atualizar Parte'))
       ],
     ));
   }
@@ -280,8 +287,10 @@ class _AtualizaSumarioState extends State<AtualizaSumario> {
               setState(() {
                 mapUnidades['NomeUnidade']![index] = nomeUnidadeController.text;
               });
+              await mensagem.mensagem(context, 'Atualização feita com sucesso',
+                  'A unidade foi atulizada com sucesso', null);
             },
-            child: const Text('Cadastrar Unidade'))
+            child: const Text('Atualizar Unidade'))
       ],
     ));
   }
@@ -427,8 +436,10 @@ class _AtualizaSumarioState extends State<AtualizaSumario> {
                   .from('Capitulo')
                   .update({'NomeCapitulo': nomeCapituloController.text}).match(
                       {'IdCapitulo': idCapitulo});
+              await mensagem.mensagem(context, 'Atualização feita com sucesso',
+                  'O capítulo foi atulizada com sucesso', null);
             },
-            child: const Text('Cadastrar Capítulo'))
+            child: const Text('Atualizar Capítulo'))
       ],
     ));
   }

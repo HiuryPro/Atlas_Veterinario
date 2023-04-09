@@ -498,12 +498,43 @@ class _HomeState extends State<Home> {
                         message: 'Clique para cadastrar o Sumário',
                         child: ListTile(
                           onTap: () {
-                            Navigator.of(context).pushNamed('/cadastrasumario');
+                            Navigator.of(context)
+                                .pushNamed('/cadastrarsumario');
                           },
                           leading: const Icon(Icons.edit_document),
-                          title: const Text('Sumário'),
+                          title: const Text('Cadastrar Sumário'),
                         ),
                       ),
+                    Tooltip(
+                      message: 'Clique para Atualizar o Sumário',
+                      child: ListTile(
+                        onTap: () {
+                          Navigator.of(context).pushNamed('/atualizarsumario');
+                        },
+                        leading: const Icon(Icons.edit_square),
+                        title: const Text('Atualizar Sumário'),
+                      ),
+                    ),
+                    Tooltip(
+                      message: 'Clique para Cadastrar as Páginas',
+                      child: ListTile(
+                        onTap: () {
+                          Navigator.of(context).pushNamed('/cadastrarpaginas');
+                        },
+                        leading: const Icon(Icons.note_add),
+                        title: const Text('Cadastrar Página'),
+                      ),
+                    ),
+                    Tooltip(
+                      message: 'Clique para Atualizar as Páginas',
+                      child: ListTile(
+                        onTap: () {
+                          Navigator.of(context).pushNamed('/atualizarpaginas');
+                        },
+                        leading: const Icon(Icons.edit_note),
+                        title: const Text('Atualizar Página'),
+                      ),
+                    ),
                   ]),
                 ),
                 Tooltip(

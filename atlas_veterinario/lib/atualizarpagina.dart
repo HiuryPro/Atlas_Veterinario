@@ -6,16 +6,16 @@ import 'package:flutter/services.dart';
 import 'Auxiliadores/mensagens.dart';
 import 'DadosDB/supa.dart';
 
-class CadastraPagina extends StatefulWidget {
-  const CadastraPagina({super.key});
+class AtualizaPagina extends StatefulWidget {
+  const AtualizaPagina({super.key});
 
   @override
-  State<CadastraPagina> createState() => _CadastraPaginaState();
+  State<AtualizaPagina> createState() => _AtualizaPaginaState();
 }
 
-class _CadastraPaginaState extends State<CadastraPagina> {
+class _AtualizaPaginaState extends State<AtualizaPagina> {
   ScrollController _scrollController = ScrollController();
-  TextEditingController conteudoPagina = TextEditingController();
+  TextEditingController conteudoPaginaController = TextEditingController();
   TextEditingController paginaController = TextEditingController();
   Mensagem mensagem = Mensagem();
 
@@ -35,9 +35,16 @@ class _CadastraPaginaState extends State<CadastraPagina> {
     'NomeCapitulo': []
   };
 
+  Map<String, List<String>> mapPaginas = {
+    'IdPagina': [],
+    'NumPagina': [],
+    'ConteudoPagina': []
+  };
+
   String? parteCapitulo;
   String? unidadeCapitulo;
   String? capitulo;
+  String? pagina;
 
   Future<void> partesSelect() async {
     List<String> idParte = [];
@@ -108,6 +115,29 @@ class _CadastraPaginaState extends State<CadastraPagina> {
     });
   }
 
+  Future<void> paginasSelect(int capitulo) async {
+    List<String> idPagina = [];
+    List<String> paginaNum = [];
+    List<String> conteudoPagina = [];
+    var dados = await SupaDB.instance.clienteSupaBase
+        .from('Pagina')
+        .select('IdPagina, NumPagina, Conteudo')
+        .match({'IdCapitulo': capitulo});
+    print(dados);
+    for (var parte in dados) {
+      idPagina.add(parte['IdPagina'].toString());
+      paginaNum.add(parte['NumPagina'].toString());
+      conteudoPagina.add(parte['Conteudo'].toString());
+    }
+    setState(() {
+      mapPaginas.addAll({
+        'IdPagina': idPagina,
+        'NumPagina': paginaNum,
+        'ConteudoPagina': conteudoPagina
+      });
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -155,6 +185,8 @@ class _CadastraPaginaState extends State<CadastraPagina> {
                           parteCapitulo = value;
                           mapCapitulos.updateAll((key, value) => value = []);
                           mapUnidades.updateAll((key, value) => value = []);
+                          mapPaginas.updateAll((key, value) => value = []);
+                          conteudoPaginaController.text = '';
                         });
 
                         await unidadesSelect(idParte);
@@ -192,6 +224,7 @@ class _CadastraPaginaState extends State<CadastraPagina> {
                           capitulo = null;
                           unidadeCapitulo = value;
                           mapCapitulos.updateAll((key, value) => value = []);
+                          conteudoPaginaController.text = '';
                         });
                         int index = mapUnidades['NumUnidade']!
                             .indexOf(unidadeCapitulo.toString().split(' ')[0]);
@@ -227,13 +260,51 @@ class _CadastraPaginaState extends State<CadastraPagina> {
                               mapCapitulos['NomeCapitulo']![
                                   mapCapitulos['NumCapitulo']!.indexOf(valor)]))
                           .toList(),
-                      onChanged: (value) {
+                      onChanged: (value) async {
                         setState(() {
                           capitulo = value;
-                          int index = mapCapitulos['NumCapitulo']!
-                              .indexOf(capitulo.toString().split(' ')[0]);
-                          String nomeCapitulo =
-                              mapCapitulos['NomeCapitulo']![index];
+                          conteudoPaginaController.text = '';
+                          pagina = null;
+                        });
+                        int index = mapCapitulos['NumCapitulo']!
+                            .indexOf(capitulo.toString().split(' ')[0]);
+                        int idCapitulo =
+                            int.parse(mapCapitulos['IdCapitulo']![index]);
+                        await paginasSelect(idCapitulo);
+                      }),
+                ),
+              ),
+            ),
+            const SizedBox(
+              height: 15,
+            ),
+            DecoratedBox(
+              decoration: const ShapeDecoration(
+                color: Colors.cyan,
+                shape: RoundedRectangleBorder(
+                  side: BorderSide(
+                      width: 1.0, style: BorderStyle.solid, color: Colors.cyan),
+                  borderRadius: BorderRadius.all(Radius.circular(25.0)),
+                ),
+              ),
+              child: DropdownButtonHideUnderline(
+                child: Center(
+                  child: DropdownButton(
+                      alignment: Alignment.center,
+                      hint: const Text('Escolha a Página'),
+                      value: pagina,
+                      items: mapPaginas['NumPagina']!
+                          .toList()
+                          .map((String valor) => buildMenuItem(valor, null))
+                          .toList(),
+                      onChanged: (value) {
+                        setState(() {
+                          pagina = value;
+                          int index = mapPaginas['NumPagina']!
+                              .indexOf(pagina.toString().split(' ')[0]);
+                          String conteudoPagina =
+                              mapPaginas['ConteudoPagina']![index];
+                          conteudoPaginaController.text = conteudoPagina;
                         });
                       }),
                 ),
@@ -243,18 +314,7 @@ class _CadastraPaginaState extends State<CadastraPagina> {
               height: 15,
             ),
             TextField(
-              controller: paginaController,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: 'Número da Página',
-              ),
-              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-            ),
-            const SizedBox(
-              height: 15,
-            ),
-            TextField(
-              controller: conteudoPagina,
+              controller: conteudoPaginaController,
               scrollController: _scrollController,
               autofocus: true,
               maxLines: 6,
@@ -270,39 +330,19 @@ class _CadastraPaginaState extends State<CadastraPagina> {
             ),
             ElevatedButton(
                 onPressed: () async {
-                  int index = mapCapitulos['NumCapitulo']!
-                      .indexOf(unidadeCapitulo.toString().split(' ')[0]);
-                  int idCapitulo =
-                      int.parse(mapCapitulos['IdCapitulo']![index]);
-                  print(idCapitulo);
+                  int index = mapPaginas['NumPagina']!
+                      .indexOf(pagina.toString().split(' ')[0]);
+                  int idPagina = int.parse(mapPaginas['IdPagina']![index]);
+                  print(idPagina);
 
-                  List resultado = await SupaDB.instance.clienteSupaBase
-                      .from('Pagina')
-                      .select('*')
-                      .match({
-                    'IdCapitulo': idCapitulo,
-                    'NumPagina': int.parse(paginaController.text)
-                  });
-                  if (resultado.isEmpty) {
-                    await SupaDB.instance.clienteSupaBase
-                        .from('Pagina')
-                        .insert({
-                      'IdCapitulo': idCapitulo,
-                      'NumPagina': int.parse(paginaController.text),
-                      'Conteudo': conteudoPagina.text
-                    });
-                    await mensagem.mensagem(
-                        context,
-                        'Cadastro feito com sucesso',
-                        'A página foi cadastrada com sucesso',
-                        null);
-                  } else {
-                    print('Essa pagina já existe');
-                    await mensagem.mensagem(context, 'Falha ao Cadastrar',
-                        'Essa página já existe nesse capítulo', null);
-                  }
+                  await SupaDB.instance.clienteSupaBase.from('Pagina').update({
+                    'Conteudo': conteudoPaginaController.text
+                  }).match({'IdPagina': idPagina});
+
+                  mensagem.mensagem(context, 'Atualização feita com sucesso',
+                      'A página foi atulizada com sucesso', null);
                 },
-                child: const Text('Cadastrar Página'))
+                child: const Text('Atualizar Página'))
           ],
         )),
       ),

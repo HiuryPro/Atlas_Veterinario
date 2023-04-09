@@ -1,6 +1,7 @@
 import 'package:atlas_veterinario/Login_Cadastro/cadastrar.dart';
 import 'package:atlas_veterinario/Login_Cadastro/confirmarcadastro.dart';
 import 'package:atlas_veterinario/atualizasumario.dart';
+import 'package:atlas_veterinario/cadastrarpagina.dart';
 import 'package:atlas_veterinario/cadastrasumario.dart';
 import 'package:atlas_veterinario/sumario.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +9,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'Login_Cadastro/Login.dart';
 import 'Auxiliadores/app_controller.dart';
 import 'Login_Cadastro/novasenha.dart';
+import 'atualizarpagina.dart';
 import 'home.dart';
 import 'hometeste.dart';
 
@@ -41,7 +43,7 @@ class AppWidget extends StatelessWidget {
                       brightness: AppController.instance.isDarkTheme
                           ? Brightness.dark
                           : Brightness.light),
-              initialRoute: '/atualizasumario',
+              initialRoute: '/login',
               routes: {
                 '/home': (context) => const Home(
                       pagina: 1,
@@ -54,8 +56,10 @@ class AppWidget extends StatelessWidget {
                 '/confirmarCadastro': (context) => const ConfirmarCadastro(),
                 '/novasenha': (context) => const NovaSenha(),
                 '/sumario': (context) => const Sumario(),
-                '/cadastrasumario': (context) => const CadastraSumario(),
-                '/atualizasumario': (context) => const AtualizaSumario()
+                '/cadastrarsumario': (context) => const CadastraSumario(),
+                '/atualizasumario': (context) => const AtualizaSumario(),
+                '/cadastrarpaginas': (context) => const CadastraPagina(),
+                '/atualizarpaginas': (context) => const AtualizaPagina()
               });
         });
   }
