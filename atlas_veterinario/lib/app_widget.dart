@@ -4,6 +4,9 @@ import 'package:atlas_veterinario/atualizasumario.dart';
 import 'package:atlas_veterinario/cadastrarpagina.dart';
 import 'package:atlas_veterinario/cadastrasumario.dart';
 import 'package:atlas_veterinario/sumario.dart';
+import 'package:atlas_veterinario/teste.dart';
+import 'package:atlas_veterinario/salvaimagem.dart';
+import 'package:atlas_veterinario/buscaimagem.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'Login_Cadastro/Login.dart';
@@ -43,7 +46,7 @@ class AppWidget extends StatelessWidget {
                       brightness: AppController.instance.isDarkTheme
                           ? Brightness.dark
                           : Brightness.light),
-              initialRoute: '/login',
+              initialRoute: '/buscaImagem',
               routes: {
                 '/home': (context) => const Home(
                       pagina: 1,
@@ -59,7 +62,10 @@ class AppWidget extends StatelessWidget {
                 '/cadastrarsumario': (context) => const CadastraSumario(),
                 '/atualizasumario': (context) => const AtualizaSumario(),
                 '/cadastrarpaginas': (context) => const CadastraPagina(),
-                '/atualizarpaginas': (context) => const AtualizaPagina()
+                '/atualizarpaginas': (context) => const AtualizaPagina(),
+                '/buscaImagem': (context) => const BuscaImagem(),
+                '/salvaImagen': (context) => const SalvaImagem(),
+                '/teste': (context) => const TesteWidget()
               });
         });
   }

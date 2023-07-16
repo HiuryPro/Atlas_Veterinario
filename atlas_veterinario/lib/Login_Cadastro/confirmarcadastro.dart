@@ -51,7 +51,7 @@ class _ConfirmarCadastroState extends State<ConfirmarCadastro> {
                   var mensagem = Mensagem();
                   try {
                     await SupaDB.instance.clienteSupaBase
-                        .from('usuario')
+                        .from('Usuario')
                         .update({'IsAtivo': true, 'Codigo': null}).match({
                       'Email': AppController.instance.email,
                       'Senha': AppController.instance.senha,

@@ -230,10 +230,11 @@ class _CadastraPaginaState extends State<CadastraPagina> {
                       onChanged: (value) {
                         setState(() {
                           capitulo = value;
+                          /* 
                           int index = mapCapitulos['NumCapitulo']!
                               .indexOf(capitulo.toString().split(' ')[0]);
-                          String nomeCapitulo =
-                              mapCapitulos['NomeCapitulo']![index];
+                               String nomeCapitulo =
+                              mapCapitulos['NomeCapitulo']![index];*/
                         });
                       }),
                 ),

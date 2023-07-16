@@ -10,7 +10,7 @@ class SupaDB {
         dotenv.env['SUPABASE_URL']!, dotenv.env['SUPABASE_KEY']!);
   }
 
-  select() async {
-    return await clienteSupaBase.from('usuario').select('*');
+  select(String tabela, String select, Map where) async {
+    return await clienteSupaBase.from(tabela).select(select).match(where);
   }
 }

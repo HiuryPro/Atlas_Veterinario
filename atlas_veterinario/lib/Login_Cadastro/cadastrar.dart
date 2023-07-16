@@ -1,10 +1,7 @@
-import 'dart:io';
 import 'dart:math';
 
 import 'package:atlas_veterinario/DadosDB/supa.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 
 import '../Auxiliadores/mensagens.dart';
 import '../Auxiliadores/telacarregamento.dart';
@@ -118,7 +115,7 @@ class _CadastroState extends State<Cadastro> {
                         }
                         try {
                           await SupaDB.instance.clienteSupaBase
-                              .from('usuario')
+                              .from('Usuario')
                               .insert({
                             'Nome': nome,
                             'Email': email,

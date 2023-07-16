@@ -509,7 +509,7 @@ class _HomeState extends State<Home> {
                       message: 'Clique para Atualizar o Sumário',
                       child: ListTile(
                         onTap: () {
-                          Navigator.of(context).pushNamed('/atualizarsumario');
+                          Navigator.of(context).pushNamed('/atualizasumario');
                         },
                         leading: const Icon(Icons.edit_square),
                         title: const Text('Atualizar Sumário'),

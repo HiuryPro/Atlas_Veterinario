@@ -3,8 +3,6 @@
 import 'package:atlas_veterinario/DadosDB/supa.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 
 import 'Auxiliadores/mensagens.dart';
 
@@ -39,7 +37,9 @@ class _CadastraSumarioState extends State<CadastraSumario> {
     List<String> parteNum = [];
     var dados = await SupaDB.instance.clienteSupaBase
         .from('Parte')
-        .select('IdParte, Parte');
+        .select('IdParte, Parte')
+        .order('IdParte', ascending: true);
+    ;
     print(dados);
     for (var parte in dados) {
       idParte.add(parte['IdParte'].toString());

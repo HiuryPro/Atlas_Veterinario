@@ -1,16 +1,10 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'dart:io';
-import 'dart:math';
-
 import 'package:atlas_veterinario/DadosDB/supa.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 
 import '../Auxiliadores/app_controller.dart';
 import '../Auxiliadores/vetthemes.dart';
-import '../SendEmail/enviaemail.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
