@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:atlas_veterinario/Proxy/proxyimagens.dart';
-import 'package:atlas_veterinario/app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:photo_view/photo_view.dart';
@@ -24,7 +23,14 @@ const double maxScale = 4;
 class _BuscaImagemState extends State<BuscaImagem> {
   late PhotoViewControllerBase controller;
   late PhotoViewScaleStateController scaleStateController;
+  ProxyImagens imagemProxy = ProxyImagens.instance;
+
+  ImageProvider imagemMembroAnimal =
+      const AssetImage('assets/images/placeholder.png');
+  Offset posicaoImagem = Offset(20, 20);
+  Map imagemDb = {};
   Uint8List? logoBase64;
+  dynamic escala = PhotoViewComputedScale.contained;
 
   int calls = 0;
 
@@ -55,62 +61,79 @@ class _BuscaImagemState extends State<BuscaImagem> {
     super.dispose();
   }
 
+  Widget body() {
+    return SizedBox(
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.height,
+        child: Padding(
+          padding: EdgeInsets.all(8),
+          child: ListView(
+            children: <Widget>[
+              const Text("Testar funções que busca Imagem"),
+              const SizedBox(height: 15),
+              ElevatedButton(
+                  onPressed: () async {
+                    try {
+                      imagemDb = await imagemProxy.find(6);
+
+                      print(imagemDb['Dx']);
+                      print(imagemDb['Dy']);
+                      String logobase64Str = imagemDb['Image'];
+                      logoBase64 = base64.decode(logobase64Str);
+                      imagemMembroAnimal = MemoryImage(logoBase64!);
+                      controller.scale = imagemDb['Zoom'];
+                      posicaoImagem = Offset(imagemDb['Dx'], imagemDb['Dy']);
+                      atualizaPosition();
+
+                      print(controller.position);
+                      print(posicaoImagem);
+                      escala = PhotoViewComputedScale.covered;
+
+                      setState(() {});
+                    } catch (exception) {
+                      print(exception);
+                    }
+
+                    // print(imagem);
+                  },
+                  child: const Text('Teste')),
+              const SizedBox(height: 15),
+              Container(
+                margin: const EdgeInsets.symmetric(
+                  vertical: 20.0,
+                  horizontal: 20.0,
+                ),
+                height: 350.0,
+                child: logoBase64 == null
+                    ? Container(
+                        color: Colors.black,
+                      )
+                    : ClipRect(
+                        child: PhotoView(
+                          disableGestures: true,
+                          enablePanAlways: true,
+                          controller: controller,
+                          imageProvider: imagemMembroAnimal,
+                          maxScale: PhotoViewComputedScale.covered * 3.0,
+                          minScale: PhotoViewComputedScale.contained * 0.8,
+                          initialScale: escala,
+                        ),
+                      ),
+              ),
+            ],
+          ),
+        ));
+  }
+
   @override
   Widget build(BuildContext context) {
-    return ExampleAppBarLayout(
-      title: "Inline usage",
-      showGoBack: true,
-      child: ListView(
-        children: <Widget>[
-          const Text("Testar funções que busca Imagem"),
-          const SizedBox(height: 15),
-          ElevatedButton(
-              onPressed: () async {
-                Map imagem = {};
-                ProxyImagens imagemProxy = ProxyImagens.instance;
-                imagem = await imagemProxy.find(4);
-                // print(imagem);
-                imagem = await imagemProxy.find(4);
+    return Scaffold(body: body());
+  }
 
-                String logobase64Str = imagem['Image'];
-                logoBase64 = base64.decode(logobase64Str);
-                controller.scale = imagem['Zoom'];
-                print(imagem);
-                setState(() {});
-
-                setState(() {});
-                // print(imagem);
-              },
-              child: const Text('Teste')),
-          const SizedBox(height: 15),
-          Container(
-            padding: const EdgeInsets.all(20.0),
-            child: const Text(
-              "Example of usage in a contained context",
-              style: const TextStyle(fontSize: 18.0),
-            ),
-          ),
-          Container(
-            margin: const EdgeInsets.symmetric(
-              vertical: 20.0,
-              horizontal: 20.0,
-            ),
-            height: 350.0,
-            child: ClipRect(
-              child: PhotoView(
-                controller: controller,
-                imageProvider: logoBase64 == null
-                    ? AssetImage('assets/images/placeholder.png')
-                        as ImageProvider
-                    : MemoryImage(logoBase64!),
-                maxScale: PhotoViewComputedScale.covered * 3.0,
-                minScale: PhotoViewComputedScale.contained * 0.8,
-                initialScale: PhotoViewComputedScale.covered,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
+  atualizaPosition() {
+    setState(() {
+      controller.scale = imagemDb['Zoom'];
+      controller.position = posicaoImagem;
+    });
   }
 }

@@ -46,7 +46,7 @@ class AppWidget extends StatelessWidget {
                       brightness: AppController.instance.isDarkTheme
                           ? Brightness.dark
                           : Brightness.light),
-              initialRoute: '/buscaImagem',
+              initialRoute: '/salvaImagem',
               routes: {
                 '/home': (context) => const Home(
                       pagina: 1,
@@ -63,8 +63,8 @@ class AppWidget extends StatelessWidget {
                 '/atualizasumario': (context) => const AtualizaSumario(),
                 '/cadastrarpaginas': (context) => const CadastraPagina(),
                 '/atualizarpaginas': (context) => const AtualizaPagina(),
-                '/buscaImagem': (context) => const BuscaImagem(),
-                '/salvaImagen': (context) => const SalvaImagem(),
+                '/buscarImagem': (context) => const BuscaImagem(),
+                '/salvaImagem': (context) => const SalvaImagem(),
                 '/teste': (context) => const TesteWidget()
               });
         });

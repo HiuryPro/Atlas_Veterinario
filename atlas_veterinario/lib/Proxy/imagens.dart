@@ -10,12 +10,27 @@ class Imagem implements ProxyInteface {
   buscadoBanco(int id) async {
     List resultados =
         await SupaDB.instance.select('Images', '*', {'IdImages': id});
-
     for (Map dados in resultados) {
       List<String> selectedKeys = ['Image', 'NomeImagem', 'Zoom', 'Dx', 'Dy'];
       imagens[dados['IdImages']] = Map.fromEntries(dados.entries.where((entry) {
         return selectedKeys.contains(entry.key);
       }));
+    }
+
+    garanteDouble(id);
+  }
+
+  garanteDouble(int id) {
+    if (imagens[id]['Zoom'].runtimeType == int) {
+      imagens[id]['Zoom'] = imagens[id]['Zoom'].toDouble();
+    }
+
+    if (imagens[id]['Dx'].runtimeType == int) {
+      imagens[id]['Dx'] = imagens[id]['Dx'].toDouble();
+    }
+
+    if (imagens[id]['Dy'].runtimeType == int) {
+      imagens[id]['Dy'] = imagens[id]['Dy'].toDouble();
     }
   }
 

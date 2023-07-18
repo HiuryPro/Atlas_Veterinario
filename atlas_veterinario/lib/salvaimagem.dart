@@ -20,7 +20,7 @@ const double max = pi * 2;
 
 const double minScale = 0.5;
 const double defScale = 0.1;
-const double maxScale = 4;
+const double maxScale = 5;
 
 class _SalvaImagemState extends State<SalvaImagem> {
   Uint8List? logoBase64;
@@ -110,18 +110,19 @@ class _SalvaImagemState extends State<SalvaImagem> {
                 horizontal: 20.0,
               ),
               height: 350.0,
-              child: ClipRect(
-                child: PhotoView(
-                  controller: controller,
-                  imageProvider: logoBase64 == null
-                      ? const AssetImage('assets/images/placeholder.png')
-                          as ImageProvider
-                      : MemoryImage(logoBase64!),
-                  maxScale: PhotoViewComputedScale.covered * 3.0,
-                  minScale: PhotoViewComputedScale.contained * 0.8,
-                  initialScale: PhotoViewComputedScale.covered,
-                ),
-              ),
+              child: logoBase64 == null
+                  ? Container(
+                      color: Colors.black,
+                    )
+                  : ClipRect(
+                      child: PhotoView(
+                        controller: controller,
+                        imageProvider: MemoryImage(logoBase64!),
+                        maxScale: PhotoViewComputedScale.covered * 6.0,
+                        minScale: PhotoViewComputedScale.contained * 0.8,
+                        initialScale: PhotoViewComputedScale.covered,
+                      ),
+                    ),
             ),
             Container(
               padding: const EdgeInsets.all(30.0),
@@ -179,7 +180,7 @@ class _SalvaImagemState extends State<SalvaImagem> {
     return Column(
       children: <Widget>[
         Text(
-          "Scale ${value.scale}",
+          "Zoom ${value.scale}",
           style: const TextStyle(color: Colors.black),
         ),
         SliderTheme(
@@ -200,7 +201,7 @@ class _SalvaImagemState extends State<SalvaImagem> {
           ),
         ),
         Text(
-          "Position ${value.position.dx}",
+          "Posição X ${value.position.dx}        Posição Y ${value.position.dy}",
           style: const TextStyle(color: Colors.black),
         ),
         SliderTheme(
@@ -216,10 +217,6 @@ class _SalvaImagemState extends State<SalvaImagem> {
               controller.position = Offset(newPosition, controller.position.dy);
             },
           ),
-        ),
-        Text(
-          "ScaleState ${scaleStateController.scaleState}",
-          style: const TextStyle(color: Colors.black),
         ),
       ],
     );
