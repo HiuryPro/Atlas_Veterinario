@@ -18,7 +18,7 @@ class SalvaImagem extends StatefulWidget {
 const double min = pi * -2;
 const double max = pi * 2;
 
-const double minScale = 0.5;
+const double minScale = 0.1;
 const double defScale = 0.1;
 const double maxScale = 5;
 
@@ -81,9 +81,16 @@ class _SalvaImagemState extends State<SalvaImagem> {
         padding: const EdgeInsets.all(8),
         child: ListView(
           children: [
-            const Text('Escolhe imagem'),
+            ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pushNamed('/buscarImagem');
+                },
+                child: Text('Tela de buscar Imagem')),
             const SizedBox(
               height: 10,
+            ),
+            const SizedBox(
+              height: 5,
             ),
             ElevatedButton(
                 onPressed: () async {
@@ -103,20 +110,17 @@ class _SalvaImagemState extends State<SalvaImagem> {
                   border: OutlineInputBorder(),
                   labelText: 'Nome da Imagem',
                 )),
-            const SizedBox(height: 10),
-            Container(
-              margin: const EdgeInsets.symmetric(
-                vertical: 20.0,
-                horizontal: 20.0,
-              ),
+            SizedBox(
               height: 350.0,
               child: logoBase64 == null
                   ? Container(
-                      color: Colors.black,
+                      color: Color(0xFFfafafa),
                     )
                   : ClipRect(
                       child: PhotoView(
                         controller: controller,
+                        backgroundDecoration:
+                            BoxDecoration(color: Color(0xFFfafafa)),
                         imageProvider: MemoryImage(logoBase64!),
                         maxScale: PhotoViewComputedScale.covered * 6.0,
                         minScale: PhotoViewComputedScale.contained * 0.8,
@@ -215,6 +219,24 @@ class _SalvaImagemState extends State<SalvaImagem> {
             max: 2000.0,
             onChanged: (double newPosition) {
               controller.position = Offset(newPosition, controller.position.dy);
+            },
+          ),
+        ),
+        Text(
+          "Rotaçãof ${value.rotation}",
+          style: const TextStyle(color: Colors.black),
+        ),
+        SliderTheme(
+          data: SliderTheme.of(context).copyWith(
+            activeTrackColor: Colors.orange,
+            thumbColor: Colors.orange,
+          ),
+          child: Slider(
+            value: value.position.dx,
+            min: -2000,
+            max: 2000,
+            onChanged: (double newRotation) {
+              controller.rotation = newRotation;
             },
           ),
         ),

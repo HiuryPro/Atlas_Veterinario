@@ -17,7 +17,7 @@ const double min = pi * -2;
 const double max = pi * 2;
 
 const double minScale = 1;
-const double defScale = 0.1;
+const double defScale = 1;
 const double maxScale = 4;
 
 class _BuscaImagemState extends State<BuscaImagem> {
@@ -27,7 +27,7 @@ class _BuscaImagemState extends State<BuscaImagem> {
 
   ImageProvider imagemMembroAnimal =
       const AssetImage('assets/images/placeholder.png');
-  Offset posicaoImagem = Offset(20, 20);
+  Offset posicaoImagem = const Offset(20, 20);
   Map imagemDb = {};
   Uint8List? logoBase64;
   dynamic escala = PhotoViewComputedScale.contained;
@@ -66,9 +66,17 @@ class _BuscaImagemState extends State<BuscaImagem> {
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
         child: Padding(
-          padding: EdgeInsets.all(8),
+          padding: const EdgeInsets.all(8),
           child: ListView(
             children: <Widget>[
+              ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).pushNamed('/salvaImagem');
+                  },
+                  child: const Text('Tela de buscar Imagem')),
+              const SizedBox(
+                height: 10,
+              ),
               const Text("Testar funções que busca Imagem"),
               const SizedBox(height: 15),
               ElevatedButton(
@@ -81,15 +89,14 @@ class _BuscaImagemState extends State<BuscaImagem> {
                       String logobase64Str = imagemDb['Image'];
                       logoBase64 = base64.decode(logobase64Str);
                       imagemMembroAnimal = MemoryImage(logoBase64!);
-                      controller.scale = imagemDb['Zoom'];
                       posicaoImagem = Offset(imagemDb['Dx'], imagemDb['Dy']);
+
                       atualizaPosition();
+                      print(imagemDb['Zoom']);
+                      print(controller.scale);
 
                       print(controller.position);
                       print(posicaoImagem);
-                      escala = PhotoViewComputedScale.covered;
-
-                      setState(() {});
                     } catch (exception) {
                       print(exception);
                     }
@@ -106,17 +113,17 @@ class _BuscaImagemState extends State<BuscaImagem> {
                 height: 350.0,
                 child: logoBase64 == null
                     ? Container(
-                        color: Colors.black,
+                        color: const Color(0xFFfafafa),
                       )
                     : ClipRect(
                         child: PhotoView(
+                          gaplessPlayback: true,
                           disableGestures: true,
-                          enablePanAlways: true,
                           controller: controller,
                           imageProvider: imagemMembroAnimal,
-                          maxScale: PhotoViewComputedScale.covered * 3.0,
+                          maxScale: PhotoViewComputedScale.covered * 7.0,
                           minScale: PhotoViewComputedScale.contained * 0.8,
-                          initialScale: escala,
+                          initialScale: PhotoViewComputedScale.contained,
                         ),
                       ),
               ),
