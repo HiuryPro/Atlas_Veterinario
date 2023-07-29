@@ -1,13 +1,18 @@
+import 'dart:convert';
 import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_painter_v2/flutter_painter.dart';
+import 'package:image_picker/image_picker.dart';
 
 import 'dart:ui' as ui;
 
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+
+import 'Proxy/proxyimagens.dart';
 
 class FlutterPainterExample extends StatefulWidget {
   const FlutterPainterExample({Key? key}) : super(key: key);
@@ -17,6 +22,21 @@ class FlutterPainterExample extends StatefulWidget {
 }
 
 class FlutterPainterExampleState extends State<FlutterPainterExample> {
+  GlobalKey _key = GlobalKey();
+  int tamanhoFonte = 12;
+  TextEditingController fontController = TextEditingController();
+  TextEditingController textoImagemController = TextEditingController();
+  List<Color> cores = [
+    Colors.black,
+    Colors.white,
+    Colors.red,
+    Colors.green,
+    Colors.blue
+  ];
+
+  Map textoImagem = {'texto': '', 'tamanhoFonte': 12, 'cor': null};
+  bool adicionandoTexto = false;
+
   static Color red = const Color(0xFFFF0000);
   FocusNode textFocusNode = FocusNode();
   late PainterController controller;
@@ -26,43 +46,15 @@ class FlutterPainterExampleState extends State<FlutterPainterExample> {
     ..color = Colors.red
     ..style = PaintingStyle.stroke
     ..strokeCap = StrokeCap.round;
-
-  static List<String> imageLinks = [
-    "https://i.imgur.com/btoI5OX.png",
-    "https://i.imgur.com/EXTQFt7.png",
-    "https://i.imgur.com/EDNjJYL.png",
-    "https://i.imgur.com/uQKD6NL.png",
-    "https://i.imgur.com/cMqVRbl.png",
-    "https://i.imgur.com/1cJBAfI.png",
-    "https://i.imgur.com/eNYfHKL.png",
-    "https://i.imgur.com/c4Ag5yt.png",
-    "https://i.imgur.com/GhpCJuf.png",
-    "https://i.imgur.com/XVMeluF.png",
-    "https://i.imgur.com/mt2yO6Z.png",
-    "https://i.imgur.com/rw9XP1X.png",
-    "https://i.imgur.com/pD7foZ8.png",
-    "https://i.imgur.com/13Y3vp2.png",
-    "https://i.imgur.com/ojv3yw1.png",
-    "https://i.imgur.com/f8ZNJJ7.png",
-    "https://i.imgur.com/BiYkHzw.png",
-    "https://i.imgur.com/snJOcEz.png",
-    "https://i.imgur.com/b61cnhi.png",
-    "https://i.imgur.com/FkDFzYe.png",
-    "https://i.imgur.com/P310x7d.png",
-    "https://i.imgur.com/5AHZpua.png",
-    "https://i.imgur.com/tmvJY4r.png",
-    "https://i.imgur.com/PdVfGkV.png",
-    "https://i.imgur.com/1PRzwBf.png",
-    "https://i.imgur.com/VeeMfBS.png",
-  ];
+  ProxyImagens imagemProxy = ProxyImagens.instance;
 
   @override
   void initState() {
     super.initState();
+    fontController.text = tamanhoFonte.toString();
     controller = PainterController(
         settings: PainterSettings(
             text: TextSettings(
-              focusNode: textFocusNode,
               textStyle: TextStyle(
                   fontWeight: FontWeight.bold, color: red, fontSize: 18),
             ),
@@ -76,7 +68,7 @@ class FlutterPainterExampleState extends State<FlutterPainterExample> {
             scale: const ScaleSettings(
               enabled: true,
               minScale: 1,
-              maxScale: 5,
+              maxScale: 6,
             )));
     // Listen to focus events of the text field
     textFocusNode.addListener(onFocus);
@@ -88,8 +80,9 @@ class FlutterPainterExampleState extends State<FlutterPainterExample> {
   /// to use it as a background
   void initBackground() async {
     // Extension getter (.image) to get [ui.Image] from [ImageProvider]
-    final image =
-        await const NetworkImage('https://picsum.photos/1920/1080/').image;
+
+    Uint8List? logoBase64 = await pickUintlist8();
+    final image = await MemoryImage(logoBase64!).image;
 
     setState(() {
       backgroundImage = image;
@@ -100,6 +93,28 @@ class FlutterPainterExampleState extends State<FlutterPainterExample> {
   /// Updates UI when the focus changes
   void onFocus() {
     setState(() {});
+  }
+
+  Future<Uint8List?> pickAndConvertImageToBytecode() async {
+    final ImagePicker _picker = ImagePicker();
+
+    final XFile? pickedImage =
+        await _picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedImage != null) {
+      final Uint8List? imageBytes = await pickedImage.readAsBytes();
+      return imageBytes;
+    }
+
+    return null;
+  }
+
+  Future<Uint8List?> pickUintlist8() async {
+    Map imagemDb = await imagemProxy.find(6);
+    String logobase64Str = imagemDb['Image'];
+    Uint8List imagem = base64.decode(logobase64Str);
+
+    return imagem;
   }
 
   Widget buildDefault(BuildContext context) {
@@ -138,40 +153,32 @@ class FlutterPainterExampleState extends State<FlutterPainterExample> {
                       icon: Icon(
                         PhosphorIcons.fill.arrowClockwise,
                       ),
-                      onPressed: controller.canRedo ? redo : null,
+                      onPressed: controller.canRedo ? controller.redo : null,
                     ),
                     // Undo action
                     IconButton(
                       icon: Icon(
                         PhosphorIcons.fill.arrowCounterClockwise,
                       ),
-                      onPressed: controller.canUndo ? undo : null,
+                      onPressed: controller.canUndo ? controller.undo : null,
                     ),
                   ],
                 );
               }),
-        ),
-        // Generate image
-        floatingActionButton: FloatingActionButton(
-          child: Icon(
-            PhosphorIcons.fill.image,
-          ),
-          onPressed: renderAndDisplayImage,
         ),
         body: Stack(
           children: [
             if (backgroundImage != null)
               // Enforces raints
               Positioned.fill(
+                key: _key,
                 child: Center(
-                  child: AspectRatio(
-                    aspectRatio:
-                        backgroundImage!.width / backgroundImage!.height,
-                    child: FlutterPainter(
-                      controller: controller,
-                    ),
+                    child: AspectRatio(
+                  aspectRatio: backgroundImage!.width / backgroundImage!.height,
+                  child: FlutterPainter(
+                    controller: controller,
                   ),
-                ),
+                )),
               ),
             Positioned(
               bottom: 0,
@@ -205,7 +212,7 @@ class FlutterPainterExampleState extends State<FlutterPainterExample> {
                                   Expanded(
                                     flex: 3,
                                     child: Slider.adaptive(
-                                        min: 2,
+                                        min: 0.1,
                                         max: 25,
                                         value: controller.freeStyleStrokeWidth,
                                         onChanged: setFreeStyleStrokeWidth),
@@ -234,45 +241,7 @@ class FlutterPainterExampleState extends State<FlutterPainterExample> {
                                   ],
                                 ),
                             ],
-                            if (textFocusNode.hasFocus) ...[
-                              const Divider(),
-                              const Text("Text settings"),
-                              // Control text font size
-                              Row(
-                                children: [
-                                  const Expanded(
-                                      flex: 1, child: Text("Font Size")),
-                                  Expanded(
-                                    flex: 3,
-                                    child: Slider.adaptive(
-                                        min: 8,
-                                        max: 96,
-                                        value:
-                                            controller.textStyle.fontSize ?? 14,
-                                        onChanged: setTextFontSize),
-                                  ),
-                                ],
-                              ),
-
-                              // Control text color hue
-                              Row(
-                                children: [
-                                  const Expanded(flex: 1, child: Text("Color")),
-                                  Expanded(
-                                    flex: 3,
-                                    child: Slider.adaptive(
-                                        min: 0,
-                                        max: 359.99,
-                                        value: HSVColor.fromColor(
-                                                controller.textStyle.color ??
-                                                    red)
-                                            .hue,
-                                        activeColor: controller.textStyle.color,
-                                        onChanged: setTextColor),
-                                  ),
-                                ],
-                              ),
-                            ],
+                            if (adicionandoTexto) ...adicionaTexto(),
                             if (controller.shapeFactory != null) ...[
                               const Divider(),
                               const Text("Shape Settings"),
@@ -329,33 +298,7 @@ class FlutterPainterExampleState extends State<FlutterPainterExample> {
                                             ))),
                                   ),
                                 ],
-                              ),
-
-                              Row(
-                                children: [
-                                  const Expanded(
-                                      flex: 1, child: Text("Fill shape")),
-                                  Expanded(
-                                    flex: 3,
-                                    child: Center(
-                                      child: Switch(
-                                          value: (controller.shapePaint ??
-                                                      shapePaint)
-                                                  .style ==
-                                              PaintingStyle.fill,
-                                          onChanged: (value) =>
-                                              setShapeFactoryPaint(
-                                                  (controller.shapePaint ??
-                                                          shapePaint)
-                                                      .copyWith(
-                                                style: value
-                                                    ? PaintingStyle.fill
-                                                    : PaintingStyle.stroke,
-                                              ))),
-                                    ),
-                                  ),
-                                ],
-                              ),
+                              )
                             ]
                           ],
                         ),
@@ -398,59 +341,20 @@ class FlutterPainterExampleState extends State<FlutterPainterExample> {
                   PhosphorIcons.fill.textT,
                   color: textFocusNode.hasFocus ? Colors.yellow : null,
                 ),
-                onPressed: addText,
-              ),
-              // Add sticker image
-              IconButton(
-                icon: Icon(
-                  PhosphorIcons.fill.sticker,
-                ),
-                onPressed: addSticker,
+                onPressed: () {
+                  setState(() {
+                    adicionandoTexto = true;
+                  });
+                },
               ),
               // Add shapes
-              if (controller.shapeFactory == null)
-                PopupMenuButton<ShapeFactory?>(
-                  tooltip: "Add shape",
-                  itemBuilder: (context) => <ShapeFactory, String>{
-                    LineFactory(): "Line",
-                    ArrowFactory(): "Arrow",
-                    DoubleArrowFactory(): "Double Arrow",
-                    RectangleFactory(): "Rectangle",
-                    OvalFactory(): "Oval",
-                  }
-                      .entries
-                      .map((e) => PopupMenuItem(
-                          value: e.key,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Icon(
-                                getShapeIcon(e.key),
-                                color: Colors.black,
-                              ),
-                              Text(" ${e.value}")
-                            ],
-                          )))
-                      .toList(),
-                  onSelected: selectShape,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Icon(
-                      getShapeIcon(controller.shapeFactory),
-                      color: controller.shapeFactory != null
-                          ? Colors.yellow
-                          : null,
-                    ),
-                  ),
-                )
-              else
-                IconButton(
-                  icon: Icon(
-                    getShapeIcon(controller.shapeFactory),
-                    color: Colors.yellow,
-                  ),
-                  onPressed: () => selectShape(null),
+              IconButton(
+                icon: Icon(
+                  PhosphorIcons.fill.arrowUpRight,
+                  color: controller.shapeFactory != null ? Colors.yellow : null,
                 ),
+                onPressed: () => controller.shapeFactory = ArrowFactory(),
+              )
             ],
           ),
         ));
@@ -461,24 +365,105 @@ class FlutterPainterExampleState extends State<FlutterPainterExample> {
     return buildDefault(context);
   }
 
-  static IconData getShapeIcon(ShapeFactory? shapeFactory) {
-    if (shapeFactory is LineFactory) return PhosphorIcons.fill.lineSegment;
-    if (shapeFactory is ArrowFactory) return PhosphorIcons.fill.arrowUpRight;
-    if (shapeFactory is DoubleArrowFactory) {
-      return PhosphorIcons.fill.arrowsHorizontal;
-    }
-    if (shapeFactory is RectangleFactory) return PhosphorIcons.fill.rectangle;
-    if (shapeFactory is OvalFactory) return PhosphorIcons.fill.circle;
-    return PhosphorIcons.fill.polygon;
-  }
+  List<Widget> adicionaTexto() {
+    return [
+      const Divider(),
+      TextField(
+        controller: textoImagemController,
+        decoration: const InputDecoration(
+          border: OutlineInputBorder(),
+          labelText: 'Inserir Texto',
+        ),
+      ),
+      Row(
+        children: [
+          const Text('Tamanho da fonte'),
+          const SizedBox(
+            width: 5,
+          ),
+          Expanded(
+              child: TextField(
+            onChanged: (value) {
+              if (value != '') {
+                int fonte = int.parse(value);
+                if (fonte >= 9 && fonte <= 100) {
+                  setState(() {
+                    tamanhoFonte = fonte;
+                  });
+                }
+              }
+            },
+            textAlign: TextAlign.center,
+            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+            controller: fontController,
+          ))
+        ],
+      ),
+      Center(
+        child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+          IconButton(
+              icon: const Icon(Icons.text_decrease),
+              onPressed: () {
+                setState(() {
+                  tamanhoFonte -= 1;
+                  fontController.text = tamanhoFonte.toInt().toString();
+                });
+              }),
+          const SizedBox(width: 5),
+          IconButton(
+              icon: const Icon(Icons.text_increase),
+              onPressed: () {
+                setState(() {
+                  tamanhoFonte += 1;
+                  fontController.text = tamanhoFonte.toInt().toString();
+                });
+              }),
+        ]),
+      ),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: cores
+            .map(
+              (cor) => GestureDetector(
+                onTap: (() {
+                  textoImagem['cor'] = cor;
+                  setState(() {});
+                }),
+                child: Container(
+                  width: 30,
+                  height: 30,
+                  decoration: BoxDecoration(
+                    border: Border.all(width: 2),
+                    color: cor,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+              ),
+            )
+            .toList(),
+      ),
+      const SizedBox(
+        height: 15,
+      ),
+      ElevatedButton(
+          onPressed: () {
+            textoImagem['fonteTamanho'] = tamanhoFonte;
+            textoImagem['texto'] = textoImagemController.text;
 
-  void undo() {
-    controller.undo();
-  }
+            double escala = backgroundImage!.width / backgroundImage!.height;
+            print(backgroundImage!.width / backgroundImage!.height);
+            print(backgroundImage!.width * escala);
+            print(backgroundImage!.height * escala);
 
-  void redo() {
-    controller.redo();
-    print(controller.performedActions);
+            addText();
+            adicionandoTexto = false;
+            setState(() {});
+          },
+          child: const Text('Inserir Texto')),
+      const SizedBox(
+        height: 5,
+      ),
+    ];
   }
 
   void toggleFreeStyleDraw() {
@@ -494,28 +479,18 @@ class FlutterPainterExampleState extends State<FlutterPainterExample> {
   }
 
   void addText() {
-    if (controller.freeStyleMode != FreeStyleMode.none) {
-      controller.freeStyleMode = FreeStyleMode.none;
-    }
-    controller.addText();
-    for (var valor in controller.value.drawables) {
-      print(valor.runtimeType);
-      if (valor.runtimeType == TextDrawable) {
-        TextDrawable textD = valor as TextDrawable;
-        print(textD.text);
-      }
-    }
-  }
+    var render =
+        controller.painterKey.currentContext!.findRenderObject() as RenderBox;
 
-  void addSticker() async {
-    final imageLink = await showDialog<String>(
-        context: context,
-        builder: (context) => SelectStickerImageDialog(
-              imagesLinks: imageLinks,
-            ));
-    if (imageLink == null) return;
-    controller.addImage(
-        await NetworkImage(imageLink).image, const Size(100, 100));
+    controller.addDrawables([
+      TextDrawable(
+          text: textoImagem['texto'],
+          position: Offset(render.size.width / 2, render.size.height / 2),
+          style: TextStyle(
+              fontSize: textoImagem['fonteTamanho'].toDouble(),
+              color: textoImagem['cor'],
+              fontWeight: FontWeight.bold))
+    ]);
   }
 
   void setFreeStyleStrokeWidth(double value) {
@@ -526,54 +501,11 @@ class FlutterPainterExampleState extends State<FlutterPainterExample> {
     controller.freeStyleColor = HSVColor.fromAHSV(1, hue, 1, 1).toColor();
   }
 
-  void setTextFontSize(double size) {
-    // Set state is just to update the current UI, the [FlutterPainter] UI updates without it
-    setState(() {
-      controller.textSettings = controller.textSettings.copyWith(
-          textStyle:
-              controller.textSettings.textStyle.copyWith(fontSize: size));
-    });
-  }
-
   void setShapeFactoryPaint(Paint paint) {
     // Set state is just to update the current UI, the [FlutterPainter] UI updates without it
     setState(() {
       controller.shapePaint = paint;
     });
-  }
-
-  void setTextColor(double hue) {
-    controller.textStyle = controller.textStyle
-        .copyWith(color: HSVColor.fromAHSV(1, hue, 1, 1).toColor());
-  }
-
-  void selectShape(ShapeFactory? factory) {
-    controller.shapeFactory = factory;
-  }
-
-  void renderAndDisplayImage() {
-    if (backgroundImage == null) return;
-    final backgroundImageSize = Size(
-        backgroundImage!.width.toDouble(), backgroundImage!.height.toDouble());
-
-    // Render the image
-    // Returns a [ui.Image] object, convert to to byte data and then to Uint8List
-    final imageFuture = controller
-        .renderImage(backgroundImageSize)
-        .then<Uint8List?>((ui.Image image) => image.pngBytes);
-
-    // From here, you can write the PNG image data a file or do whatever you want with it
-    // For example:
-    // ```dart
-    // final file = File('${(await getTemporaryDirectory()).path}/img.png');
-    // await file.writeAsBytes(byteData.buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes));
-    // ```
-    // I am going to display it using Image.memory
-
-    // Show a dialog with the image
-    showDialog(
-        context: context,
-        builder: (context) => RenderedImageDialog(imageFuture: imageFuture));
   }
 
   void removeSelectedDrawable() {
@@ -587,73 +519,5 @@ class FlutterPainterExampleState extends State<FlutterPainterExample> {
 
     controller.replaceDrawable(
         imageDrawable, imageDrawable.copyWith(flipped: !imageDrawable.flipped));
-  }
-}
-
-class RenderedImageDialog extends StatelessWidget {
-  final Future<Uint8List?> imageFuture;
-
-  RenderedImageDialog({Key? key, required this.imageFuture}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      title: const Text("Rendered Image"),
-      content: FutureBuilder<Uint8List?>(
-        future: imageFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState != ConnectionState.done) {
-            return const SizedBox(
-              height: 50,
-              child: Center(child: CircularProgressIndicator.adaptive()),
-            );
-          }
-          if (!snapshot.hasData || snapshot.data == null) {
-            return const SizedBox();
-          }
-          return InteractiveViewer(
-              maxScale: 10, child: Image.memory(snapshot.data!));
-        },
-      ),
-    );
-  }
-}
-
-class SelectStickerImageDialog extends StatelessWidget {
-  final List<String> imagesLinks;
-
-  const SelectStickerImageDialog({Key? key, required this.imagesLinks})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      title: const Text("Select sticker"),
-      content: imagesLinks.isEmpty
-          ? const Text("No images")
-          : FractionallySizedBox(
-              heightFactor: 0.5,
-              child: SingleChildScrollView(
-                child: Wrap(
-                  children: [
-                    for (final imageLink in imagesLinks)
-                      InkWell(
-                        onTap: () => Navigator.pop(context, imageLink),
-                        child: FractionallySizedBox(
-                          widthFactor: 1 / 4,
-                          child: Image.network(imageLink),
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-            ),
-      actions: [
-        TextButton(
-          child: const Text("Cancel"),
-          onPressed: () => Navigator.pop(context),
-        )
-      ],
-    );
   }
 }

@@ -67,7 +67,7 @@ class AppWidget extends StatelessWidget {
                 '/buscarImagem': (context) => const BuscaImagem(),
                 '/salvaImagem': (context) => const SalvaImagem(),
                 '/teste': (context) => const TesteWidget(),
-                '/imagem': (context) => const FlutterPainterExample()
+                '/imagem': (context) => FlutterPainterExample()
               });
         });
   }
