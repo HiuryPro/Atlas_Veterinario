@@ -1,3 +1,4 @@
+import 'package:atlas_veterinario/DadosDB/supa.dart';
 import 'package:flutter/material.dart';
 
 import 'Proxy/proxyimagens.dart';
@@ -28,13 +29,12 @@ class _TesteWidgetState extends State<TesteWidget> {
               const SizedBox(height: 15),
               ElevatedButton(
                   onPressed: () async {
-                    Map imagem = {};
-                    ProxyImagens imagemProxy = ProxyImagens.instance;
-                    imagem = await imagemProxy.find(1);
-                    // print(imagem);
-                    imagem = await imagemProxy.find(1);
-                    setState(() {});
-                    // print(imagem);
+                    var teste = await SupaDB.instance.select(
+                        'Imagem',
+                        'IdImagem, NomeImagem, Imagem_Texto(Texto), Imagem_Seta(*), Imagem_Contorno(*)',
+                        {'IdImagem': 18});
+
+                    print(teste);
                   },
                   child: const Text('Teste'))
             ])));

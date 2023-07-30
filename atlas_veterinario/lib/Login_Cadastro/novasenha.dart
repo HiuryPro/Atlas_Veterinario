@@ -1,11 +1,11 @@
 import 'dart:math';
 
-import 'package:atlas_veterinario/Auxiliadores/mensagens.dart';
+import 'package:atlas_veterinario/Utils/mensagens.dart';
 import 'package:atlas_veterinario/SendEmail/enviaemail.dart';
 import 'package:flutter/material.dart';
 
-import '../Auxiliadores/telacarregamento.dart';
-import '../Auxiliadores/vetthemes.dart';
+import '../Utils/telacarregamento.dart';
+import '../Utils/vetthemes.dart';
 import '../DadosDB/supa.dart';
 
 class NovaSenha extends StatefulWidget {

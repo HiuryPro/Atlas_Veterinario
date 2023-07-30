@@ -7,11 +7,11 @@ import 'package:atlas_veterinario/sumario.dart';
 import 'package:atlas_veterinario/teste.dart';
 import 'package:atlas_veterinario/salvaimagem.dart';
 import 'package:atlas_veterinario/buscaimagem.dart';
-import 'package:atlas_veterinario/testeputimage.dart';
+import 'package:atlas_veterinario/CadImagem/testeputimage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'Login_Cadastro/Login.dart';
-import 'Auxiliadores/app_controller.dart';
+import 'Utils/app_controller.dart';
 import 'Login_Cadastro/novasenha.dart';
 import 'atualizarpagina.dart';
 import 'home.dart';
@@ -47,7 +47,7 @@ class AppWidget extends StatelessWidget {
                       brightness: AppController.instance.isDarkTheme
                           ? Brightness.dark
                           : Brightness.light),
-              initialRoute: '/imagem',
+              initialRoute: '/teste',
               routes: {
                 '/home': (context) => const Home(
                       pagina: 1,
@@ -67,7 +67,7 @@ class AppWidget extends StatelessWidget {
                 '/buscarImagem': (context) => const BuscaImagem(),
                 '/salvaImagem': (context) => const SalvaImagem(),
                 '/teste': (context) => const TesteWidget(),
-                '/imagem': (context) => FlutterPainterExample()
+                '/imagem': (context) => const FlutterPainterExample()
               });
         });
   }

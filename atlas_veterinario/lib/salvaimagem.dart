@@ -3,10 +3,11 @@ import 'dart:math';
 import 'package:atlas_veterinario/DadosDB/supa.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:image_picker/image_picker.dart';
 import 'dart:convert';
 
 import 'package:photo_view/photo_view.dart';
+
+import 'Utils/utils.dart';
 
 class SalvaImagem extends StatefulWidget {
   const SalvaImagem({super.key});
@@ -23,6 +24,7 @@ const double defScale = 0.1;
 const double maxScale = 5;
 
 class _SalvaImagemState extends State<SalvaImagem> {
+  Utils utils = Utils();
   Uint8List? logoBase64;
   double? scaleCopy;
 
@@ -59,20 +61,6 @@ class _SalvaImagemState extends State<SalvaImagem> {
     super.dispose();
   }
 
-  Future<Uint8List?> pickAndConvertImageToBytecode() async {
-    final ImagePicker _picker = ImagePicker();
-
-    final XFile? pickedImage =
-        await _picker.pickImage(source: ImageSource.gallery);
-
-    if (pickedImage != null) {
-      final Uint8List? imageBytes = await pickedImage.readAsBytes();
-      return imageBytes;
-    }
-
-    return null;
-  }
-
   Widget body() {
     return SizedBox(
       height: MediaQuery.of(context).size.height,
@@ -95,7 +83,7 @@ class _SalvaImagemState extends State<SalvaImagem> {
             ElevatedButton(
                 onPressed: () async {
                   try {
-                    logoBase64 = await pickAndConvertImageToBytecode();
+                    logoBase64 = await utils.pickAndConvertImageToBytecode();
                   } catch (exception) {
                     print(exception);
                   }
