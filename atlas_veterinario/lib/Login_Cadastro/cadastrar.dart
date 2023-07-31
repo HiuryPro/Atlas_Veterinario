@@ -3,9 +3,9 @@ import 'dart:math';
 import 'package:atlas_veterinario/DadosDB/supa.dart';
 import 'package:flutter/material.dart';
 
-import '../Auxiliadores/mensagens.dart';
-import '../Auxiliadores/telacarregamento.dart';
-import '../Auxiliadores/vetthemes.dart';
+import '../Utils/mensagens.dart';
+import '../Utils/telacarregamento.dart';
+import '../Utils/vetthemes.dart';
 import '../SendEmail/enviaemail.dart';
 
 class Cadastro extends StatefulWidget {

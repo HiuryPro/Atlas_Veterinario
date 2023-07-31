@@ -4,7 +4,7 @@ import 'package:atlas_veterinario/DadosDB/supa.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import 'Auxiliadores/mensagens.dart';
+import 'Utils/mensagens.dart';
 
 class CadastraSumario extends StatefulWidget {
   const CadastraSumario({super.key});

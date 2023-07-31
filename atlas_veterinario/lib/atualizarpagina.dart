@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import 'Auxiliadores/mensagens.dart';
+import 'Utils/mensagens.dart';
 import 'DadosDB/supa.dart';
 
 class AtualizaPagina extends StatefulWidget {

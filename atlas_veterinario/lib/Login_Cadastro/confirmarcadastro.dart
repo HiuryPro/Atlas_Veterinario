@@ -1,8 +1,8 @@
 import 'package:atlas_veterinario/DadosDB/supa.dart';
 import 'package:flutter/material.dart';
-import '../Auxiliadores/app_controller.dart';
-import '../Auxiliadores/mensagens.dart';
-import '../Auxiliadores/vetthemes.dart';
+import '../Utils/app_controller.dart';
+import '../Utils/mensagens.dart';
+import '../Utils/vetthemes.dart';
 
 class ConfirmarCadastro extends StatefulWidget {
   const ConfirmarCadastro({super.key});

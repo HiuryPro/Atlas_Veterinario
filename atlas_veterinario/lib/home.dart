@@ -1,12 +1,12 @@
 // ignore: implementation_imports
 // ignore: implementation_imports
-import 'package:atlas_veterinario/Auxiliadores/mensagens.dart';
+import 'package:atlas_veterinario/Utils/mensagens.dart';
 import 'package:flutter/services.dart';
 import 'package:turn_page_transition/src/turn_direction.dart';
 import 'package:flutter/material.dart';
 import 'package:turn_page_transition/turn_page_transition.dart';
 
-import 'Auxiliadores/app_controller.dart';
+import 'Utils/app_controller.dart';
 
 class Home extends StatefulWidget {
   final int pagina;

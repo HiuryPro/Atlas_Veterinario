@@ -3,10 +3,11 @@ import 'dart:math';
 import 'package:atlas_veterinario/DadosDB/supa.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:image_picker/image_picker.dart';
 import 'dart:convert';
 
 import 'package:photo_view/photo_view.dart';
+
+import 'Utils/utils.dart';
 
 class SalvaImagem extends StatefulWidget {
   const SalvaImagem({super.key});
@@ -18,11 +19,12 @@ class SalvaImagem extends StatefulWidget {
 const double min = pi * -2;
 const double max = pi * 2;
 
-const double minScale = 0.5;
+const double minScale = 0.1;
 const double defScale = 0.1;
 const double maxScale = 5;
 
 class _SalvaImagemState extends State<SalvaImagem> {
+  Utils utils = Utils();
   Uint8List? logoBase64;
   double? scaleCopy;
 
@@ -59,20 +61,6 @@ class _SalvaImagemState extends State<SalvaImagem> {
     super.dispose();
   }
 
-  Future<Uint8List?> pickAndConvertImageToBytecode() async {
-    final ImagePicker _picker = ImagePicker();
-
-    final XFile? pickedImage =
-        await _picker.pickImage(source: ImageSource.gallery);
-
-    if (pickedImage != null) {
-      final Uint8List? imageBytes = await pickedImage.readAsBytes();
-      return imageBytes;
-    }
-
-    return null;
-  }
-
   Widget body() {
     return SizedBox(
       height: MediaQuery.of(context).size.height,
@@ -81,14 +69,21 @@ class _SalvaImagemState extends State<SalvaImagem> {
         padding: const EdgeInsets.all(8),
         child: ListView(
           children: [
-            const Text('Escolhe imagem'),
+            ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pushNamed('/buscarImagem');
+                },
+                child: Text('Tela de buscar Imagem')),
             const SizedBox(
               height: 10,
+            ),
+            const SizedBox(
+              height: 5,
             ),
             ElevatedButton(
                 onPressed: () async {
                   try {
-                    logoBase64 = await pickAndConvertImageToBytecode();
+                    logoBase64 = await utils.pickAndConvertImageToBytecode();
                   } catch (exception) {
                     print(exception);
                   }
@@ -103,20 +98,17 @@ class _SalvaImagemState extends State<SalvaImagem> {
                   border: OutlineInputBorder(),
                   labelText: 'Nome da Imagem',
                 )),
-            const SizedBox(height: 10),
-            Container(
-              margin: const EdgeInsets.symmetric(
-                vertical: 20.0,
-                horizontal: 20.0,
-              ),
+            SizedBox(
               height: 350.0,
               child: logoBase64 == null
                   ? Container(
-                      color: Colors.black,
+                      color: Color(0xFFfafafa),
                     )
                   : ClipRect(
                       child: PhotoView(
                         controller: controller,
+                        backgroundDecoration:
+                            BoxDecoration(color: Color(0xFFfafafa)),
                         imageProvider: MemoryImage(logoBase64!),
                         maxScale: PhotoViewComputedScale.covered * 6.0,
                         minScale: PhotoViewComputedScale.contained * 0.8,
@@ -215,6 +207,24 @@ class _SalvaImagemState extends State<SalvaImagem> {
             max: 2000.0,
             onChanged: (double newPosition) {
               controller.position = Offset(newPosition, controller.position.dy);
+            },
+          ),
+        ),
+        Text(
+          "Rotaçãof ${value.rotation}",
+          style: const TextStyle(color: Colors.black),
+        ),
+        SliderTheme(
+          data: SliderTheme.of(context).copyWith(
+            activeTrackColor: Colors.orange,
+            thumbColor: Colors.orange,
+          ),
+          child: Slider(
+            value: value.position.dx,
+            min: -2000,
+            max: 2000,
+            onChanged: (double newRotation) {
+              controller.rotation = newRotation;
             },
           ),
         ),

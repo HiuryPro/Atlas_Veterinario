@@ -11,9 +11,9 @@ class TelaCarregamento {
       SizedBox(
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,
-        child: Column(
+        child: const Column(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: const [
+            children: [
               Center(
                   child: CircularProgressIndicator(color: Color(0xFF0080d9))),
               SizedBox(height: 10),

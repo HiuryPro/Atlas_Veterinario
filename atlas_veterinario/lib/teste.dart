@@ -1,3 +1,4 @@
+import 'package:atlas_veterinario/DadosDB/supa.dart';
 import 'package:flutter/material.dart';
 
 import 'Proxy/proxyimagens.dart';
@@ -10,6 +11,7 @@ class TesteWidget extends StatefulWidget {
 }
 
 class _TesteWidgetState extends State<TesteWidget> {
+  ProxyImagens imagemProxy = ProxyImagens.instance;
   Widget body() {
     return SizedBox(
         width: MediaQuery.of(context).size.width,
@@ -28,13 +30,31 @@ class _TesteWidgetState extends State<TesteWidget> {
               const SizedBox(height: 15),
               ElevatedButton(
                   onPressed: () async {
-                    Map imagem = {};
-                    ProxyImagens imagemProxy = ProxyImagens.instance;
-                    imagem = await imagemProxy.find(1);
-                    // print(imagem);
-                    imagem = await imagemProxy.find(1);
-                    setState(() {});
-                    // print(imagem);
+                    var teste = await SupaDB.instance.select(
+                        'Imagem',
+                        'IdImagem, NomeImagem, Imagem_Texto(*), Imagem_Seta(*), Imagem_Contorno(*)',
+                        {'IdImagem': 18});
+
+                    Map<int, Map> db = {};
+                    db[teste[0]['IdImagem']] = teste[0];
+                    db[18]!.remove('IdImagem');
+
+                    for (Map texto in db[18]!['Imagem_Texto']) {
+                      texto.remove('IdImagem');
+                    }
+
+                    for (Map seta in db[18]!['Imagem_Seta']) {
+                      seta.remove('IdImagem');
+                    }
+
+                    for (Map contorno in db[18]!['Imagem_Contorno']) {
+                      contorno.remove('IdImagem');
+                    }
+/*
+                    print(db);
+                    var resultados = await imagemProxy.find(18);
+                    MemoryImage memoryImage = MemoryImage(resultados['Imagem']);
+                    */
                   },
                   child: const Text('Teste'))
             ])));

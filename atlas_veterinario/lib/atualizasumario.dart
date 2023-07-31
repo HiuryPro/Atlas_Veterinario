@@ -3,7 +3,7 @@
 import 'package:atlas_veterinario/DadosDB/supa.dart';
 import 'package:flutter/material.dart';
 
-import 'Auxiliadores/mensagens.dart';
+import 'Utils/mensagens.dart';
 
 class AtualizaSumario extends StatefulWidget {
   const AtualizaSumario({super.key});

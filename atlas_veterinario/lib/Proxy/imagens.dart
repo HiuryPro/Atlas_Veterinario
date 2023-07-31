@@ -8,29 +8,24 @@ class Imagem implements ProxyInteface {
   Map imagens = {};
 
   buscadoBanco(int id) async {
-    List resultados =
-        await SupaDB.instance.select('Images', '*', {'IdImages': id});
-    for (Map dados in resultados) {
-      List<String> selectedKeys = ['Image', 'NomeImagem', 'Zoom', 'Dx', 'Dy'];
-      imagens[dados['IdImages']] = Map.fromEntries(dados.entries.where((entry) {
-        return selectedKeys.contains(entry.key);
-      }));
+    List resultados = await SupaDB.instance.select(
+        'Imagem',
+        'IdImagem, Imagem ,NomeImagem, Width, Height, Imagem_Texto(*), Imagem_Seta(*), Imagem_Contorno(*)',
+        {'IdImagem': id});
+
+    imagens[resultados[0]['IdImagem']] = resultados[0];
+    imagens[id]!.remove('IdImagem');
+
+    for (Map texto in imagens[id]!['Imagem_Texto']) {
+      texto.remove('IdImagem');
     }
 
-    garanteDouble(id);
-  }
-
-  garanteDouble(int id) {
-    if (imagens[id]['Zoom'].runtimeType == int) {
-      imagens[id]['Zoom'] = imagens[id]['Zoom'].toDouble();
+    for (Map seta in imagens[id]!['Imagem_Seta']) {
+      seta.remove('IdImagem');
     }
 
-    if (imagens[id]['Dx'].runtimeType == int) {
-      imagens[id]['Dx'] = imagens[id]['Dx'].toDouble();
-    }
-
-    if (imagens[id]['Dy'].runtimeType == int) {
-      imagens[id]['Dy'] = imagens[id]['Dy'].toDouble();
+    for (Map contorno in imagens[id]!['Imagem_Contorno']) {
+      contorno.remove('IdImagem');
     }
   }
 
