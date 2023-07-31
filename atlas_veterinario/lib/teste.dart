@@ -11,6 +11,7 @@ class TesteWidget extends StatefulWidget {
 }
 
 class _TesteWidgetState extends State<TesteWidget> {
+  ProxyImagens imagemProxy = ProxyImagens.instance;
   Widget body() {
     return SizedBox(
         width: MediaQuery.of(context).size.width,
@@ -31,10 +32,29 @@ class _TesteWidgetState extends State<TesteWidget> {
                   onPressed: () async {
                     var teste = await SupaDB.instance.select(
                         'Imagem',
-                        'IdImagem, NomeImagem, Imagem_Texto(Texto), Imagem_Seta(*), Imagem_Contorno(*)',
+                        'IdImagem, NomeImagem, Imagem_Texto(*), Imagem_Seta(*), Imagem_Contorno(*)',
                         {'IdImagem': 18});
 
-                    print(teste);
+                    Map<int, Map> db = {};
+                    db[teste[0]['IdImagem']] = teste[0];
+                    db[18]!.remove('IdImagem');
+
+                    for (Map texto in db[18]!['Imagem_Texto']) {
+                      texto.remove('IdImagem');
+                    }
+
+                    for (Map seta in db[18]!['Imagem_Seta']) {
+                      seta.remove('IdImagem');
+                    }
+
+                    for (Map contorno in db[18]!['Imagem_Contorno']) {
+                      contorno.remove('IdImagem');
+                    }
+/*
+                    print(db);
+                    var resultados = await imagemProxy.find(18);
+                    MemoryImage memoryImage = MemoryImage(resultados['Imagem']);
+                    */
                   },
                   child: const Text('Teste'))
             ])));

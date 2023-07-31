@@ -24,7 +24,6 @@ class FlutterPainterExampleState extends State<FlutterPainterExample> {
 
   CadastraImagem cadImagem = CadastraImagem();
 
-  Color cores1 = Color(int.parse('0xFF000000'));
   int tamanhoFonte = 12;
   TextEditingController fontController = TextEditingController();
   TextEditingController textoImagemController = TextEditingController();
@@ -60,7 +59,6 @@ class FlutterPainterExampleState extends State<FlutterPainterExample> {
   @override
   void initState() {
     super.initState();
-    cores.add(cores1);
     fontController.text = tamanhoFonte.toString();
     controller = PainterController(
         settings: PainterSettings(
@@ -92,7 +90,6 @@ class FlutterPainterExampleState extends State<FlutterPainterExample> {
 
     logoBase64 = await utils.pickAndConvertImageToBytecode();
     final image = await MemoryImage(logoBase64!).image;
-
     setState(() {
       backgroundImage = image;
       controller.background = image.backgroundDrawable;
@@ -106,6 +103,9 @@ class FlutterPainterExampleState extends State<FlutterPainterExample> {
 
   Widget buildDefault(BuildContext context) {
     return Scaffold(
+        floatingActionButton: FloatingActionButton(onPressed: () {
+          renderAndDisplayImage();
+        }),
         appBar: PreferredSize(
           preferredSize: const Size(double.infinity, kToolbarHeight),
           // Listen to the controller and update the UI when it updates.
@@ -120,7 +120,7 @@ class FlutterPainterExampleState extends State<FlutterPainterExample> {
                         controller.removeDrawable(drawable);
                       }
                     },
-                    icon: Icon(PhosphorIcons.fill.image))
+                    icon: Icon(PhosphorIcons.fill.image)),
               ]),
               builder: (context, _, child) {
                 return AppBar(
@@ -135,17 +135,6 @@ class FlutterPainterExampleState extends State<FlutterPainterExample> {
                           ? null
                           : removeSelectedDrawable,
                     ),
-                    // Delete the selected drawable
-                    IconButton(
-                      icon: const Icon(
-                        Icons.flip,
-                      ),
-                      onPressed: controller.selectedObjectDrawable != null &&
-                              controller.selectedObjectDrawable is ImageDrawable
-                          ? flipSelectedImageDrawable
-                          : null,
-                    ),
-                    // Redo action
                     IconButton(
                       icon: Icon(
                         PhosphorIcons.fill.arrowClockwise,
@@ -158,6 +147,20 @@ class FlutterPainterExampleState extends State<FlutterPainterExample> {
                         PhosphorIcons.fill.arrowCounterClockwise,
                       ),
                       onPressed: controller.canUndo ? controller.undo : null,
+                    ),
+                    IconButton(
+                      icon: Icon(
+                        PhosphorIcons.fill.image,
+                      ),
+                      onPressed: () {
+                        for (var drawable in controller.drawables) {
+                          if (drawable.runtimeType == EraseDrawable) {
+                            EraseDrawable teste = drawable as EraseDrawable;
+                            print(teste.path);
+                          }
+                        }
+                        print(controller.drawables);
+                      },
                     ),
                   ],
                 );
@@ -226,24 +229,28 @@ class FlutterPainterExampleState extends State<FlutterPainterExample> {
                               if (controller.freeStyleMode ==
                                   FreeStyleMode.draw)
                                 Row(
-                                  children: [
-                                    const Expanded(
-                                        flex: 1, child: Text("Color")),
-                                    // Control free style color hue
-                                    Expanded(
-                                      flex: 3,
-                                      child: Slider.adaptive(
-                                          min: 0,
-                                          max: 359.99,
-                                          value: HSVColor.fromColor(
-                                                  controller.freeStyleColor)
-                                              .hue,
-                                          activeColor:
-                                              controller.freeStyleColor,
-                                          onChanged: setFreeStyleColor),
-                                    ),
-                                  ],
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: cores
+                                      .map(
+                                        (cor) => GestureDetector(
+                                          onTap: (() {
+                                            controller.freeStyleColor = cor;
+                                            setState(() {});
+                                          }),
+                                          child: Container(
+                                            width: 30,
+                                            height: 30,
+                                            decoration: BoxDecoration(
+                                              border: Border.all(width: 2),
+                                              color: cor,
+                                              shape: BoxShape.circle,
+                                            ),
+                                          ),
+                                        ),
+                                      )
+                                      .toList(),
                                 ),
+                              const SizedBox(height: 5)
                             ],
                             if (adicionandoTexto) ...adicionaTexto(),
                             if (controller.shapeFactory != null) ...[
@@ -276,32 +283,34 @@ class FlutterPainterExampleState extends State<FlutterPainterExample> {
 
                               // Control shape color hue
                               Row(
-                                children: [
-                                  const Expanded(flex: 1, child: Text("Color")),
-                                  Expanded(
-                                    flex: 3,
-                                    child: Slider.adaptive(
-                                        min: 0,
-                                        max: 359.99,
-                                        value: HSVColor.fromColor(
-                                                (controller.shapePaint ??
-                                                        shapePaint)
-                                                    .color)
-                                            .hue,
-                                        activeColor: (controller.shapePaint ??
-                                                shapePaint)
-                                            .color,
-                                        onChanged: (hue) =>
-                                            setShapeFactoryPaint(
-                                                (controller.shapePaint ??
-                                                        shapePaint)
-                                                    .copyWith(
-                                              color: HSVColor.fromAHSV(
-                                                      1, hue, 1, 1)
-                                                  .toColor(),
-                                            ))),
-                                  ),
-                                ],
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: cores
+                                    .map(
+                                      (cor) => GestureDetector(
+                                        onTap: (() {
+                                          setShapeFactoryPaint(
+                                              (controller.shapePaint ??
+                                                      shapePaint)
+                                                  .copyWith(
+                                            color: cor,
+                                          ));
+                                          setState(() {});
+                                        }),
+                                        child: Container(
+                                          width: 30,
+                                          height: 30,
+                                          decoration: BoxDecoration(
+                                            border: Border.all(width: 2),
+                                            color: cor,
+                                            shape: BoxShape.circle,
+                                          ),
+                                        ),
+                                      ),
+                                    )
+                                    .toList(),
+                              ),
+                              const SizedBox(
+                                height: 5,
                               )
                             ]
                           ],
@@ -319,8 +328,9 @@ class FlutterPainterExampleState extends State<FlutterPainterExample> {
           builder: (context, _, __) => Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              // Free-style eraser
               IconButton(
+                tooltip:
+                    'Use para apagar apenas o desenho/contorno, não usar no Texto ou Seta nesse caso use a Lata de Lixo\nPs: Use a borracha apenas para apagar o desenho inteiro',
                 icon: Icon(
                   PhosphorIcons.fill.eraser,
                   color: controller.freeStyleMode == FreeStyleMode.erase
@@ -329,7 +339,6 @@ class FlutterPainterExampleState extends State<FlutterPainterExample> {
                 ),
                 onPressed: toggleFreeStyleErase,
               ),
-              // Free-style drawing
               IconButton(
                 icon: Icon(
                   PhosphorIcons.fill.scribbleLoop,
@@ -350,7 +359,7 @@ class FlutterPainterExampleState extends State<FlutterPainterExample> {
                 ),
                 onPressed: () {
                   setState(() {
-                    adicionandoTexto = true;
+                    adicionandoTexto = !adicionandoTexto;
                     controller.freeStyleMode = FreeStyleMode.none;
                     controller.shapeFactory = null;
                   });
@@ -363,7 +372,8 @@ class FlutterPainterExampleState extends State<FlutterPainterExample> {
                   color: controller.shapeFactory != null ? Colors.yellow : null,
                 ),
                 onPressed: () {
-                  controller.shapeFactory = ArrowFactory();
+                  controller.shapeFactory =
+                      controller.shapeFactory == null ? ArrowFactory() : null;
                   controller.freeStyleMode = FreeStyleMode.none;
                   setState(() {});
                 },
@@ -371,12 +381,16 @@ class FlutterPainterExampleState extends State<FlutterPainterExample> {
               IconButton(
                 icon: Icon(
                   PhosphorIcons.fill.floppyDisk,
-                  color: controller.shapeFactory != null ? Colors.yellow : null,
                 ),
                 onPressed: () async {
+                  var render = controller.painterKey.currentContext!
+                      .findRenderObject() as RenderBox;
                   var insertedIT;
                   var inserted = await cadImagem.cadastraImagem(
-                      logoBase64!, nomeImagemController.text);
+                      logoBase64!,
+                      nomeImagemController.text,
+                      render.size.width,
+                      render.size.height);
                   int idImagem = inserted[0]['IdImagem'];
 
                   for (var drawables in controller.drawables) {
@@ -506,12 +520,6 @@ class FlutterPainterExampleState extends State<FlutterPainterExample> {
         : FreeStyleMode.none;
   }
 
-  void toggleFreeStyleErase() {
-    controller.freeStyleMode = controller.freeStyleMode != FreeStyleMode.erase
-        ? FreeStyleMode.erase
-        : FreeStyleMode.none;
-  }
-
   void addText() {
     var render =
         controller.painterKey.currentContext!.findRenderObject() as RenderBox;
@@ -540,8 +548,10 @@ class FlutterPainterExampleState extends State<FlutterPainterExample> {
     controller.freeStyleStrokeWidth = value;
   }
 
-  void setFreeStyleColor(double hue) {
-    controller.freeStyleColor = HSVColor.fromAHSV(1, hue, 1, 1).toColor();
+  void toggleFreeStyleErase() {
+    controller.freeStyleMode = controller.freeStyleMode != FreeStyleMode.erase
+        ? FreeStyleMode.erase
+        : FreeStyleMode.none;
   }
 
   void setShapeFactoryPaint(Paint paint) {
@@ -556,16 +566,54 @@ class FlutterPainterExampleState extends State<FlutterPainterExample> {
     if (selectedDrawable != null) controller.removeDrawable(selectedDrawable);
   }
 
-  void flipSelectedImageDrawable() {
-    final imageDrawable = controller.selectedObjectDrawable;
-    if (imageDrawable is! ImageDrawable) return;
-
-    controller.replaceDrawable(
-        imageDrawable, imageDrawable.copyWith(flipped: !imageDrawable.flipped));
-  }
-
   @override
   Widget build(BuildContext context) {
     return buildDefault(context);
+  }
+
+  void renderAndDisplayImage() {
+    if (backgroundImage == null) return;
+    final backgroundImageSize = Size(
+        backgroundImage!.width.toDouble(), backgroundImage!.height.toDouble());
+
+    // Render the image
+    // Returns a [ui.Image] object, convert to to byte data and then to Uint8List
+    final imageFuture = controller
+        .renderImage(backgroundImageSize)
+        .then<Uint8List?>((ui.Image image) => image.pngBytes);
+
+    showDialog(
+        context: context,
+        builder: (context) => RenderedImageDialog(imageFuture: imageFuture));
+  }
+}
+
+class RenderedImageDialog extends StatelessWidget {
+  final Future<Uint8List?> imageFuture;
+
+  const RenderedImageDialog({Key? key, required this.imageFuture})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text("Rendered Image"),
+      content: FutureBuilder<Uint8List?>(
+        future: imageFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState != ConnectionState.done) {
+            return const SizedBox(
+              height: 50,
+              child: Center(child: CircularProgressIndicator.adaptive()),
+            );
+          }
+          if (!snapshot.hasData || snapshot.data == null) {
+            return const SizedBox();
+          }
+          return InteractiveViewer(
+              maxScale: 10, child: Image.memory(snapshot.data!));
+        },
+      ),
+    );
   }
 }
