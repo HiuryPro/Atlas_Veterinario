@@ -1,4 +1,7 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_painter_v2/flutter_painter.dart';
@@ -7,6 +10,7 @@ import 'dart:ui' as ui;
 
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
+import '../Utils/mensagens.dart';
 import '../Utils/utils.dart';
 import '../Proxy/proxyimagens.dart';
 import 'cadastraimagem.dart';
@@ -23,8 +27,10 @@ class FlutterPainterExampleState extends State<FlutterPainterExample> {
   Uint8List? logoBase64;
 
   CadastraImagem cadImagem = CadastraImagem();
+  Mensagem mensagem = Mensagem();
 
   int tamanhoFonte = 12;
+  int i = 0;
   TextEditingController fontController = TextEditingController();
   TextEditingController textoImagemController = TextEditingController();
   TextEditingController nomeImagemController = TextEditingController();
@@ -35,7 +41,11 @@ class FlutterPainterExampleState extends State<FlutterPainterExample> {
     Colors.red,
     Colors.green,
     Colors.blue,
+    Colors.orange,
+    const Color(0xffa00000)
   ];
+
+  // imagem com a legenda em outra tela, mas na mesma linha
 
   Map textoImagem = {'texto': '', 'tamanhoFonte': 12, 'cor': null};
 
@@ -63,8 +73,8 @@ class FlutterPainterExampleState extends State<FlutterPainterExample> {
     controller = PainterController(
         settings: PainterSettings(
             text: TextSettings(
-              textStyle: TextStyle(
-                  fontWeight: FontWeight.bold, color: red, fontSize: 18),
+              focusNode: textFocusNode,
+              textStyle: TextStyle(color: red, fontSize: 18),
             ),
             freeStyle: FreeStyleSettings(
               color: red,
@@ -98,6 +108,12 @@ class FlutterPainterExampleState extends State<FlutterPainterExample> {
 
   /// Updates UI when the focus changes
   void onFocus() {
+    i++;
+    textFocusNode.unfocus();
+    if (i <= 1) {
+      print('Oi');
+      controller.undo();
+    }
     setState(() {});
   }
 
@@ -112,7 +128,7 @@ class FlutterPainterExampleState extends State<FlutterPainterExample> {
           child: ValueListenableBuilder<PainterControllerValue>(
               valueListenable: controller,
               child: Row(children: [
-                const Text("Flutter Painter Example"),
+                const Text("Teste"),
                 IconButton(
                     onPressed: () {
                       initBackground();
@@ -210,12 +226,12 @@ class FlutterPainterExampleState extends State<FlutterPainterExample> {
                             if (controller.freeStyleMode !=
                                 FreeStyleMode.none) ...[
                               const Divider(),
-                              const Text("Free Style Settings"),
+                              const Text("Configurações Desenho"),
                               // Control free style stroke width
                               Row(
                                 children: [
                                   const Expanded(
-                                      flex: 1, child: Text("Stroke Width")),
+                                      flex: 1, child: Text("Largura do Traço")),
                                   Expanded(
                                     flex: 3,
                                     child: Slider.adaptive(
@@ -241,7 +257,13 @@ class FlutterPainterExampleState extends State<FlutterPainterExample> {
                                             width: 30,
                                             height: 30,
                                             decoration: BoxDecoration(
-                                              border: Border.all(width: 2),
+                                              border: Border.all(
+                                                  width: 2,
+                                                  color: controller
+                                                              .freeStyleColor ==
+                                                          cor
+                                                      ? Colors.yellow
+                                                      : Colors.black),
                                               color: cor,
                                               shape: BoxShape.circle,
                                             ),
@@ -255,13 +277,13 @@ class FlutterPainterExampleState extends State<FlutterPainterExample> {
                             if (adicionandoTexto) ...adicionaTexto(),
                             if (controller.shapeFactory != null) ...[
                               const Divider(),
-                              const Text("Shape Settings"),
+                              const Text("Configuração da Seta"),
 
                               // Control text color hue
                               Row(
                                 children: [
                                   const Expanded(
-                                      flex: 1, child: Text("Stroke Width")),
+                                      flex: 1, child: Text("Largura do Traço")),
                                   Expanded(
                                     flex: 3,
                                     child: Slider.adaptive(
@@ -300,7 +322,14 @@ class FlutterPainterExampleState extends State<FlutterPainterExample> {
                                           width: 30,
                                           height: 30,
                                           decoration: BoxDecoration(
-                                            border: Border.all(width: 2),
+                                            border: Border.all(
+                                                width: 2,
+                                                color: (controller.shapePaint ??
+                                                                shapePaint)
+                                                            .color ==
+                                                        cor
+                                                    ? Colors.yellow
+                                                    : Colors.black),
                                             color: cor,
                                             shape: BoxShape.circle,
                                           ),
@@ -355,7 +384,7 @@ class FlutterPainterExampleState extends State<FlutterPainterExample> {
               IconButton(
                 icon: Icon(
                   PhosphorIcons.fill.textT,
-                  color: textFocusNode.hasFocus ? Colors.yellow : null,
+                  color: adicionandoTexto ? Colors.yellow : null,
                 ),
                 onPressed: () {
                   setState(() {
@@ -410,6 +439,8 @@ class FlutterPainterExampleState extends State<FlutterPainterExample> {
                   }
 
                   print(idImagem);
+                  mensagem.mensagem(context, 'Cadastrado com Sucesso',
+                      'Imagem cadastrada com sucesso', null);
                 },
               )
             ],
@@ -485,7 +516,11 @@ class FlutterPainterExampleState extends State<FlutterPainterExample> {
                   width: 30,
                   height: 30,
                   decoration: BoxDecoration(
-                    border: Border.all(width: 2),
+                    border: Border.all(
+                        width: 2,
+                        color: textoImagem['cor'] == cor
+                            ? Colors.yellow
+                            : Colors.black),
                     color: cor,
                     shape: BoxShape.circle,
                   ),

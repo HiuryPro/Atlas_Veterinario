@@ -56,7 +56,7 @@ class BuscarImagemPainterState extends State<BuscarImagemPainter> {
               minScale: 1,
               maxScale: 6,
             )));
-    initBackground(19);
+    initBackground(21);
   }
 
   void initBackground(int id) async {
@@ -192,11 +192,12 @@ class BuscarImagemPainterState extends State<BuscarImagemPainter> {
                       if (controller.drawables[0].runtimeType == TextDrawable) {
                         TextDrawable oldDrawable =
                             controller.drawables[0] as TextDrawable;
+
                         TextDrawable newDrawable = TextDrawable(
                             text: oldDrawable.text,
                             position: oldDrawable.position,
                             style: TextStyle(
-                                color: Colors.red,
+                                color: const Color(0xffa00000),
                                 fontSize: oldDrawable.style.fontSize,
                                 fontWeight: oldDrawable.style.fontWeight),
                             scale: oldDrawable.scale);
@@ -223,12 +224,9 @@ class BuscarImagemPainterState extends State<BuscarImagemPainter> {
             if (backgroundImage != null)
               Column(
                 children: [
-                  TextField(),
-                  TextField(),
-                  TextField(),
-                  TextField(),
-                  TextField(),
-                  Expanded(child: FutureImageVet(imageFuture: imageFuture)),
+                  Expanded(
+                      child: Center(
+                          child: FutureImageVet(imageFuture: imageFuture))),
                 ],
               ),
           ],
