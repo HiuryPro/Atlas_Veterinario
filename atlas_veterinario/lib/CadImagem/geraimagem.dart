@@ -12,6 +12,13 @@ class FutureImageVet extends StatefulWidget {
 
 class _FutureImageVetState extends State<FutureImageVet> {
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    print('Corno');
+  }
+
+  @override
   Widget build(BuildContext context) {
     return FutureBuilder<Uint8List?>(
       future: widget.imageFuture,

@@ -10,7 +10,7 @@ class Imagem implements ProxyInteface {
   buscadoBanco(int id) async {
     List resultados = await SupaDB.instance.select(
         'Imagem',
-        'IdImagem, Imagem ,NomeImagem, Width, Height, Imagem_Texto(*), Imagem_Seta(*), Imagem_Contorno(*)',
+        'IdImagem, Imagem ,NomeImagem, Width, Height, Imagem_Texto(*)',
         {'IdImagem': id});
 
     imagens[resultados[0]['IdImagem']] = resultados[0];
@@ -18,14 +18,6 @@ class Imagem implements ProxyInteface {
 
     for (Map texto in imagens[id]!['Imagem_Texto']) {
       texto.remove('IdImagem');
-    }
-
-    for (Map seta in imagens[id]!['Imagem_Seta']) {
-      seta.remove('IdImagem');
-    }
-
-    for (Map contorno in imagens[id]!['Imagem_Contorno']) {
-      contorno.remove('IdImagem');
     }
   }
 

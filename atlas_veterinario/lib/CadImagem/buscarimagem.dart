@@ -1,20 +1,22 @@
 import 'dart:convert';
 
 import 'package:atlas_veterinario/CadImagem/geraimagem.dart';
+import 'package:carousel_slider/carousel_controller.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_painter_v2/flutter_painter.dart';
 
 import 'dart:ui' as ui;
-
-import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 import '../Utils/utils.dart';
 import '../Proxy/proxyimagens.dart';
 
 class BuscarImagemPainter extends StatefulWidget {
-  const BuscarImagemPainter({Key? key}) : super(key: key);
+  final int id;
+  const BuscarImagemPainter({Key? key, required this.id}) : super(key: key);
 
   @override
   BuscarImagemPainterState createState() => BuscarImagemPainterState();
@@ -22,10 +24,19 @@ class BuscarImagemPainter extends StatefulWidget {
 
 class BuscarImagemPainterState extends State<BuscarImagemPainter> {
   ProxyImagens imagemProxy = ProxyImagens.instance;
+  List<String> legendas = [];
+  List<Color> coresDestaque = [];
+  TextDrawable? old;
+
   Future<Uint8List?>? imageFuture;
   Utils utils = Utils();
   double width = 100;
   double height = 100;
+
+  var carouselController = CarouselController();
+
+  int indexAtivo = 0;
+  bool enabled = false;
 
   late PainterController controller;
   ui.Image? backgroundImage;
@@ -56,7 +67,7 @@ class BuscarImagemPainterState extends State<BuscarImagemPainter> {
               minScale: 1,
               maxScale: 6,
             )));
-    initBackground(21);
+    initBackground(widget.id);
   }
 
   void initBackground(int id) async {
@@ -76,8 +87,6 @@ class BuscarImagemPainterState extends State<BuscarImagemPainter> {
     setState(() {});
 
     adicionatexto(resultados);
-    adicionaSeta(resultados);
-    adicionaContorno(resultados);
     imageFuture = controller
         .renderImage(Size(width, height))
         .then<Uint8List?>((ui.Image image) => image.pngBytes);
@@ -86,8 +95,11 @@ class BuscarImagemPainterState extends State<BuscarImagemPainter> {
 
   adicionatexto(Map resultados) {
     for (Map imagemTexto in resultados['Imagem_Texto']) {
-      String texto = imagemTexto['Texto'];
-      int cor = imagemTexto['Cor'];
+      legendas.add(imagemTexto['Legenda']);
+      coresDestaque.add(Color(imagemTexto['CorDestaque']));
+
+      String texto = imagemTexto['Numero'];
+
       double zoom = imagemTexto['Zoom'].runtimeType == int
           ? imagemTexto['Zoom'].toDouble()
           : imagemTexto['Zoom'];
@@ -109,128 +121,94 @@ class BuscarImagemPainterState extends State<BuscarImagemPainter> {
             scale: zoom,
             style: TextStyle(
                 fontSize: fontSize,
-                color: Color(cor),
+                color: Colors.black,
                 fontWeight: FontWeight.bold),
             locked: true)
       ]);
     }
   }
 
-  adicionaSeta(Map resultados) {
-    for (Map imagemSeta in resultados['Imagem_Seta']) {
-      double traco = imagemSeta['Traco'].runtimeType == int
-          ? imagemSeta['Traco'].toDouble()
-          : imagemSeta['Traco'];
-
-      Paint shapePaint = Paint()
-        ..strokeWidth = traco
-        ..color = Color(imagemSeta['Cor'])
-        ..style = PaintingStyle.stroke
-        ..strokeCap = StrokeCap.round;
-
-      double largura = imagemSeta['Largura'].runtimeType == int
-          ? imagemSeta['Largura'].toDouble()
-          : imagemSeta['Largura'];
-
-      double rotation = imagemSeta['Rotacao'].runtimeType == int
-          ? imagemSeta['Rotacao'].toDouble()
-          : imagemSeta['Rotacao'];
-
-      double zoom = imagemSeta['Zoom'].runtimeType == int
-          ? imagemSeta['Zoom'].toDouble()
-          : imagemSeta['Zoom'];
-
-      double dx = imagemSeta['Dx'].runtimeType == int
-          ? imagemSeta['Dx'].toDouble()
-          : imagemSeta['Dx'];
-
-      double dy = imagemSeta['Dy'].runtimeType == int
-          ? imagemSeta['Dy'].toDouble()
-          : imagemSeta['Dy'];
-
-      controller.addDrawables([
-        ArrowDrawable(
-            paint: shapePaint,
-            rotationAngle: rotation,
-            length: largura,
-            position: Offset(dx, dy),
-            scale: zoom,
-            locked: true)
-      ]);
-    }
-  }
-
-  adicionaContorno(Map resultados) {
-    for (Map imagemContorno in resultados['Imagem_Contorno']) {
-      double traco = imagemContorno['Traco'].runtimeType == int
-          ? imagemContorno['Traco'].toDouble()
-          : imagemContorno['Traco'];
-
-      List<Offset> offsets =
-          utils.parseStringDoubleListToOffsetList(imagemContorno['Path']);
-
-      controller.addDrawables([
-        FreeStyleDrawable(
-            path: offsets,
-            color: Color(imagemContorno['Cor']),
-            strokeWidth: traco)
-      ]);
-    }
-  }
-
   Widget buildDefault(BuildContext context) {
-    return Scaffold(
-        appBar: PreferredSize(
-          preferredSize: const Size(double.infinity, kToolbarHeight),
-          // Listen to the controller and update the UI when it updates.
-          child: ValueListenableBuilder<PainterControllerValue>(
-              valueListenable: controller,
-              child: Row(children: [
-                const Text("Flutter Painter Example"),
-                IconButton(
-                    onPressed: () {
-                      if (controller.drawables[0].runtimeType == TextDrawable) {
-                        TextDrawable oldDrawable =
-                            controller.drawables[0] as TextDrawable;
-
-                        TextDrawable newDrawable = TextDrawable(
-                            text: oldDrawable.text,
-                            position: oldDrawable.position,
-                            style: TextStyle(
-                                color: const Color(0xffa00000),
-                                fontSize: oldDrawable.style.fontSize,
-                                fontWeight: oldDrawable.style.fontWeight),
-                            scale: oldDrawable.scale);
-
-                        controller.replaceDrawable(oldDrawable, newDrawable);
-                        imageFuture = controller
-                            .renderImage(Size(width, height))
-                            .then<Uint8List?>(
-                                (ui.Image image) => image.pngBytes);
-                        setState(() {});
-                      }
-                      print(controller.drawables[0]);
-                    },
-                    icon: Icon(PhosphorIcons.fill.image))
-              ]),
-              builder: (context, _, child) {
-                return AppBar(
-                  title: child,
-                );
-              }),
+    return Column(
+      children: [
+        Expanded(
+          child: CarouselSlider(
+              items: [
+                if (backgroundImage != null)
+                  Center(
+                    child: AspectRatio(
+                        aspectRatio:
+                            backgroundImage!.width / backgroundImage!.height,
+                        child: FutureImageVet(imageFuture: imageFuture)),
+                  ),
+                criaButoesLegenda()
+              ],
+              carouselController: carouselController,
+              options: CarouselOptions(
+                initialPage: 0,
+                viewportFraction: 1,
+                enlargeCenterPage: true,
+                onPageChanged: (index, reason) {
+                  setState(() {
+                    indexAtivo = index;
+                  });
+                },
+                enableInfiniteScroll: false,
+              )),
         ),
-        body: Stack(
-          children: [
-            if (backgroundImage != null)
-              Column(
-                children: [
-                  Expanded(
-                      child: Center(
-                          child: FutureImageVet(imageFuture: imageFuture))),
-                ],
-              ),
-          ],
-        ));
+        Center(
+            child: AnimatedSmoothIndicator(
+          activeIndex: indexAtivo,
+          count: 2,
+          onDotClicked: (index) {
+            setState(() {
+              print(index);
+              indexAtivo = index;
+              carouselController.animateToPage(indexAtivo,
+                  duration: const Duration(milliseconds: 500));
+            });
+          },
+        )),
+      ],
+    );
+  }
+
+  Widget criaButoesLegenda() {
+    return ListView(
+      children: legendas
+          .map((legenda) => Padding(
+                padding: EdgeInsets.only(bottom: 5, top: 5),
+                child: ElevatedButton(
+                    onPressed: () async {
+                      if (old != null) {
+                        destacaNumero(old!, Colors.black);
+                      }
+                      int index = legendas.indexOf(legenda);
+
+                      destacaNumero(controller.drawables[index] as TextDrawable,
+                          coresDestaque[index]);
+                      old = controller.drawables[index] as TextDrawable;
+                      setState(() {
+                        carouselController.animateToPage(0,
+                            duration: const Duration(milliseconds: 500));
+                      });
+                    },
+                    child: Text(legenda)),
+              ))
+          .toList(),
+    );
+  }
+
+  destacaNumero(TextDrawable old, Color cor) {
+    TextDrawable oldDrawable = old;
+
+    TextDrawable newDrawable = oldDrawable.copyWith(
+        text: oldDrawable.text, style: oldDrawable.style.copyWith(color: cor));
+
+    controller.replaceDrawable(old, newDrawable);
+    imageFuture = controller
+        .renderImage(Size(width, height))
+        .then<Uint8List?>((ui.Image image) => image.pngBytes);
   }
 
   @override
