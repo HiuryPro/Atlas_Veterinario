@@ -12,13 +12,6 @@ class FutureImageVet extends StatefulWidget {
 
 class _FutureImageVetState extends State<FutureImageVet> {
   @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    print('Corno');
-  }
-
-  @override
   Widget build(BuildContext context) {
     return FutureBuilder<Uint8List?>(
       future: widget.imageFuture,
@@ -33,7 +26,8 @@ class _FutureImageVetState extends State<FutureImageVet> {
           return const SizedBox();
         }
         return InteractiveViewer(
-            maxScale: 10, child: Image.memory(snapshot.data!));
+            maxScale: 10,
+            child: Image.memory(snapshot.data!, fit: BoxFit.cover));
       },
     );
   }

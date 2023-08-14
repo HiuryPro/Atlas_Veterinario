@@ -11,7 +11,9 @@ class Imagem implements ProxyInteface {
     List resultados = await SupaDB.instance.select(
         'Imagem',
         'IdImagem, Imagem ,NomeImagem, Width, Height, Imagem_Texto(*)',
-        {'IdImagem': id});
+        {'IdImagem': id},
+        'IdImagem',
+        true);
 
     imagens[resultados[0]['IdImagem']] = resultados[0];
     imagens[id]!.remove('IdImagem');
@@ -21,9 +23,33 @@ class Imagem implements ProxyInteface {
     }
   }
 
+  buscadoBancoFull() async {
+    List resultados = await SupaDB.instance.select(
+        'Imagem',
+        'IdImagem, Imagem ,NomeImagem, Width, Height, Imagem_Texto(*)',
+        {},
+        'IdImagem',
+        true);
+
+    for (Map resultado in resultados) {
+      imagens[resultado['IdImagem']] = resultado;
+      imagens[resultado['IdImagem']]!.remove('IdImagem');
+
+      for (Map texto in imagens[resultado['IdImagem']]!['Imagem_Texto']) {
+        texto.remove('IdImagem');
+      }
+    }
+  }
+
   @override
   find(int id) async {
     print('Dados da imagem buscada');
     return imagens[id];
+  }
+
+  @override
+  findFull() {
+    print('Dados da imagem buscada');
+    return imagens;
   }
 }

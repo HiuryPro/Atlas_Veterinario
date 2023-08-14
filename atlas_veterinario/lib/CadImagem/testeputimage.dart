@@ -69,7 +69,7 @@ class FlutterPainterExampleState extends State<FlutterPainterExample> {
     ..color = Colors.red
     ..style = PaintingStyle.stroke
     ..strokeCap = StrokeCap.round;
-  ProxyImagens imagemProxy = ProxyImagens.instance;
+  ProxyImagens imagemProxy = ProxyImagens().getInterface();
 
   @override
   void initState() {

@@ -11,34 +11,18 @@ class TesteWidget extends StatefulWidget {
 }
 
 class _TesteWidgetState extends State<TesteWidget> {
-  ProxyImagens imagemProxy = ProxyImagens.instance;
+  ProxyImagens imagemProxy = ProxyImagens().getInterface();
   Widget body() {
     return SizedBox(
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
-        child: Padding(
+        child: const Padding(
           padding: EdgeInsets.all(8),
-          child: ListView(
-            children: const [
-              SizedBox(
-                width: 300,
-                height: 300,
+          child: Column(
+            children: [
+              Expanded(
                 child: BuscarImagemPainter(
-                  id: 2,
-                ),
-              ),
-              SizedBox(
-                width: 300,
-                height: 300,
-                child: BuscarImagemPainter(
-                  id: 1,
-                ),
-              ),
-              SizedBox(
-                width: 300,
-                height: 300,
-                child: BuscarImagemPainter(
-                  id: 1,
+                  id: 3,
                 ),
               ),
             ],

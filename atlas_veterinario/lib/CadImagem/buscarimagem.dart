@@ -2,14 +2,12 @@ import 'dart:convert';
 
 import 'package:atlas_veterinario/CadImagem/geraimagem.dart';
 import 'package:carousel_slider/carousel_controller.dart';
-import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_painter_v2/flutter_painter.dart';
 
 import 'dart:ui' as ui;
-import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 import '../Utils/utils.dart';
 import '../Proxy/proxyimagens.dart';
@@ -23,10 +21,12 @@ class BuscarImagemPainter extends StatefulWidget {
 }
 
 class BuscarImagemPainterState extends State<BuscarImagemPainter> {
-  ProxyImagens imagemProxy = ProxyImagens.instance;
-  List<String> legendas = [];
+  ProxyImagens imagemProxy = ProxyImagens().getInterface();
+  List<String> legendas = [""];
   List<Color> coresDestaque = [];
   TextDrawable? old;
+  bool isLegendas = false;
+  String legendaAtual = "";
 
   Future<Uint8List?>? imageFuture;
   Utils utils = Utils();
@@ -84,9 +84,10 @@ class BuscarImagemPainterState extends State<BuscarImagemPainter> {
     width = resultados['Width'];
     height = resultados['Height'];
 
-    setState(() {});
+    setState(() {
+      adicionatexto(resultados);
+    });
 
-    adicionatexto(resultados);
     imageFuture = controller
         .renderImage(Size(width, height))
         .then<Uint8List?>((ui.Image image) => image.pngBytes);
@@ -129,48 +130,16 @@ class BuscarImagemPainterState extends State<BuscarImagemPainter> {
   }
 
   Widget buildDefault(BuildContext context) {
-    return Column(
-      children: [
-        Expanded(
-          child: CarouselSlider(
-              items: [
-                if (backgroundImage != null)
-                  Center(
-                    child: AspectRatio(
-                        aspectRatio:
-                            backgroundImage!.width / backgroundImage!.height,
-                        child: FutureImageVet(imageFuture: imageFuture)),
-                  ),
-                criaButoesLegenda()
-              ],
-              carouselController: carouselController,
-              options: CarouselOptions(
-                initialPage: 0,
-                viewportFraction: 1,
-                enlargeCenterPage: true,
-                onPageChanged: (index, reason) {
-                  setState(() {
-                    indexAtivo = index;
-                  });
-                },
-                enableInfiniteScroll: false,
-              )),
-        ),
-        Center(
-            child: AnimatedSmoothIndicator(
-          activeIndex: indexAtivo,
-          count: 2,
-          onDotClicked: (index) {
-            setState(() {
-              print(index);
-              indexAtivo = index;
-              carouselController.animateToPage(indexAtivo,
-                  duration: const Duration(milliseconds: 500));
-            });
-          },
-        )),
-      ],
-    );
+    if (isLegendas) {
+      return criaButoesLegenda();
+    } else {
+      return Column(
+        children: [
+          Expanded(child: FutureImageVet(imageFuture: imageFuture)),
+          if (legendas.isNotEmpty) testeDrop()
+        ],
+      );
+    }
   }
 
   Widget criaButoesLegenda() {
@@ -189,8 +158,7 @@ class BuscarImagemPainterState extends State<BuscarImagemPainter> {
                           coresDestaque[index]);
                       old = controller.drawables[index] as TextDrawable;
                       setState(() {
-                        carouselController.animateToPage(0,
-                            duration: const Duration(milliseconds: 500));
+                        isLegendas = false;
                       });
                     },
                     child: Text(legenda)),
@@ -209,6 +177,43 @@ class BuscarImagemPainterState extends State<BuscarImagemPainter> {
     imageFuture = controller
         .renderImage(Size(width, height))
         .then<Uint8List?>((ui.Image image) => image.pngBytes);
+  }
+
+  DropdownMenuItem<String> buildMenuItem(String item) => DropdownMenuItem(
+      value: item,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Text(item,
+            style: const TextStyle(
+              fontSize: 20,
+            )),
+      ));
+
+  DropdownButton testeDrop() {
+    return DropdownButton(
+        focusColor: Colors.transparent,
+        alignment: Alignment.center,
+        hint: const Text('Escolha a Parte'),
+        value: legendaAtual,
+        items: legendas.map((String valor) => buildMenuItem(valor)).toList(),
+        onChanged: (value) {
+          if (old != null) {
+            destacaNumero(old!, Colors.black);
+          }
+
+          if (value != "") {
+            int index = legendas.indexOf(value) - 1;
+
+            destacaNumero(controller.drawables[index] as TextDrawable,
+                coresDestaque[index]);
+            old = controller.drawables[index] as TextDrawable;
+          }
+
+          setState(() {
+            isLegendas = false;
+            legendaAtual = value;
+          });
+        });
   }
 
   @override

@@ -1,3 +1,8 @@
+import 'package:atlas_veterinario/Capa_Sumario/capa.dart';
+import 'package:atlas_veterinario/Capa_Sumario/capitulo.dart';
+import 'package:atlas_veterinario/Capa_Sumario/folharosto.dart';
+import 'package:atlas_veterinario/Capa_Sumario/parte.dart';
+import 'package:atlas_veterinario/Capa_Sumario/unidade.dart';
 import 'package:atlas_veterinario/Login_Cadastro/cadastrar.dart';
 import 'package:atlas_veterinario/Login_Cadastro/confirmarcadastro.dart';
 import 'package:atlas_veterinario/atualizasumario.dart';
@@ -8,6 +13,8 @@ import 'package:atlas_veterinario/teste.dart';
 import 'package:atlas_veterinario/CadImagem/testeputimage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'Capa_Sumario/indice.dart';
+import 'Capa_Sumario/introducao.dart';
 import 'Login_Cadastro/Login.dart';
 import 'Utils/app_controller.dart';
 import 'Login_Cadastro/novasenha.dart';
@@ -45,7 +52,7 @@ class AppWidget extends StatelessWidget {
                       brightness: AppController.instance.isDarkTheme
                           ? Brightness.dark
                           : Brightness.light),
-              initialRoute: '/teste',
+              initialRoute: '/capitulo',
               routes: {
                 '/home': (context) => const Home(
                       pagina: 1,
@@ -64,7 +71,18 @@ class AppWidget extends StatelessWidget {
                 '/atualizarpaginas': (context) => const AtualizaPagina(),
                 // '/buscarImagem': (context) => const BuscarImagemPainter(id: 2,),
                 '/teste': (context) => const TesteWidget(),
-                '/imagem': (context) => const FlutterPainterExample()
+                '/imagem': (context) => const FlutterPainterExample(),
+                '/capa': (context) => const Capa(),
+                '/rosto': (context) => const FolhaRosto(),
+                '/indices': (context) => const Indices(),
+                '/introducao': (context) => const Introducao(),
+                '/parte': (context) => const Parte(id: 3),
+                '/unidade': (context) => const Unidade(id: 1, unidade: 2),
+                '/capitulo': (context) => const Capitulo(
+                      id: 1,
+                      unidade: 2,
+                      capitulo: 5,
+                    )
               });
         });
   }

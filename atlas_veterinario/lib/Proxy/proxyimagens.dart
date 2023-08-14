@@ -5,11 +5,18 @@ import 'package:atlas_veterinario/Proxy/proxyInteface.dart';
 import 'imagens.dart';
 
 class ProxyImagens implements ProxyInteface {
-  static ProxyImagens instance = ProxyImagens();
+  static ProxyImagens? instance;
   late Imagem imagem;
 
   ProxyImagens() {
     imagem = Imagem();
+  }
+
+  ProxyImagens getInterface() {
+    if (instance == null) {
+      instance = ProxyImagens();
+    }
+    return instance!;
   }
 
   @override
@@ -22,5 +29,15 @@ class ProxyImagens implements ProxyInteface {
     }
 
     return imagem.find(id);
+  }
+
+  findFull() async {
+    if (imagem.imagens.isEmpty) {
+      print('Busca do banco');
+      await imagem.buscadoBancoFull();
+    } else {
+      print('Busca da memoria');
+    }
+    return imagem.findFull();
   }
 }
