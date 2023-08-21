@@ -16,11 +16,15 @@ class _TesteWidgetState extends State<TesteWidget> {
     return SizedBox(
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
-        child: const Padding(
-          padding: EdgeInsets.all(8),
+        child: Padding(
+          padding: const EdgeInsets.all(8),
           child: Column(
             children: [
-              Expanded(
+              ElevatedButton(
+                onPressed: () async {},
+                child: const Text('Test'),
+              ),
+              const Expanded(
                 child: BuscarImagemPainter(
                   id: 3,
                 ),

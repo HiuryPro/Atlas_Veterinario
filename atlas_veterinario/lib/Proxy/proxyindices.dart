@@ -1,9 +1,9 @@
 // ignore_for_file: prefer_conditional_assignment, prefer_initializing_formals, unnecessary_this
 
 import 'package:atlas_veterinario/Proxy/indices.dart';
-import 'package:atlas_veterinario/Proxy/proxyInteface.dart';
+import 'package:atlas_veterinario/Proxy/proxyinteface.dart';
 
-class ProxyIndices implements ProxyInteface {
+class ProxyIndices implements ProxyInterface {
   static ProxyIndices? instance;
   late IndicesP indice;
 

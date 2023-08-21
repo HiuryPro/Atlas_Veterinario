@@ -11,8 +11,6 @@ class Capa extends StatefulWidget {
 class _CapaState extends State<Capa> {
   Widget body() {
     return Container(
-      width: MediaQuery.of(context).size.width,
-      height: MediaQuery.of(context).size.height,
       decoration: const BoxDecoration(
         gradient: LinearGradient(
           colors: [

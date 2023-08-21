@@ -56,6 +56,7 @@ class FlutterPainterExampleState extends State<FlutterPainterExample> {
   List<Color> coresDestaque = [];
 
   bool adicionandoTexto = false;
+  bool atualizandoTexto = false;
 
   static Color red = const Color(0xFFFF0000);
   FocusNode textFocusNode = FocusNode(
@@ -114,17 +115,21 @@ class FlutterPainterExampleState extends State<FlutterPainterExample> {
     if (controller.selectedObjectDrawable != null &&
         controller.selectedObjectDrawable.runtimeType == TextDrawable) {
       TextDrawable drawbleT = controller.selectedObjectDrawable as TextDrawable;
+      print(drawbleT.rotationAngle);
       controller.textStyle = drawbleT.style;
 
       fontController.text = drawbleT.style.fontSize.toString();
       numeroImagemController.text = drawbleT.text;
       legendaImagemController.text =
           legendas[controller.drawables.indexOf(drawbleT)];
+      textoImagem['cor'] =
+          coresDestaque[controller.drawables.indexOf(drawbleT)];
     }
 
     textFocusNode.unfocus();
 
     adicionandoTexto = true;
+
     setState(() {});
   }
 
@@ -276,7 +281,8 @@ class FlutterPainterExampleState extends State<FlutterPainterExample> {
                               logoBase64!,
                               nomeImagemController.text,
                               render.size.width,
-                              render.size.height);
+                              render.size.height,
+                              rotation);
                           int idImagem = inserted[0]['IdImagem'];
 
                           for (var drawables in controller.drawables) {
@@ -319,6 +325,9 @@ class FlutterPainterExampleState extends State<FlutterPainterExample> {
       ),
       TextField(
         inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+        onChanged: (value) {
+          setState(() {});
+        },
         controller: numeroImagemController,
         decoration: const InputDecoration(
             border: OutlineInputBorder(), labelText: 'Inserir Número'),
@@ -417,7 +426,8 @@ class FlutterPainterExampleState extends State<FlutterPainterExample> {
             textoImagem['numero'] = numeroImagemController.text;
 
             if (textoImagem['numero'] != '') {
-              if (controller.selectedObjectDrawable == null) {
+              if (controller.selectedObjectDrawable == null &&
+                  adicionandoTexto) {
                 addText();
                 legendas.add(legendaImagemController.text);
                 coresDestaque.add(textoImagem['cor']);
@@ -449,6 +459,7 @@ class FlutterPainterExampleState extends State<FlutterPainterExample> {
     TextDrawable textT = controller.selectedObjectDrawable as TextDrawable;
 
     TextDrawable newDrawable = textT.copyWith(
+        rotation: textT.rotationAngle,
         text: textoImagem['numero'],
         style: textT.style.copyWith(fontSize: textoImagem['fonteTamanho']));
     int index =
@@ -488,9 +499,9 @@ class FlutterPainterExampleState extends State<FlutterPainterExample> {
   void removeSelectedDrawable() {
     final selectedDrawable = controller.selectedObjectDrawable;
     if (selectedDrawable != null) {
-      controller.removeDrawable(selectedDrawable);
       legendas.removeAt(controller.drawables.indexOf(selectedDrawable));
       coresDestaque.removeAt(controller.drawables.indexOf(selectedDrawable));
+      controller.removeDrawable(selectedDrawable);
     }
   }
 

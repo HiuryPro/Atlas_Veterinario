@@ -3,9 +3,9 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 
 class Unidade extends StatefulWidget {
-  final int id;
+  final int parte;
   final int unidade;
-  const Unidade({super.key, required this.id, required this.unidade});
+  const Unidade({super.key, required this.parte, required this.unidade});
 
   @override
   State<Unidade> createState() => _UnidadeState();
@@ -23,11 +23,8 @@ class _UnidadeState extends State<Unidade> {
 
   Widget body() {
     return SizedBox(
-      width: MediaQuery.of(context).size.width,
-      height: MediaQuery.of(context).size.height,
       child: Padding(
-        padding:
-            const EdgeInsets.only(top: 15, bottom: 15, left: 15, right: 15),
+        padding: const EdgeInsets.only(left: 15.0, right: 15),
         child: Container(
           decoration: const BoxDecoration(
             border: Border(left: BorderSide(width: 6, color: Colors.black)),
@@ -44,10 +41,8 @@ class _UnidadeState extends State<Unidade> {
   }
 
   testeW() async {
-    Map resultados = await proxyUnidade.find(widget.id);
+    Map resultados = await proxyUnidade.find(widget.parte);
     Map unidade = resultados['Unidade'][widget.unidade];
-    print(resultados.keys);
-    print(resultados);
 
     testes = [
       Row(

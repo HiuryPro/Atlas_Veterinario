@@ -10,11 +10,8 @@ class FolhaRosto extends StatefulWidget {
 class _FolhaRostoState extends State<FolhaRosto> {
   Widget body() {
     return SizedBox(
-      width: MediaQuery.of(context).size.width,
-      height: MediaQuery.of(context).size.height,
       child: Padding(
-        padding:
-            const EdgeInsets.only(top: 15, bottom: 15, left: 30, right: 15),
+        padding: const EdgeInsets.only(left: 15.0, top: 10),
         child: Container(
           decoration: const BoxDecoration(
             border: Border(left: BorderSide(width: 6, color: Colors.black)),

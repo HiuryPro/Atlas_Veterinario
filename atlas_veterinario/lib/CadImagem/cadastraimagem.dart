@@ -11,13 +11,14 @@ class CadastraImagem {
   Utils utils = Utils();
 
   cadastraImagem(Uint8List logoBase64, String nomeImagem, double width,
-      double height) async {
+      double height, int rotation) async {
     Map imagemDb = {'Imagem': '', 'NomeImagem': ''};
     String encodedString = base64.encode(logoBase64);
     imagemDb['Imagem'] = encodedString;
     imagemDb['NomeImagem'] = nomeImagem;
     imagemDb['Width'] = width;
     imagemDb['Height'] = height;
+    imagemDb['RotationImage'] = rotation;
 
     return await SupaDB.instance.insert('Imagem', imagemDb);
   }

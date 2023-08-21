@@ -3,8 +3,8 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 
 class Parte extends StatefulWidget {
-  final int id;
-  const Parte({super.key, required this.id});
+  final int parte;
+  const Parte({super.key, required this.parte});
 
   @override
   State<Parte> createState() => _ParteState();
@@ -24,11 +24,8 @@ class _ParteState extends State<Parte> {
 
   Widget body() {
     return SizedBox(
-      width: MediaQuery.of(context).size.width,
-      height: MediaQuery.of(context).size.height,
       child: Padding(
-        padding:
-            const EdgeInsets.only(top: 15, bottom: 15, left: 30, right: 15),
+        padding: const EdgeInsets.only(left: 15.0),
         child: Container(
           decoration: const BoxDecoration(
             border: Border(left: BorderSide(width: 6, color: Colors.black)),
@@ -56,8 +53,7 @@ class _ParteState extends State<Parte> {
   }
 
   teste() async {
-    Map resultados = await proxyParte.find(widget.id);
-    print(resultados);
+    Map resultados = await proxyParte.find(widget.parte);
     testes.add(Center(
         child: AutoSizeText(
       'PARTE ${'I' * resultados['Parte']}',
@@ -66,7 +62,6 @@ class _ParteState extends State<Parte> {
       minFontSize: 30,
     )));
     setState(() {});
-    print(resultados.values);
   }
 
   @override

@@ -3,12 +3,12 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 
 class Capitulo extends StatefulWidget {
-  final int id;
+  final int parte;
   final int unidade;
   final int capitulo;
   const Capitulo(
       {super.key,
-      required this.id,
+      required this.parte,
       required this.capitulo,
       required this.unidade});
 
@@ -28,11 +28,8 @@ class _CapituloState extends State<Capitulo> {
 
   Widget body() {
     return SizedBox(
-      width: MediaQuery.of(context).size.width,
-      height: MediaQuery.of(context).size.height,
       child: Padding(
-        padding:
-            const EdgeInsets.only(top: 15, bottom: 15, left: 15, right: 15),
+        padding: const EdgeInsets.only(left: 15.0),
         child: Container(
           decoration: const BoxDecoration(
             border: Border(left: BorderSide(width: 6, color: Colors.black)),
@@ -51,11 +48,9 @@ class _CapituloState extends State<Capitulo> {
   }
 
   testeW() async {
-    Map resultados = await proxyIndice.find(widget.id);
+    Map resultados = await proxyIndice.find(widget.parte);
     Map unidade = resultados['Unidade'][widget.unidade];
     Map capitulo = unidade['Capitulo'][widget.capitulo];
-    print(resultados.keys);
-    print(resultados);
 
     testes = [
       const Flexible(flex: 1, child: SizedBox()),

@@ -1,13 +1,13 @@
 import '../DadosDB/supa.dart';
 import 'package:atlas_veterinario/Proxy/proxyinteface.dart';
 
-class IndicesP implements ProxyInteface {
+class IndicesP implements ProxyInterface {
   Map indices = {};
 
   buscadoBanco(int id) async {
     List resultados = await SupaDB.instance.select(
         'Parte',
-        'Parte, Descricao, Unidade(IdParte, NumUnidade, NomeUnidade, Capitulo(*))',
+        'IdParte, Parte, Descricao, Unidade(IdParte, NumUnidade, NomeUnidade, Capitulo(*))',
         {'Parte': id},
         'Parte',
         true);
@@ -35,7 +35,7 @@ class IndicesP implements ProxyInteface {
   buscadoBancoFull() async {
     List resultados = await SupaDB.instance.select(
         'Parte',
-        'Parte, Descricao, Unidade(IdParte, NumUnidade, NomeUnidade, Capitulo(*))',
+        'IdParte, Parte, Descricao, Unidade(IdParte, NumUnidade, NomeUnidade, Capitulo(*))',
         {},
         'Parte',
         true);

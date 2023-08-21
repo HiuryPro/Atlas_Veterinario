@@ -52,7 +52,7 @@ class AppWidget extends StatelessWidget {
                       brightness: AppController.instance.isDarkTheme
                           ? Brightness.dark
                           : Brightness.light),
-              initialRoute: '/capitulo',
+              initialRoute: '/home',
               routes: {
                 '/home': (context) => const Home(
                       pagina: 1,
@@ -67,7 +67,7 @@ class AppWidget extends StatelessWidget {
                 '/sumario': (context) => const Sumario(),
                 '/cadastrarsumario': (context) => const CadastraSumario(),
                 '/atualizasumario': (context) => const AtualizaSumario(),
-                '/cadastrarpaginas': (context) => const CadastraPagina(),
+                '/cadastrarpaginas': (context) => const CadPagina(),
                 '/atualizarpaginas': (context) => const AtualizaPagina(),
                 // '/buscarImagem': (context) => const BuscarImagemPainter(id: 2,),
                 '/teste': (context) => const TesteWidget(),
@@ -76,10 +76,10 @@ class AppWidget extends StatelessWidget {
                 '/rosto': (context) => const FolhaRosto(),
                 '/indices': (context) => const Indices(),
                 '/introducao': (context) => const Introducao(),
-                '/parte': (context) => const Parte(id: 3),
-                '/unidade': (context) => const Unidade(id: 1, unidade: 2),
+                '/parte': (context) => const Parte(parte: 3),
+                '/unidade': (context) => const Unidade(parte: 1, unidade: 2),
                 '/capitulo': (context) => const Capitulo(
-                      id: 1,
+                      parte: 1,
                       unidade: 2,
                       capitulo: 5,
                     )

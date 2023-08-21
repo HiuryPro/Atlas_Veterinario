@@ -21,30 +21,25 @@ class _IntroducaoState extends State<Introducao> {
   }
 
   Widget body() {
-    return SizedBox(
-      width: MediaQuery.of(context).size.width,
-      height: MediaQuery.of(context).size.height,
-      child: Padding(
-        padding:
-            const EdgeInsets.only(top: 15, bottom: 15, left: 30, right: 15),
-        child: Container(
-          decoration: const BoxDecoration(
-            border: Border(left: BorderSide(width: 6, color: Colors.black)),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.only(left: 15.0),
-            child: ListView(
-              shrinkWrap: true,
-              children: testes.isEmpty
-                  ? [
-                      const SizedBox(
-                        height: 50,
-                        child:
-                            Center(child: CircularProgressIndicator.adaptive()),
-                      )
-                    ]
-                  : testes,
-            ),
+    return Padding(
+      padding: const EdgeInsets.only(left: 15.0, top: 10),
+      child: Container(
+        decoration: const BoxDecoration(
+          border: Border(left: BorderSide(width: 6, color: Colors.black)),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.only(left: 15.0),
+          child: ListView(
+            shrinkWrap: true,
+            children: testes.isEmpty
+                ? [
+                    const SizedBox(
+                      height: 50,
+                      child:
+                          Center(child: CircularProgressIndicator.adaptive()),
+                    )
+                  ]
+                : testes,
           ),
         ),
       ),
@@ -64,7 +59,6 @@ class _IntroducaoState extends State<Introducao> {
       testes.add(Text('${introducao['Introducao']}'));
     }
     setState(() {});
-    print(resultados.values);
   }
 
   @override

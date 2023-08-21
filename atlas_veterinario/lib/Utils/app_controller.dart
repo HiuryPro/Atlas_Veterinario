@@ -15,6 +15,9 @@ class AppController extends ChangeNotifier {
   Color themeCustom = Colors.white;
   Color themeCustom2 = Colors.white;
 
+  bool tutorial1 = false;
+  bool tutorial2 = false;
+
   int tamanhoFonte = 12;
   int totalPaginas = 2017;
 
@@ -48,6 +51,16 @@ class AppController extends ChangeNotifier {
     temaEmUso = temas.temaVerde();
     themeCustom = const Color(0xff6fb43d);
     themeCustom2 = const Color(0xff026534);
+    notifyListeners();
+  }
+
+  mudaTutorial1() {
+    tutorial1 = !tutorial1;
+    notifyListeners();
+  }
+
+  mudaTutorial2() {
+    tutorial2 = !tutorial2;
     notifyListeners();
   }
 }

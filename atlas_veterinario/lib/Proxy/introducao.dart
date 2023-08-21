@@ -3,7 +3,7 @@
 import 'package:atlas_veterinario/DadosDB/supa.dart';
 import 'package:atlas_veterinario/Proxy/proxyinteface.dart';
 
-class IntroducaoP implements ProxyInteface {
+class IntroducaoP implements ProxyInterface {
   // a key representa o IdImagem e o value o nome e o bytecode
   Map introducao = {};
 

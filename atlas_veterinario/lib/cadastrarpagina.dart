@@ -1,119 +1,40 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:atlas_veterinario/DadosDB/supa.dart';
+import 'package:atlas_veterinario/Proxy/proxyindices.dart';
+import 'package:atlas_veterinario/Utils/mensagens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import 'Utils/mensagens.dart';
-import 'DadosDB/supa.dart';
-
-class CadastraPagina extends StatefulWidget {
-  const CadastraPagina({super.key});
+class CadPagina extends StatefulWidget {
+  const CadPagina({super.key});
 
   @override
-  State<CadastraPagina> createState() => _CadastraPaginaState();
+  State<CadPagina> createState() => _CadPaginaState();
 }
 
-class _CadastraPaginaState extends State<CadastraPagina> {
-  ScrollController _scrollController = ScrollController();
-  TextEditingController conteudoPagina = TextEditingController();
-  TextEditingController paginaController = TextEditingController();
+class _CadPaginaState extends State<CadPagina> {
   Mensagem mensagem = Mensagem();
-
-  Map<String, List<String>> mapPartes = {
-    'IdParte': ['1'],
-    'Parte': ['1']
-  };
-  Map<String, List<String>> mapUnidades = {
-    'IdUnidade': [],
-    'NumUnidade': [],
-    'NomeUnidade': []
-  };
-
-  Map<String, List<String>> mapCapitulos = {
-    'IdCapitulo': [],
-    'NumCapitulo': [],
-    'NomeCapitulo': []
-  };
-
-  String? parteCapitulo;
-  String? unidadeCapitulo;
-  String? capitulo;
-
-  Future<void> partesSelect() async {
-    List<String> idParte = [];
-    List<String> parteNum = [];
-    List<String> descricao = [];
-    var dados = await SupaDB.instance.clienteSupaBase
-        .from('Parte')
-        .select(
-          'IdParte, Parte, Descricao',
-        )
-        .order('IdParte', ascending: true);
-    print(dados);
-    for (var parte in dados) {
-      idParte.add(parte['IdParte'].toString());
-      parteNum.add(parte['Parte'].toString());
-      descricao.add(parte['Descricao'].toString());
-    }
-    setState(() {
-      mapPartes.addAll(
-          {'IdParte': idParte, 'Parte': parteNum, 'Descricao': descricao});
-    });
-    print(mapPartes);
-  }
-
-  Future<void> unidadesSelect(int parte) async {
-    List<String> idUnidade = [];
-    List<String> unidadeNum = [];
-    List<String> unidadeNome = [];
-    var dados = await SupaDB.instance.clienteSupaBase
-        .from('Unidade')
-        .select('IdUnidade, NumUnidade, NomeUnidade')
-        .match({'IdParte': parte});
-    print(dados);
-    for (var parte in dados) {
-      idUnidade.add(parte['IdUnidade'].toString());
-      unidadeNum.add(parte['NumUnidade'].toString());
-      unidadeNome.add(parte['NomeUnidade'].toString());
-    }
-    setState(() {
-      mapUnidades.addAll({
-        'IdUnidade': idUnidade,
-        'NumUnidade': unidadeNum,
-        'NomeUnidade': unidadeNome
-      });
-    });
-  }
-
-  Future<void> capitulosSelect(int unidade) async {
-    List<String> idCapitulo = [];
-    List<String> capituloNum = [];
-    List<String> capituloNome = [];
-    var dados = await SupaDB.instance.clienteSupaBase
-        .from('Capitulo')
-        .select('IdCapitulo, NumCapitulo, NomeCapitulo')
-        .match({'IdUnidade': unidade});
-    print(dados);
-    for (var parte in dados) {
-      idCapitulo.add(parte['IdCapitulo'].toString());
-      capituloNum.add(parte['NumCapitulo'].toString());
-      capituloNome.add(parte['NomeCapitulo'].toString());
-    }
-    setState(() {
-      mapCapitulos.addAll({
-        'IdCapitulo': idCapitulo,
-        'NumCapitulo': capituloNum,
-        'NomeCapitulo': capituloNome
-      });
-    });
-  }
+  Map partes = {};
+  List<String> itemsParte = ['Parte', 'Unidade', 'Capitulo'];
+  TextEditingController controllerPagina = TextEditingController();
+  String? value;
+  String? valueParte;
+  String? valueUnidade;
+  String? valueCapitulo;
+  List<DropdownMenuItem<String>>? listaUnidades;
+  int? parteAtual;
+  int? unidadeAtual;
+  int? capAtual;
 
   @override
   void initState() {
     super.initState();
     Future.delayed(Duration.zero, () async {
-      await partesSelect();
+      partes = await ProxyIndices().getInterface().findFull();
+      print(partes.values.toList());
     });
+    setState(() {});
   }
 
   Widget body() {
@@ -121,193 +42,112 @@ class _CadastraPaginaState extends State<CadastraPagina> {
       width: MediaQuery.of(context).size.width,
       height: MediaQuery.of(context).size.height,
       child: Padding(
-        padding: EdgeInsets.all(8),
-        child: Center(
-            child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            DecoratedBox(
-              decoration: const ShapeDecoration(
-                color: Colors.cyan,
-                shape: RoundedRectangleBorder(
-                  side: BorderSide(
-                      width: 1.0, style: BorderStyle.solid, color: Colors.cyan),
-                  borderRadius: BorderRadius.all(Radius.circular(25.0)),
-                ),
-              ),
-              child: DropdownButtonHideUnderline(
-                child: Center(
-                  child: DropdownButton(
-                      alignment: Alignment.center,
-                      hint: const Text('Escolha a Parte'),
-                      value: parteCapitulo,
-                      items: mapPartes['Parte']!
-                          .map((String valor) => buildMenuItem(valor, null))
-                          .toList(),
-                      onChanged: (value) async {
-                        print(mapPartes);
-                        int index = mapPartes['Parte']!.indexOf(value!);
-                        int idParte = int.parse(mapPartes['IdParte']![index]);
-                        print(idParte);
-                        setState(() {
-                          unidadeCapitulo = null;
-                          capitulo = null;
-                          parteCapitulo = value;
-                          mapCapitulos.updateAll((key, value) => value = []);
-                          mapUnidades.updateAll((key, value) => value = []);
-                        });
-
-                        await unidadesSelect(idParte);
-                      }),
-                ),
-              ),
-            ),
-            const SizedBox(
-              height: 15,
-            ),
-            DecoratedBox(
-              decoration: const ShapeDecoration(
-                color: Colors.cyan,
-                shape: RoundedRectangleBorder(
-                  side: BorderSide(
-                      width: 1.0, style: BorderStyle.solid, color: Colors.cyan),
-                  borderRadius: BorderRadius.all(Radius.circular(25.0)),
-                ),
-              ),
-              child: DropdownButtonHideUnderline(
-                child: Center(
-                  child: DropdownButton(
-                      alignment: Alignment.center,
-                      hint: const Text('Escolha a Unidade'),
-                      value: unidadeCapitulo,
-                      items: mapUnidades['NumUnidade']!
-                          .toList()
-                          .map((String valor) => buildMenuItem(
-                              valor,
-                              mapUnidades['NomeUnidade']![
-                                  mapUnidades['NumUnidade']!.indexOf(valor)]))
-                          .toList(),
-                      onChanged: (value) async {
-                        setState(() {
-                          capitulo = null;
-                          unidadeCapitulo = value;
-                          mapCapitulos.updateAll((key, value) => value = []);
-                        });
-                        int index = mapUnidades['NumUnidade']!
-                            .indexOf(unidadeCapitulo.toString().split(' ')[0]);
-                        int idUnidade =
-                            int.parse(mapUnidades['IdUnidade']![index]);
-                        await capitulosSelect(idUnidade);
-                      }),
-                ),
-              ),
-            ),
-            const SizedBox(
-              height: 15,
-            ),
-            DecoratedBox(
-              decoration: const ShapeDecoration(
-                color: Colors.cyan,
-                shape: RoundedRectangleBorder(
-                  side: BorderSide(
-                      width: 1.0, style: BorderStyle.solid, color: Colors.cyan),
-                  borderRadius: BorderRadius.all(Radius.circular(25.0)),
-                ),
-              ),
-              child: DropdownButtonHideUnderline(
-                child: Center(
-                  child: DropdownButton(
-                      alignment: Alignment.center,
-                      hint: const Text('Escolha a Capitulo'),
-                      value: capitulo,
-                      items: mapCapitulos['NumCapitulo']!
-                          .toList()
-                          .map((String valor) => buildMenuItem(
-                              valor,
-                              mapCapitulos['NomeCapitulo']![
-                                  mapCapitulos['NumCapitulo']!.indexOf(valor)]))
-                          .toList(),
-                      onChanged: (value) {
-                        setState(() {
-                          capitulo = value;
-                          /* 
-                          int index = mapCapitulos['NumCapitulo']!
-                              .indexOf(capitulo.toString().split(' ')[0]);
-                               String nomeCapitulo =
-                              mapCapitulos['NomeCapitulo']![index];*/
-                        });
-                      }),
-                ),
-              ),
-            ),
-            const SizedBox(
-              height: 15,
-            ),
-            TextField(
-              controller: paginaController,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: 'Número da Página',
-              ),
-              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-            ),
-            const SizedBox(
-              height: 15,
-            ),
-            TextField(
-              controller: conteudoPagina,
-              scrollController: _scrollController,
-              autofocus: true,
-              maxLines: 6,
-              keyboardType: TextInputType.multiline,
-              autocorrect: true,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                isDense: true,
-              ),
-            ),
-            const SizedBox(
-              height: 15,
-            ),
-            ElevatedButton(
-                onPressed: () async {
-                  int index = mapCapitulos['NumCapitulo']!
-                      .indexOf(unidadeCapitulo.toString().split(' ')[0]);
-                  int idCapitulo =
-                      int.parse(mapCapitulos['IdCapitulo']![index]);
-                  print(idCapitulo);
-
-                  List resultado = await SupaDB.instance.clienteSupaBase
-                      .from('Pagina')
-                      .select('*')
-                      .match({
-                    'IdCapitulo': idCapitulo,
-                    'NumPagina': int.parse(paginaController.text)
-                  });
-                  if (resultado.isEmpty) {
-                    await SupaDB.instance.clienteSupaBase
-                        .from('Pagina')
-                        .insert({
-                      'IdCapitulo': idCapitulo,
-                      'NumPagina': int.parse(paginaController.text),
-                      'Conteudo': conteudoPagina.text
-                    });
-                    await mensagem.mensagem(
-                        context,
-                        'Cadastro feito com sucesso',
-                        'A página foi cadastrada com sucesso',
-                        null);
-                  } else {
-                    print('Essa pagina já existe');
-                    await mensagem.mensagem(context, 'Falha ao Cadastrar',
-                        'Essa página já existe nesse capítulo', null);
-                  }
-                },
-                child: const Text('Cadastrar Página'))
-          ],
-        )),
+        padding: const EdgeInsets.all(8),
+        child: TabBarView(
+            children: [paginaImagem(), paginaParte(), paginaCadImagem()]),
       ),
     );
+  }
+
+  paginaImagem() {
+    return ListView(
+      shrinkWrap: true,
+      children: [
+        TextField(
+          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+          controller: controllerPagina,
+          decoration: const InputDecoration(label: Text('Página')),
+        ),
+        const SizedBox(height: 10),
+        DropdownButton(
+            value: value,
+            items: itemsParte.map((e) => buildMenuItem(e, null)).toList(),
+            onChanged: (value) {
+              setState(() {
+                this.value = value;
+              });
+            }),
+        const SizedBox(height: 10),
+        Builder(builder: (context) {
+          if (value != null) {
+            return DropdownButton(
+                value: valueParte,
+                items: partes.values
+                    .toList()
+                    .map(
+                        (e) => buildMenuItem('PARTE ${'I' * e['Parte']}', null))
+                    .toList(),
+                onChanged: (value) {
+                  setState(() {
+                    valueUnidade = value;
+                    parteAtual = 'I'.allMatches(valueParte!).length;
+                  });
+                });
+          }
+
+          return const Text('Foda');
+        }),
+        const SizedBox(height: 10),
+        Builder(builder: (context) {
+          if (parteAtual != null) {
+            return DropdownButton(
+                value: valueUnidade,
+                items: partes[parteAtual]['Unidade']
+                    .values
+                    .toList()
+                    .map<DropdownMenuItem<String>>((e) {
+                  return buildMenuItem(
+                      '${e['NumUnidade']}  ${e['NomeUnidade']}', null);
+                }).toList(),
+                onChanged: (value) {
+                  setState(() {
+                    valueParte = value;
+                    parteAtual = 'I'.allMatches(valueParte!).length;
+                  });
+                });
+          }
+
+          return const Text('Foda');
+        }),
+        Align(
+          alignment: Alignment.bottomCenter,
+          child: ElevatedButton(
+              onPressed: () async {
+                //SupaDB.instance.insert('Pagina_Partes', insert)
+
+                if (controllerPagina.text != '') {
+                  if (valueParte != null) {
+                    int pagina = int.parse(controllerPagina.text);
+                    try {
+                      await SupaDB.instance
+                          .insert('Pagina', {'IdPagina': pagina});
+
+                      if (value == 'Parte') {
+                        cadPaginaParte(parteAtual!, pagina);
+                      }
+                    } catch (e) {
+                      print(e);
+                      mensagem.mensagem(
+                          context,
+                          'Erro ao cadastrar pagina $pagina',
+                          'Essa página já está cadastrada',
+                          null);
+                    }
+                  }
+                }
+              },
+              child: const Text('Cadastrar Página')),
+        )
+      ],
+    );
+  }
+
+  paginaParte() {
+    return const SizedBox();
+  }
+
+  paginaCadImagem() {
+    return const SizedBox();
   }
 
   DropdownMenuItem<String> buildMenuItem(String item, var map) =>
@@ -321,8 +161,35 @@ class _CadastraPaginaState extends State<CadastraPagina> {
                 )),
           ));
 
+  cadPaginaParte(int parteAtual, int pagina) async {
+    await SupaDB.instance
+        .insert('Pagina_Partes', {'IdPagina': pagina, 'IdParte': parteAtual});
+    mensagem.mensagem(context, 'Cadastro feito com sucesso',
+        'Página cadastrada com sucesso', null);
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(appBar: AppBar(), body: body());
+    return DefaultTabController(
+        length: 3,
+        child: Scaffold(
+            appBar: AppBar(
+              title: const Text('Cadastrar Sumário'),
+              bottom: const TabBar(tabs: [
+                Text(
+                  'Cadastrar Parte',
+                  style: TextStyle(fontSize: 15),
+                ),
+                Text(
+                  'Cadastrar Unidade',
+                  style: TextStyle(fontSize: 15),
+                ),
+                Text(
+                  'Cadastrar Capítulo',
+                  style: TextStyle(fontSize: 15),
+                )
+              ]),
+            ),
+            body: body()));
   }
 }

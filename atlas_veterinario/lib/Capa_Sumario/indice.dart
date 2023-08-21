@@ -23,11 +23,8 @@ class _IndicesState extends State<Indices> {
 
   Widget body() {
     return SizedBox(
-      width: MediaQuery.of(context).size.width,
-      height: MediaQuery.of(context).size.height,
       child: Padding(
-        padding:
-            const EdgeInsets.only(top: 15, bottom: 15, left: 30, right: 15),
+        padding: const EdgeInsets.only(left: 15.0, top: 10),
         child: Container(
           decoration: const BoxDecoration(
             border: Border(left: BorderSide(width: 6, color: Colors.black)),
@@ -56,7 +53,6 @@ class _IndicesState extends State<Indices> {
 
   teste() async {
     Map resultados = await proxyIndices.findFull();
-    print(resultados.values);
     testes = [
       const AutoSizeText(
         'ÍNDICE',
@@ -65,7 +61,6 @@ class _IndicesState extends State<Indices> {
       ),
     ];
     for (Map parte in resultados.values) {
-      print(parte);
       setState(() {
         testes.add(Padding(
           padding: const EdgeInsets.only(bottom: 15, top: 15),
@@ -99,10 +94,13 @@ class _IndicesState extends State<Indices> {
           Map capitulo = unidade['Capitulo'][idCapitulo];
           setState(
             () {
-              testes.add(AutoSizeText(
-                'Cap${capitulo['NumCapitulo']}- ${capitulo['NomeCapitulo']}',
-                minFontSize: 10,
-                maxLines: 3,
+              testes.add(Padding(
+                padding: const EdgeInsets.only(bottom: 5),
+                child: AutoSizeText(
+                  'Cap${capitulo['NumCapitulo']}- ${capitulo['NomeCapitulo']}',
+                  minFontSize: 10,
+                  maxLines: 3,
+                ),
               ));
             },
           );
