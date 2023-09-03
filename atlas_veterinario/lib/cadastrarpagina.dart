@@ -6,6 +6,8 @@ import 'package:atlas_veterinario/Utils/mensagens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'CadImagem/burcarsoimagem.dart';
+
 class CadPagina extends StatefulWidget {
   const CadPagina({super.key});
 
@@ -16,16 +18,20 @@ class CadPagina extends StatefulWidget {
 class _CadPaginaState extends State<CadPagina> {
   Mensagem mensagem = Mensagem();
   Map partes = {};
-  List<String> itemsParte = ['Parte', 'Unidade', 'Capitulo'];
+  List<String> itemsParte = ['Parte', 'Unidade', 'Capitulo', 'Imagem'];
   TextEditingController controllerPagina = TextEditingController();
   String? value;
   String? valueParte;
   String? valueUnidade;
   String? valueCapitulo;
+  String? valueImagem;
   List<DropdownMenuItem<String>>? listaUnidades;
   int? parteAtual;
   int? unidadeAtual;
-  int? capAtual;
+  int? capituloAtual;
+  int? imagemAtual;
+
+  List imagens = [];
 
   @override
   void initState() {
@@ -39,17 +45,24 @@ class _CadPaginaState extends State<CadPagina> {
 
   Widget body() {
     return SizedBox(
-      width: MediaQuery.of(context).size.width,
-      height: MediaQuery.of(context).size.height,
-      child: Padding(
-        padding: const EdgeInsets.all(8),
-        child: TabBarView(
-            children: [paginaImagem(), paginaParte(), paginaCadImagem()]),
-      ),
-    );
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.height,
+        child: Padding(
+            padding: const EdgeInsets.all(8), child: cadastrarPagina()));
   }
 
-  paginaImagem() {
+  reseta() {
+    valueParte = null;
+    valueUnidade = null;
+    valueCapitulo = null;
+    unidadeAtual = null;
+    capituloAtual = null;
+    parteAtual = null;
+    imagemAtual = null;
+    valueImagem = null;
+  }
+
+  Widget cadastrarPagina() {
     return ListView(
       shrinkWrap: true,
       children: [
@@ -62,14 +75,22 @@ class _CadPaginaState extends State<CadPagina> {
         DropdownButton(
             value: value,
             items: itemsParte.map((e) => buildMenuItem(e, null)).toList(),
-            onChanged: (value) {
+            onChanged: (value) async {
               setState(() {
                 this.value = value;
+                reseta();
               });
+              if (value == 'Imagem' && imagens.isEmpty) {
+                imagens = await SupaDB.instance.clienteSupaBase
+                    .from('Imagem')
+                    .select('IdImagem, NomeImagem');
+                print(imagens);
+              }
+              setState(() {});
             }),
         const SizedBox(height: 10),
         Builder(builder: (context) {
-          if (value != null) {
+          if (value != 'Imagem' && value != null) {
             return DropdownButton(
                 value: valueParte,
                 items: partes.values
@@ -79,17 +100,22 @@ class _CadPaginaState extends State<CadPagina> {
                     .toList(),
                 onChanged: (value) {
                   setState(() {
-                    valueUnidade = value;
+                    valueParte = value;
                     parteAtual = 'I'.allMatches(valueParte!).length;
+                    valueUnidade = null;
+                    valueCapitulo = null;
+                    unidadeAtual = null;
+                    capituloAtual = null;
                   });
                 });
           }
 
-          return const Text('Foda');
+          return const SizedBox();
         }),
         const SizedBox(height: 10),
         Builder(builder: (context) {
           if (parteAtual != null) {
+            print('Teste');
             return DropdownButton(
                 value: valueUnidade,
                 items: partes[parteAtual]['Unidade']
@@ -101,14 +127,64 @@ class _CadPaginaState extends State<CadPagina> {
                 }).toList(),
                 onChanged: (value) {
                   setState(() {
-                    valueParte = value;
-                    parteAtual = 'I'.allMatches(valueParte!).length;
+                    valueUnidade = value;
+                    unidadeAtual = int.parse(value!.split(" ")[0]);
+                    print(unidadeAtual);
+                    valueCapitulo = null;
+                    capituloAtual = null;
                   });
                 });
           }
 
-          return const Text('Foda');
+          if (value == 'Imagem' && imagens.isNotEmpty) {
+            return DropdownButton(
+                value: valueImagem,
+                items: imagens.map<DropdownMenuItem<String>>((e) {
+                  return buildMenuItem(
+                      '${e['IdImagem']}  ${e['NomeImagem']}', null);
+                }).toList(),
+                onChanged: (value) {
+                  setState(() {
+                    valueImagem = value;
+                    imagemAtual = null;
+                  });
+                });
+          }
+
+          return const SizedBox();
         }),
+        Builder(builder: (context) {
+          if (unidadeAtual != null) {
+            return DropdownButton(
+                value: valueCapitulo,
+                items: partes[parteAtual]['Unidade'][unidadeAtual]['Capitulo']
+                    .values
+                    .toList()
+                    .map<DropdownMenuItem<String>>((e) {
+                  return buildMenuItem(
+                      '${e['NumCapitulo']}  ${e['NomeCapitulo']}', null);
+                }).toList(),
+                onChanged: (value) {
+                  setState(() {
+                    valueCapitulo = value;
+                    capituloAtual = int.parse(value!.split(" ")[0]);
+                    print(unidadeAtual);
+                  });
+                });
+          }
+
+          if (imagemAtual == null && valueImagem != null) {
+            imagemAtual = int.parse(valueImagem!.split(" ")[0]);
+            return BuscarImagem(
+              id: imagemAtual!,
+            );
+          }
+
+          return const SizedBox();
+        }),
+        SizedBox(
+          height: 20,
+        ),
         Align(
           alignment: Alignment.bottomCenter,
           child: ElevatedButton(
@@ -116,14 +192,21 @@ class _CadPaginaState extends State<CadPagina> {
                 //SupaDB.instance.insert('Pagina_Partes', insert)
 
                 if (controllerPagina.text != '') {
-                  if (valueParte != null) {
+                  if (value != null) {
                     int pagina = int.parse(controllerPagina.text);
                     try {
                       await SupaDB.instance
                           .insert('Pagina', {'IdPagina': pagina});
 
-                      if (value == 'Parte') {
+                      if (value == 'Parte' && parteAtual != null) {
                         cadPaginaParte(parteAtual!, pagina);
+                      }
+                      if (value == 'Unidade' && unidadeAtual != null) {
+                        cadPaginaUnidade(parteAtual!, unidadeAtual!, pagina);
+                      }
+                      if (value == 'Capitulo' && capituloAtual != null) {
+                        cadPaginaCapitulo(
+                            parteAtual!, unidadeAtual!, capituloAtual!, pagina);
                       }
                     } catch (e) {
                       print(e);
@@ -140,14 +223,6 @@ class _CadPaginaState extends State<CadPagina> {
         )
       ],
     );
-  }
-
-  paginaParte() {
-    return const SizedBox();
-  }
-
-  paginaCadImagem() {
-    return const SizedBox();
   }
 
   DropdownMenuItem<String> buildMenuItem(String item, var map) =>
@@ -168,28 +243,31 @@ class _CadPaginaState extends State<CadPagina> {
         'Página cadastrada com sucesso', null);
   }
 
+  cadPaginaUnidade(int parteAtual, int unidadeAtual, int pagina) async {
+    await SupaDB.instance.insert('Pagina_Partes',
+        {'IdPagina': pagina, 'IdParte': parteAtual, 'IdUnidade': unidadeAtual});
+    mensagem.mensagem(context, 'Cadastro feito com sucesso',
+        'Página cadastrada com sucesso', null);
+  }
+
+  cadPaginaCapitulo(
+      int parteAtual, int unidadeAtual, int capituloAtual, int pagina) async {
+    await SupaDB.instance.insert('Pagina_Partes', {
+      'IdPagina': pagina,
+      'IdParte': parteAtual,
+      'IdUnidade': unidadeAtual,
+      'IdCapitulo': capituloAtual
+    });
+    mensagem.mensagem(context, 'Cadastro feito com sucesso',
+        'Página cadastrada com sucesso', null);
+  }
+
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-        length: 3,
-        child: Scaffold(
-            appBar: AppBar(
-              title: const Text('Cadastrar Sumário'),
-              bottom: const TabBar(tabs: [
-                Text(
-                  'Cadastrar Parte',
-                  style: TextStyle(fontSize: 15),
-                ),
-                Text(
-                  'Cadastrar Unidade',
-                  style: TextStyle(fontSize: 15),
-                ),
-                Text(
-                  'Cadastrar Capítulo',
-                  style: TextStyle(fontSize: 15),
-                )
-              ]),
-            ),
-            body: body()));
+    return Scaffold(
+        appBar: AppBar(
+          title: const Text('Cadastrar Página'),
+        ),
+        body: body());
   }
 }

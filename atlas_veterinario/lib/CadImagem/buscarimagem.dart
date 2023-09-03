@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:atlas_veterinario/CadImagem/geraimagem.dart';
-import 'package:atlas_veterinario/Utils/app_controller.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:carousel_slider/carousel_controller.dart';
 import 'package:flutter/foundation.dart';
@@ -187,8 +186,11 @@ class BuscarImagemPainterState extends State<BuscarImagemPainter> {
           Expanded(
               child: RotatedBox(
             quarterTurns: rotationImagem,
-            child: FutureImageVet(
-              imageFuture: imageFuture,
+            child: InteractiveViewer(
+              maxScale: 10,
+              child: FutureImageVet(
+                imageFuture: imageFuture,
+              ),
             ),
           )),
           if (legendas.isNotEmpty)

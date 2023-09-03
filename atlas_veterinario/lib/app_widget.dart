@@ -11,6 +11,7 @@ import 'package:atlas_veterinario/cadastrasumario.dart';
 import 'package:atlas_veterinario/sumario.dart';
 import 'package:atlas_veterinario/teste.dart';
 import 'package:atlas_veterinario/CadImagem/testeputimage.dart';
+import 'package:atlas_veterinario/testegeral.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'Capa_Sumario/indice.dart';
@@ -52,7 +53,7 @@ class AppWidget extends StatelessWidget {
                       brightness: AppController.instance.isDarkTheme
                           ? Brightness.dark
                           : Brightness.light),
-              initialRoute: '/home',
+              initialRoute: '/cadastrarpaginas',
               routes: {
                 '/home': (context) => const Home(
                       pagina: 1,
@@ -60,6 +61,7 @@ class AppWidget extends StatelessWidget {
                 '/hometeste': (context) => const HomeTeste(
                       pagina: 1,
                     ),
+                '/testegeral': (context) => const TesteGeral(),
                 '/cadastro': (context) => const Cadastro(),
                 '/login': (context) => const Login(),
                 '/confirmarCadastro': (context) => const ConfirmarCadastro(),

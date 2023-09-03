@@ -34,11 +34,8 @@ class _FutureImageVetState extends State<FutureImageVet> {
         if (!snapshot.hasData || snapshot.data == null) {
           return const SizedBox();
         }
-        return InteractiveViewer(
-          maxScale: 10,
-          child: Center(
-            child: Image.memory(snapshot.data!, fit: BoxFit.fill),
-          ),
+        return Center(
+          child: Image.memory(snapshot.data!, fit: BoxFit.fill),
         );
       },
     );

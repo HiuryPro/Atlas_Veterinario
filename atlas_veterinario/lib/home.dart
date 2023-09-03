@@ -10,7 +10,6 @@ import 'package:atlas_veterinario/Utils/mensagens.dart';
 import 'package:atlas_veterinario/Utils/tutorial.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/services.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:turn_page_transition/src/turn_direction.dart';
 import 'package:flutter/material.dart';
 import 'package:turn_page_transition/turn_page_transition.dart';
@@ -291,19 +290,19 @@ class _HomeState extends State<Home> {
       int parteId;
       int unidadeId;
       int capituloId;
-      if (conteudo['Pagina_Partes']['IdCapitulo'] != null) {
-        capituloId = conteudo['Pagina_Partes']['IdCapitulo'];
-        unidadeId = conteudo['Pagina_Partes']['IdUnidade'];
-        parteId = conteudo['Pagina_Partes']['IdParte'];
+      if (conteudo['Pagina_Partes']['Capitulo'] != null) {
+        capituloId = conteudo['Pagina_Partes']['Capitulo'];
+        unidadeId = conteudo['Pagina_Partes']['Unidade'];
+        parteId = conteudo['Pagina_Partes']['Parte'];
         return Capitulo(
             parte: parteId, capitulo: capituloId, unidade: unidadeId);
-      } else if (conteudo['Pagina_Partes']['IdUnidade'] != null) {
-        unidadeId = conteudo['Pagina_Partes']['IdUnidade'];
-        parteId = conteudo['Pagina_Partes']['IdParte'];
+      } else if (conteudo['Pagina_Partes']['Unidade'] != null) {
+        unidadeId = conteudo['Pagina_Partes']['Unidade'];
+        parteId = conteudo['Pagina_Partes']['Parte'];
         return Unidade(parte: parteId, unidade: unidadeId);
       }
 
-      parteId = conteudo['Pagina_Partes']['IdParte'];
+      parteId = conteudo['Pagina_Partes']['Parte'];
 
       return Parte(
         parte: parteId,

@@ -7,7 +7,7 @@ class IndicesP implements ProxyInterface {
   buscadoBanco(int id) async {
     List resultados = await SupaDB.instance.select(
         'Parte',
-        'IdParte, Parte, Descricao, Unidade(IdParte, NumUnidade, NomeUnidade, Capitulo(*))',
+        'Parte, Descricao, Unidade(Parte, NumUnidade, NomeUnidade, Capitulo(*))',
         {'Parte': id},
         'Parte',
         true);
@@ -35,7 +35,7 @@ class IndicesP implements ProxyInterface {
   buscadoBancoFull() async {
     List resultados = await SupaDB.instance.select(
         'Parte',
-        'IdParte, Parte, Descricao, Unidade(IdParte, NumUnidade, NomeUnidade, Capitulo(*))',
+        'Parte, Descricao, Unidade(Parte, NumUnidade, NomeUnidade, Capitulo(*))',
         {},
         'Parte',
         true);
