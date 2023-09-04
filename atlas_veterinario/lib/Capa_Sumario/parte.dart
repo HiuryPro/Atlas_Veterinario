@@ -53,7 +53,7 @@ class _ParteState extends State<Parte> {
   }
 
   teste() async {
-    Map resultados = await proxyParte.find(widget.parte);
+    Map resultados = await proxyParte.find(widget.parte, false);
     testes.add(Center(
         child: AutoSizeText(
       'PARTE ${'I' * resultados['Parte']}',

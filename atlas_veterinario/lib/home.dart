@@ -274,7 +274,7 @@ class _HomeState extends State<Home> {
 
   Future<Map?> buscaTelaConteudo() async {
     ProxyPagina instance = ProxyPagina().getInstance();
-    Map? resultado = await instance.find(widget.pagina);
+    Map? resultado = await instance.find(widget.pagina, false);
     print(resultado);
     if (resultado != null) {
       resultado.removeWhere(
@@ -286,30 +286,30 @@ class _HomeState extends State<Home> {
   }
 
   Widget criaTela(Map conteudo) {
-    if (conteudo.containsKey('Pagina_Partes')) {
+    if (!conteudo.containsKey('IdImagem')) {
       int parteId;
       int unidadeId;
       int capituloId;
-      if (conteudo['Pagina_Partes']['Capitulo'] != null) {
-        capituloId = conteudo['Pagina_Partes']['Capitulo'];
-        unidadeId = conteudo['Pagina_Partes']['Unidade'];
-        parteId = conteudo['Pagina_Partes']['Parte'];
+      if (conteudo['Capitulo'] != null) {
+        capituloId = conteudo['Capitulo'];
+        unidadeId = conteudo['Unidade'];
+        parteId = conteudo['Parte'];
         return Capitulo(
             parte: parteId, capitulo: capituloId, unidade: unidadeId);
-      } else if (conteudo['Pagina_Partes']['Unidade'] != null) {
-        unidadeId = conteudo['Pagina_Partes']['Unidade'];
-        parteId = conteudo['Pagina_Partes']['Parte'];
+      } else if (conteudo['Unidade'] != null) {
+        unidadeId = conteudo['Unidade'];
+        parteId = conteudo['Parte'];
         return Unidade(parte: parteId, unidade: unidadeId);
       }
 
-      parteId = conteudo['Pagina_Partes']['Parte'];
+      parteId = conteudo['Parte'];
 
       return Parte(
         parte: parteId,
       );
     } else {
       isImage = true;
-      int idImagem = conteudo['Pagina_Imagem']['IdImagem'];
+      int idImagem = conteudo['IdImagem'];
       return BuscarImagemPainter(id: idImagem);
     }
   }

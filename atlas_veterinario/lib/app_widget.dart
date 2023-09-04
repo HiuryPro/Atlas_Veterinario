@@ -53,7 +53,7 @@ class AppWidget extends StatelessWidget {
                       brightness: AppController.instance.isDarkTheme
                           ? Brightness.dark
                           : Brightness.light),
-              initialRoute: '/cadastrarpaginas',
+              initialRoute: '/atualizarpaginas',
               routes: {
                 '/home': (context) => const Home(
                       pagina: 1,

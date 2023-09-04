@@ -47,7 +47,7 @@ class _IntroducaoState extends State<Introducao> {
   }
 
   teste() async {
-    Map resultados = await proxyIntroducao.findFull();
+    Map resultados = await proxyIntroducao.findFull(false);
     testes = [
       const Text(
         'INTRODUÇÃO',

@@ -48,7 +48,7 @@ class _CapituloState extends State<Capitulo> {
   }
 
   testeW() async {
-    Map resultados = await proxyIndice.find(widget.parte);
+    Map resultados = await proxyIndice.find(widget.parte, false);
     Map unidade = resultados['Unidade'][widget.unidade];
     Map capitulo = unidade['Capitulo'][widget.capitulo];
 

@@ -42,13 +42,13 @@ class Imagem implements ProxyInterface {
   }
 
   @override
-  find(int id) async {
+  find(int id, bool atualizar) async {
     print('Dados da imagem buscada');
     return imagens[id];
   }
 
   @override
-  findFull() {
+  findFull(bool atualizar) {
     print('Dados da imagem buscada');
     return imagens;
   }

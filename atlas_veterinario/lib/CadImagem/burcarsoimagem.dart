@@ -71,10 +71,11 @@ class _BuscarImagemState extends State<BuscarImagem> {
               maxScale: 6,
             )));
     initBackground(widget.id, 0);
+    print(widget.id);
   }
 
   void initBackground(int id, int rotation) async {
-    Map resultados = await imagemProxy.find(id);
+    Map resultados = await imagemProxy.find(id, false);
     Uint8List logoBase64 = base64.decode(resultados['Imagem']);
 
     final image = await MemoryImage(logoBase64).image;

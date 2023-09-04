@@ -61,13 +61,13 @@ class IndicesP implements ProxyInterface {
   }
 
   @override
-  find(int id) async {
+  find(int id, bool atualizar) async {
     print('Dados da imagem buscada');
     return indices[id];
   }
 
   @override
-  findFull() async {
+  findFull(bool atualizar) async {
     print('Dados da imagem buscada');
     return indices;
   }

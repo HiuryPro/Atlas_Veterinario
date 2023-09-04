@@ -1,10 +1,14 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:atlas_veterinario/DadosDB/supa.dart';
+import 'package:atlas_veterinario/Proxy/proxyimagens.dart';
+import 'package:atlas_veterinario/Proxy/proxyindices.dart';
+import 'package:atlas_veterinario/Proxy/proxypagina.dart';
+import 'package:atlas_veterinario/Utils/mensagens.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:supabase/supabase.dart';
 
-import 'Utils/mensagens.dart';
-import 'DadosDB/supa.dart';
+import 'CadImagem/burcarsoimagem.dart';
 
 class AtualizaPagina extends StatefulWidget {
   const AtualizaPagina({super.key});
@@ -14,339 +18,360 @@ class AtualizaPagina extends StatefulWidget {
 }
 
 class _AtualizaPaginaState extends State<AtualizaPagina> {
-  ScrollController _scrollController = ScrollController();
-  TextEditingController conteudoPaginaController = TextEditingController();
-  TextEditingController paginaController = TextEditingController();
   Mensagem mensagem = Mensagem();
+  Map partes = {};
+  Map? paginas;
+  Future<dynamic>? teste;
+  List<String> itemsParte = ['Parte', 'Unidade', 'Capitulo', 'Imagem'];
+  TextEditingController controllerPagina = TextEditingController();
+  String? value;
+  String? paginaAtual;
+  String? valueParte;
+  String? valueUnidade;
+  String? valueCapitulo;
+  String? valueImagem;
+  List<DropdownMenuItem<String>>? listaUnidades;
+  int? parteAtual;
+  int? unidadeAtual;
+  int? capituloAtual;
+  int? imagemAtual;
+  BuscarImagem? imagem;
+  bool atualizar = false;
 
-  Map<String, List<String>> mapPartes = {
-    'IdParte': ['1'],
-    'Parte': ['1']
-  };
-  Map<String, List<String>> mapUnidades = {
-    'IdUnidade': [],
-    'NumUnidade': [],
-    'NomeUnidade': []
-  };
-
-  Map<String, List<String>> mapCapitulos = {
-    'IdCapitulo': [],
-    'NumCapitulo': [],
-    'NomeCapitulo': []
-  };
-
-  Map<String, List<String>> mapPaginas = {
-    'IdPagina': [],
-    'NumPagina': [],
-    'ConteudoPagina': []
-  };
-
-  String? parteCapitulo;
-  String? unidadeCapitulo;
-  String? capitulo;
-  String? pagina;
-
-  Future<void> partesSelect() async {
-    List<String> idParte = [];
-    List<String> parteNum = [];
-    List<String> descricao = [];
-    var dados = await SupaDB.instance.clienteSupaBase
-        .from('Parte')
-        .select(
-          'IdParte, Parte, Descricao',
-        )
-        .order('IdParte', ascending: true);
-    print(dados);
-    for (var parte in dados) {
-      idParte.add(parte['IdParte'].toString());
-      parteNum.add(parte['Parte'].toString());
-      descricao.add(parte['Descricao'].toString());
-    }
-    setState(() {
-      mapPartes.addAll(
-          {'IdParte': idParte, 'Parte': parteNum, 'Descricao': descricao});
-    });
-    print(mapPartes);
-  }
-
-  Future<void> unidadesSelect(int parte) async {
-    List<String> idUnidade = [];
-    List<String> unidadeNum = [];
-    List<String> unidadeNome = [];
-    var dados = await SupaDB.instance.clienteSupaBase
-        .from('Unidade')
-        .select('IdUnidade, NumUnidade, NomeUnidade')
-        .match({'IdParte': parte});
-    print(dados);
-    for (var parte in dados) {
-      idUnidade.add(parte['IdUnidade'].toString());
-      unidadeNum.add(parte['NumUnidade'].toString());
-      unidadeNome.add(parte['NomeUnidade'].toString());
-    }
-    setState(() {
-      mapUnidades.addAll({
-        'IdUnidade': idUnidade,
-        'NumUnidade': unidadeNum,
-        'NomeUnidade': unidadeNome
-      });
-    });
-  }
-
-  Future<void> capitulosSelect(int unidade) async {
-    List<String> idCapitulo = [];
-    List<String> capituloNum = [];
-    List<String> capituloNome = [];
-    var dados = await SupaDB.instance.clienteSupaBase
-        .from('Capitulo')
-        .select('IdCapitulo, NumCapitulo, NomeCapitulo')
-        .match({'IdUnidade': unidade});
-    print(dados);
-    for (var parte in dados) {
-      idCapitulo.add(parte['IdCapitulo'].toString());
-      capituloNum.add(parte['NumCapitulo'].toString());
-      capituloNome.add(parte['NomeCapitulo'].toString());
-    }
-    setState(() {
-      mapCapitulos.addAll({
-        'IdCapitulo': idCapitulo,
-        'NumCapitulo': capituloNum,
-        'NomeCapitulo': capituloNome
-      });
-    });
-  }
-
-  Future<void> paginasSelect(int capitulo) async {
-    List<String> idPagina = [];
-    List<String> paginaNum = [];
-    List<String> conteudoPagina = [];
-    var dados = await SupaDB.instance.clienteSupaBase
-        .from('Pagina')
-        .select('IdPagina, NumPagina, Conteudo')
-        .match({'IdCapitulo': capitulo});
-    print(dados);
-    for (var parte in dados) {
-      idPagina.add(parte['IdPagina'].toString());
-      paginaNum.add(parte['NumPagina'].toString());
-      conteudoPagina.add(parte['Conteudo'].toString());
-    }
-    setState(() {
-      mapPaginas.addAll({
-        'IdPagina': idPagina,
-        'NumPagina': paginaNum,
-        'ConteudoPagina': conteudoPagina
-      });
-    });
-  }
+  List imagens = [];
 
   @override
   void initState() {
     super.initState();
+
     Future.delayed(Duration.zero, () async {
-      await partesSelect();
+      partes = await ProxyIndices().getInterface().findFull(false);
+      paginas = await ProxyPagina().getInstance().findFull(false);
+
+      setState(() {});
+
+      print(partes.values.toList());
+      print(paginas);
     });
   }
 
   Widget body() {
     return SizedBox(
-      width: MediaQuery.of(context).size.width,
-      height: MediaQuery.of(context).size.height,
-      child: Padding(
-        padding: EdgeInsets.all(8),
-        child: Center(
-            child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            DecoratedBox(
-              decoration: const ShapeDecoration(
-                color: Colors.cyan,
-                shape: RoundedRectangleBorder(
-                  side: BorderSide(
-                      width: 1.0, style: BorderStyle.solid, color: Colors.cyan),
-                  borderRadius: BorderRadius.all(Radius.circular(25.0)),
-                ),
-              ),
-              child: DropdownButtonHideUnderline(
-                child: Center(
-                  child: DropdownButton(
-                      alignment: Alignment.center,
-                      hint: const Text('Escolha a Parte'),
-                      value: parteCapitulo,
-                      items: mapPartes['Parte']!
-                          .map((String valor) => buildMenuItem(valor, null))
-                          .toList(),
-                      onChanged: (value) async {
-                        print(mapPartes);
-                        int index = mapPartes['Parte']!.indexOf(value!);
-                        int idParte = int.parse(mapPartes['IdParte']![index]);
-                        print(idParte);
-                        setState(() {
-                          unidadeCapitulo = null;
-                          capitulo = null;
-                          parteCapitulo = value;
-                          mapCapitulos.updateAll((key, value) => value = []);
-                          mapUnidades.updateAll((key, value) => value = []);
-                          mapPaginas.updateAll((key, value) => value = []);
-                          conteudoPaginaController.text = '';
-                        });
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.height,
+        child: Padding(
+            padding: const EdgeInsets.all(8), child: cadastrarPagina()));
+  }
 
-                        await unidadesSelect(idParte);
-                      }),
-                ),
-              ),
-            ),
-            const SizedBox(
-              height: 15,
-            ),
-            DecoratedBox(
-              decoration: const ShapeDecoration(
-                color: Colors.cyan,
-                shape: RoundedRectangleBorder(
-                  side: BorderSide(
-                      width: 1.0, style: BorderStyle.solid, color: Colors.cyan),
-                  borderRadius: BorderRadius.all(Radius.circular(25.0)),
-                ),
-              ),
-              child: DropdownButtonHideUnderline(
-                child: Center(
-                  child: DropdownButton(
-                      alignment: Alignment.center,
-                      hint: const Text('Escolha a Unidade'),
-                      value: unidadeCapitulo,
-                      items: mapUnidades['NumUnidade']!
-                          .toList()
-                          .map((String valor) => buildMenuItem(
-                              valor,
-                              mapUnidades['NomeUnidade']![
-                                  mapUnidades['NumUnidade']!.indexOf(valor)]))
-                          .toList(),
-                      onChanged: (value) async {
-                        setState(() {
-                          capitulo = null;
-                          unidadeCapitulo = value;
-                          mapCapitulos.updateAll((key, value) => value = []);
-                          conteudoPaginaController.text = '';
-                        });
-                        int index = mapUnidades['NumUnidade']!
-                            .indexOf(unidadeCapitulo.toString().split(' ')[0]);
-                        int idUnidade =
-                            int.parse(mapUnidades['IdUnidade']![index]);
-                        await capitulosSelect(idUnidade);
-                      }),
-                ),
-              ),
-            ),
-            const SizedBox(
-              height: 15,
-            ),
-            DecoratedBox(
-              decoration: const ShapeDecoration(
-                color: Colors.cyan,
-                shape: RoundedRectangleBorder(
-                  side: BorderSide(
-                      width: 1.0, style: BorderStyle.solid, color: Colors.cyan),
-                  borderRadius: BorderRadius.all(Radius.circular(25.0)),
-                ),
-              ),
-              child: DropdownButtonHideUnderline(
-                child: Center(
-                  child: DropdownButton(
-                      alignment: Alignment.center,
-                      hint: const Text('Escolha a Capitulo'),
-                      value: capitulo,
-                      items: mapCapitulos['NumCapitulo']!
-                          .toList()
-                          .map((String valor) => buildMenuItem(
-                              valor,
-                              mapCapitulos['NomeCapitulo']![
-                                  mapCapitulos['NumCapitulo']!.indexOf(valor)]))
-                          .toList(),
-                      onChanged: (value) async {
-                        setState(() {
-                          capitulo = value;
-                          conteudoPaginaController.text = '';
-                          pagina = null;
-                        });
-                        int index = mapCapitulos['NumCapitulo']!
-                            .indexOf(capitulo.toString().split(' ')[0]);
-                        int idCapitulo =
-                            int.parse(mapCapitulos['IdCapitulo']![index]);
-                        await paginasSelect(idCapitulo);
-                      }),
-                ),
-              ),
-            ),
-            const SizedBox(
-              height: 15,
-            ),
-            DecoratedBox(
-              decoration: const ShapeDecoration(
-                color: Colors.cyan,
-                shape: RoundedRectangleBorder(
-                  side: BorderSide(
-                      width: 1.0, style: BorderStyle.solid, color: Colors.cyan),
-                  borderRadius: BorderRadius.all(Radius.circular(25.0)),
-                ),
-              ),
-              child: DropdownButtonHideUnderline(
-                child: Center(
-                  child: DropdownButton(
-                      alignment: Alignment.center,
-                      hint: const Text('Escolha a Página'),
-                      value: pagina,
-                      items: mapPaginas['NumPagina']!
-                          .toList()
-                          .map((String valor) => buildMenuItem(valor, null))
-                          .toList(),
-                      onChanged: (value) {
-                        setState(() {
-                          pagina = value;
-                          int index = mapPaginas['NumPagina']!
-                              .indexOf(pagina.toString().split(' ')[0]);
-                          String conteudoPagina =
-                              mapPaginas['ConteudoPagina']![index];
-                          conteudoPaginaController.text = conteudoPagina;
-                        });
-                      }),
-                ),
-              ),
-            ),
-            const SizedBox(
-              height: 15,
-            ),
-            TextField(
-              controller: conteudoPaginaController,
-              scrollController: _scrollController,
-              autofocus: true,
-              maxLines: 6,
-              keyboardType: TextInputType.multiline,
-              autocorrect: true,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                isDense: true,
-              ),
-            ),
-            const SizedBox(
-              height: 15,
-            ),
-            ElevatedButton(
-                onPressed: () async {
-                  int index = mapPaginas['NumPagina']!
-                      .indexOf(pagina.toString().split(' ')[0]);
-                  int idPagina = int.parse(mapPaginas['IdPagina']![index]);
-                  print(idPagina);
+  reseta() {
+    valueParte = null;
+    valueUnidade = null;
+    valueCapitulo = null;
+    unidadeAtual = null;
+    capituloAtual = null;
+    parteAtual = null;
+    imagemAtual = null;
+    valueImagem = null;
+    imagem = null;
+  }
 
-                  await SupaDB.instance.clienteSupaBase.from('Pagina').update({
-                    'Conteudo': conteudoPaginaController.text
-                  }).match({'IdPagina': idPagina});
+  Widget cadastrarPagina() {
+    return ListView(
+      shrinkWrap: true,
+      children: [
+        Builder(builder: (context) {
+          if (paginas != null) {
+            return DropdownButton(
+                value: paginaAtual,
+                items: paginas!.keys
+                    .map((e) => buildMenuItem(e.toString(), null))
+                    .toList(),
+                onChanged: (value) async {
+                  reseta();
+                  int idParte;
+                  int idUnidade;
+                  int idCapitulo;
 
-                  mensagem.mensagem(context, 'Atualização feita com sucesso',
-                      'A página foi atulizada com sucesso', null);
-                },
-                child: const Text('Atualizar Página'))
-          ],
-        )),
-      ),
+                  setState(() {
+                    paginaAtual = value;
+                  });
+                  Map conteudos;
+                  Map unidadeMap;
+                  Map capituloMap;
+                  Map paginaEscolhida = paginas![int.parse(paginaAtual!)];
+
+                  if (paginaEscolhida['Capitulo'] != null) {
+                    idParte = paginaEscolhida['Parte'];
+                    idUnidade = paginaEscolhida['Unidade'];
+                    idCapitulo = paginaEscolhida['Capitulo'];
+
+                    conteudos = await ProxyIndices()
+                        .getInterface()
+                        .find(idParte, false);
+                    unidadeMap = conteudos['Unidade'][idUnidade];
+                    capituloMap = unidadeMap['Capitulo'][idCapitulo];
+
+                    setState(() {
+                      this.value = 'Capitulo';
+
+                      valueParte = 'PARTE ${'I' * idParte}';
+                      parteAtual = idParte;
+
+                      valueUnidade =
+                          '${unidadeMap['NumUnidade']}  ${unidadeMap['NomeUnidade']}';
+                      unidadeAtual = unidadeMap['NumUnidade'];
+
+                      valueCapitulo =
+                          '${capituloMap['NumCapitulo']}  ${capituloMap['NomeCapitulo']}';
+                      capituloAtual = capituloMap['NumCapitulo'];
+                    });
+                  } else if (paginaEscolhida['Unidade'] != null) {
+                    idParte = paginaEscolhida['Parte'];
+                    idUnidade = paginaEscolhida['Unidade'];
+                    conteudos = await ProxyIndices()
+                        .getInterface()
+                        .find(idParte, false);
+                    unidadeMap = conteudos['Unidade'][idUnidade];
+
+                    setState(() {
+                      this.value = 'Unidade';
+                      print(value);
+                      valueParte = 'PARTE ${'I' * idParte}';
+                      parteAtual = idParte;
+
+                      valueUnidade =
+                          '${unidadeMap['NumUnidade']}  ${unidadeMap['NomeUnidade']}';
+                      unidadeAtual = unidadeMap['NumUnidade'];
+                    });
+                  } else if (paginaEscolhida['Parte'] != null) {
+                    idParte = paginaEscolhida['Parte'];
+                    setState(() {
+                      this.value = 'Parte';
+
+                      valueParte = 'PARTE ${'I' * idParte}';
+                      parteAtual = idParte;
+                    });
+                  } else if (paginaEscolhida['IdImagem'] != null) {
+                    conteudos = await ProxyImagens()
+                        .getInterface()
+                        .find(paginaEscolhida['IdImagem'], false);
+                    print(conteudos);
+                    setState(() {
+                      this.value = 'Imagem';
+                      valueImagem =
+                          '${paginaEscolhida['IdImagem']}  ${conteudos['NomeImagem']}';
+                      imagemAtual = paginaEscolhida['IdImagem'];
+                    });
+                    imagens = await SupaDB.instance.clienteSupaBase
+                        .from('Imagem')
+                        .select('IdImagem, NomeImagem');
+                    setState(() {
+                      imagem = null;
+                    });
+                    await Future.delayed(Duration(milliseconds: 1));
+                    setState(() {
+                      imagem = BuscarImagem(
+                        id: paginaEscolhida['IdImagem'],
+                      );
+                    });
+
+                    setState(() {});
+                  }
+                });
+          }
+          return SizedBox();
+        }),
+        const SizedBox(height: 10),
+        Builder(builder: (context) {
+          if (paginaAtual != null) {
+            return DropdownButton(
+                value: value,
+                items: itemsParte.map((e) => buildMenuItem(e, null)).toList(),
+                onChanged: (value) async {
+                  setState(() {
+                    this.value = value;
+                    reseta();
+                  });
+                  if (value == 'Imagem' && imagens.isEmpty) {
+                    imagens = await SupaDB.instance.clienteSupaBase
+                        .from('Imagem')
+                        .select('IdImagem, NomeImagem');
+                    print(imagens);
+                  }
+                  setState(() {});
+                });
+          }
+          return SizedBox();
+        }),
+        const SizedBox(height: 10),
+        Builder(builder: (context) {
+          if (value != 'Imagem' && value != null) {
+            return DropdownButton(
+                value: valueParte,
+                items: partes.values
+                    .toList()
+                    .map(
+                        (e) => buildMenuItem('PARTE ${'I' * e['Parte']}', null))
+                    .toList(),
+                onChanged: (value) {
+                  setState(() {
+                    valueParte = value;
+                    parteAtual = 'I'.allMatches(valueParte!).length;
+                    valueUnidade = null;
+                    valueCapitulo = null;
+                    unidadeAtual = null;
+                    capituloAtual = null;
+                  });
+                });
+          }
+
+          return const SizedBox();
+        }),
+        const SizedBox(height: 10),
+        Builder(builder: (context) {
+          if (parteAtual != null &&
+              (value == 'Unidade' || value == 'Capitulo')) {
+            print('Teste');
+            return DropdownButton(
+                value: valueUnidade,
+                items: partes[parteAtual]['Unidade']
+                    .values
+                    .toList()
+                    .map<DropdownMenuItem<String>>((e) {
+                  return buildMenuItem(
+                      '${e['NumUnidade']}  ${e['NomeUnidade']}', null);
+                }).toList(),
+                onChanged: (value) {
+                  setState(() {
+                    valueUnidade = value;
+                    unidadeAtual = int.parse(value!.split(" ")[0]);
+                    print(unidadeAtual);
+                    valueCapitulo = null;
+                    capituloAtual = null;
+                  });
+                });
+          }
+
+          if (value == 'Imagem' && imagens.isNotEmpty) {
+            return DropdownButton(
+                value: valueImagem,
+                items: imagens.map<DropdownMenuItem<String>>((e) {
+                  return buildMenuItem(
+                      '${e['IdImagem']}  ${e['NomeImagem']}', null);
+                }).toList(),
+                onChanged: (value) async {
+                  setState(() {
+                    imagem = null;
+                  });
+                  await Future.delayed(const Duration(milliseconds: 1));
+                  setState(() {
+                    valueImagem = value;
+                    imagemAtual = int.parse(valueImagem!.split(" ")[0]);
+                    imagem = BuscarImagem(
+                      id: imagemAtual!,
+                    );
+                  });
+                });
+          }
+
+          return const SizedBox();
+        }),
+        Builder(builder: (context) {
+          if (unidadeAtual != null && value == 'Capitulo') {
+            return DropdownButton(
+                value: valueCapitulo,
+                items: partes[parteAtual]['Unidade'][unidadeAtual]['Capitulo']
+                    .values
+                    .toList()
+                    .map<DropdownMenuItem<String>>((e) {
+                  return buildMenuItem(
+                      '${e['NumCapitulo']}  ${e['NomeCapitulo']}', null);
+                }).toList(),
+                onChanged: (value) {
+                  setState(() {
+                    valueCapitulo = value;
+                    capituloAtual = int.parse(value!.split(" ")[0]);
+                    print(unidadeAtual);
+                  });
+                });
+          }
+
+          if (imagem != null) {
+            return BuscarImagem(id: imagemAtual!);
+          }
+
+          return const SizedBox();
+        }),
+        const SizedBox(
+          height: 20,
+        ),
+        Align(
+          alignment: Alignment.bottomCenter,
+          child: ElevatedButton(
+              onPressed: () async {
+                //SupaDB.instance.insert('Pagina_Partes', insert)
+
+                if (paginaAtual != null) {
+                  if (value != null) {
+                    await mensagemUpdate(context, int.parse(paginaAtual!));
+                    print(atualizar);
+                    if (atualizar) {
+                      try {
+                        await fazUpdate(int.parse(paginaAtual!));
+                        mensagem.mensagem(
+                            context,
+                            'Atualizaçao feita com sucesso',
+                            'Página atualizada com sucesso',
+                            null);
+                      } on PostgrestException catch (e) {
+                        print(e);
+                      }
+                    }
+                    setState(() {
+                      atualizar = false;
+                    });
+                    paginas = await ProxyPagina().getInstance().findFull(true);
+
+                    setState(() {});
+                  }
+                }
+              },
+              child: const Text('Atualizar Página')),
+        )
+      ],
     );
+  }
+
+  fazUpdate(int pagina) async {
+    if (value == 'Parte' && parteAtual != null) {
+      await SupaDB.instance.clienteSupaBase.from('Pagina').update({
+        'Parte': parteAtual,
+        'Unidade': null,
+        'Capitulo': null,
+        'IdImagem': null
+      }).match({'IdPagina': pagina});
+    } else if (value == 'Unidade' && unidadeAtual != null) {
+      await SupaDB.instance.clienteSupaBase.from('Pagina').update({
+        'Parte': parteAtual,
+        'Unidade': unidadeAtual,
+        'Capitulo': null,
+        'IdImagem': null,
+      }).match({'IdPagina': pagina});
+    } else if (value == 'Capitulo' && capituloAtual != null) {
+      await SupaDB.instance.clienteSupaBase.from('Pagina').update({
+        'Parte': parteAtual,
+        'Unidade': unidadeAtual,
+        'Capitulo': capituloAtual,
+        'IdImagem': null
+      }).match({'IdPagina': pagina});
+    } else if (value == 'Imagem' && imagemAtual != null) {
+      await SupaDB.instance.clienteSupaBase.from('Pagina').update({
+        'Parte': null,
+        'Unidade': null,
+        'Capitulo': null,
+        'IdImagem': imagemAtual
+      }).match({'IdPagina': pagina});
+    }
   }
 
   DropdownMenuItem<String> buildMenuItem(String item, var map) =>
@@ -360,8 +385,42 @@ class _AtualizaPaginaState extends State<AtualizaPagina> {
                 )),
           ));
 
+  Widget alert(BuildContext context, int pagina) {
+    return AlertDialog(
+      title: Text('Atualizar a página $pagina?'),
+      content: const Text('Deseja atualizar está página?'),
+      actions: [
+        TextButton(
+            onPressed: () async {
+              setState(() {
+                atualizar = true;
+              });
+              Navigator.of(context).pop();
+            },
+            child: Text('Atualizar')),
+        TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: const Text("Cancelar"))
+      ],
+    );
+  }
+
+  Future<dynamic> mensagemUpdate(BuildContext context, int pagina) async {
+    return await showDialog(
+      context: context,
+      builder: (_) => alert(context, pagina),
+      barrierDismissible: true,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(appBar: AppBar(), body: body());
+    return Scaffold(
+        appBar: AppBar(
+          title: const Text('Atualzar Página'),
+        ),
+        body: body());
   }
 }

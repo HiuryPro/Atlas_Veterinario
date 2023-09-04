@@ -8,7 +8,7 @@ class PaginaP implements ProxyInterface {
   buscadoBanco(int id) async {
     List resultados = await SupaDB.instance.select(
         'Pagina',
-        'IdPagina, Pagina_Partes(*), Pagina_Imagem(*)',
+        'IdPagina, Parte, Unidade, Capitulo,IdImagem',
         {'IdPagina': id},
         'IdPagina',
         true);
@@ -20,7 +20,7 @@ class PaginaP implements ProxyInterface {
 
   buscadoBancoFull() async {
     List resultados = await SupaDB.instance.select('Pagina',
-        'IdPagina, Pagina_Partes(*), Pagina_Imagem(*)', {}, 'IdPagina', true);
+        'IdPagina, Parte, Unidade, Capitulo,IdImagem', {}, 'IdPagina', true);
 
     for (Map resultado in resultados) {
       paginas[resultado['IdPagina']] = resultado;
@@ -29,7 +29,7 @@ class PaginaP implements ProxyInterface {
   }
 
   @override
-  find(int id) async {
+  find(int id, bool atualizar) async {
     print('Dados da Pagina buscada');
     if (paginas.containsKey(id)) {
       return paginas[id];
@@ -39,7 +39,7 @@ class PaginaP implements ProxyInterface {
   }
 
   @override
-  findFull() {
+  Future<Map> findFull(bool atualizar) async {
     print('Dados da Pagina buscada');
     return paginas;
   }

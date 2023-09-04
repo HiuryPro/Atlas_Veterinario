@@ -20,24 +20,25 @@ class ProxyImagens implements ProxyInterface {
   }
 
   @override
-  find(int id) async {
-    if (imagem.imagens[id] == null) {
+  find(int id, bool atualizar) async {
+    if (imagem.imagens[id] == null || atualizar) {
       print('Busca do banco');
       await imagem.buscadoBanco(id);
     } else {
       print('Busca da memoria');
     }
 
-    return imagem.find(id);
+    return imagem.find(id, atualizar);
   }
 
-  findFull() async {
-    if (imagem.imagens.isEmpty) {
+  @override
+  findFull(bool atualizar) async {
+    if (imagem.imagens.isEmpty || atualizar) {
       print('Busca do banco');
       await imagem.buscadoBancoFull();
     } else {
       print('Busca da memoria');
     }
-    return imagem.findFull();
+    return imagem.findFull(atualizar);
   }
 }

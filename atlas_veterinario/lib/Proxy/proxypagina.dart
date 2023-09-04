@@ -19,25 +19,25 @@ class ProxyPagina implements ProxyInterface {
   }
 
   @override
-  find(int id) async {
-    if (pagina.paginas[id] == null) {
+  find(int id, bool atualizar) async {
+    if (pagina.paginas[id] == null || atualizar) {
       print('Busca do banco');
       await pagina.buscadoBanco(id);
     } else {
       print('Busca da memoria');
     }
 
-    return pagina.find(id);
+    return pagina.find(id, atualizar);
   }
 
   @override
-  findFull() async {
-    if (pagina.paginas.isEmpty) {
+  findFull(bool atualizar) async {
+    if (pagina.paginas.isEmpty || atualizar) {
       print('Busca do banco');
       await pagina.buscadoBancoFull();
     } else {
       print('Busca da memoria');
     }
-    return pagina.findFull();
+    return pagina.findFull(atualizar);
   }
 }

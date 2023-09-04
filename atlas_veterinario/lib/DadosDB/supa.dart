@@ -20,6 +20,11 @@ class SupaDB {
   }
 
   insert(String tabela, Map insert) async {
-    return await clienteSupaBase.from(tabela).insert(insert).select();
+    try {
+      return await clienteSupaBase.from(tabela).insert(insert).select();
+    } on PostgrestException catch (e) {
+      print(e);
+      return null;
+    }
   }
 }

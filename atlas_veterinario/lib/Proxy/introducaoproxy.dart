@@ -19,24 +19,25 @@ class ProxyIntroducao implements ProxyInterface {
   }
 
   @override
-  find(int id) async {
-    if (introducao.introducao[id] == null) {
+  find(int id, bool atualizar) async {
+    if (introducao.introducao[id] == null || atualizar) {
       print('Busca do banco');
       await introducao.buscadoBanco(id);
     } else {
       print('Busca da memoria');
     }
 
-    return introducao.find(id);
+    return introducao.find(id, atualizar);
   }
 
-  findFull() async {
-    if (introducao.introducao.isEmpty) {
+  @override
+  Future<Map> findFull(bool atualizar) async {
+    if (introducao.introducao.isEmpty || atualizar) {
       print('Busca do banco');
       await introducao.buscadoBancoFull();
     } else {
       print('Busca da memoria');
     }
-    return introducao.findFull();
+    return introducao.findFull(atualizar);
   }
 }

@@ -26,13 +26,13 @@ class IntroducaoP implements ProxyInterface {
   }
 
   @override
-  find(int id) async {
+  find(int id, bool atualizar) async {
     print('Dados da introducao buscada');
     return introducao[id];
   }
 
   @override
-  findFull() {
+  Future<Map> findFull(bool atualizar) async {
     print('Dados da introducao buscada');
     return introducao;
   }

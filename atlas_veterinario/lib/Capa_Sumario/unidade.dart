@@ -41,7 +41,7 @@ class _UnidadeState extends State<Unidade> {
   }
 
   testeW() async {
-    Map resultados = await proxyUnidade.find(widget.parte);
+    Map resultados = await proxyUnidade.find(widget.parte, false);
     Map unidade = resultados['Unidade'][widget.unidade];
 
     testes = [

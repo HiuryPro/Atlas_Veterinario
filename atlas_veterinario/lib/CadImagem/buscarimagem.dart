@@ -82,7 +82,7 @@ class BuscarImagemPainterState extends State<BuscarImagemPainter> {
   }
 
   void initBackground(int id, int rotation) async {
-    Map resultados = await imagemProxy.find(id);
+    Map resultados = await imagemProxy.find(id, false);
     Uint8List logoBase64 = base64.decode(resultados['Imagem']);
 
     final image = await MemoryImage(logoBase64).image;

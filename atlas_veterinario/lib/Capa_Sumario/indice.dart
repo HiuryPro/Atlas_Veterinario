@@ -52,7 +52,7 @@ class _IndicesState extends State<Indices> {
   }
 
   teste() async {
-    Map resultados = await proxyIndices.findFull();
+    Map resultados = await proxyIndices.findFull(false);
     testes = [
       const AutoSizeText(
         'ÍNDICE',

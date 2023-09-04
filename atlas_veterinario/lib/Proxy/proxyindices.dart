@@ -19,24 +19,24 @@ class ProxyIndices implements ProxyInterface {
   }
 
   @override
-  find(int id) async {
-    if (indice.indices[id] == null) {
+  find(int id, bool atualizar) async {
+    if (indice.indices[id] == null || atualizar) {
       print('Busca do banco');
       await indice.buscadoBanco(id);
     } else {
       print('Busca da memoria');
     }
 
-    return indice.find(id);
+    return indice.find(id, atualizar);
   }
 
-  findFull() async {
-    if (indice.indices.isEmpty) {
+  findFull(bool atualizar) async {
+    if (indice.indices.isEmpty || atualizar) {
       print('Busca do banco');
       await indice.buscadoBancoFull();
     } else {
       print('Busca da memoria');
     }
-    return indice.findFull();
+    return indice.findFull(atualizar);
   }
 }

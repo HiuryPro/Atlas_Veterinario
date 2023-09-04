@@ -1,6 +1,6 @@
 // ignore_for_file: file_names
 
 class ProxyInterface {
-  findFull() {}
-  find(int id) {}
+  findFull(bool atualizar) {}
+  find(int id, bool atualizar) {}
 }

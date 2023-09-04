@@ -5,6 +5,7 @@ import 'package:atlas_veterinario/Proxy/proxyindices.dart';
 import 'package:atlas_veterinario/Utils/mensagens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:supabase/supabase.dart';
 
 import 'CadImagem/burcarsoimagem.dart';
 
@@ -30,6 +31,7 @@ class _CadPaginaState extends State<CadPagina> {
   int? unidadeAtual;
   int? capituloAtual;
   int? imagemAtual;
+  BuscarImagem? imagem;
 
   List imagens = [];
 
@@ -37,7 +39,7 @@ class _CadPaginaState extends State<CadPagina> {
   void initState() {
     super.initState();
     Future.delayed(Duration.zero, () async {
-      partes = await ProxyIndices().getInterface().findFull();
+      partes = await ProxyIndices().getInterface().findFull(false);
       print(partes.values.toList());
     });
     setState(() {});
@@ -60,6 +62,7 @@ class _CadPaginaState extends State<CadPagina> {
     parteAtual = null;
     imagemAtual = null;
     valueImagem = null;
+    imagem = null;
   }
 
   Widget cadastrarPagina() {
@@ -114,7 +117,7 @@ class _CadPaginaState extends State<CadPagina> {
         }),
         const SizedBox(height: 10),
         Builder(builder: (context) {
-          if (parteAtual != null) {
+          if (parteAtual != null && value == 'Unidade') {
             print('Teste');
             return DropdownButton(
                 value: valueUnidade,
@@ -143,10 +146,17 @@ class _CadPaginaState extends State<CadPagina> {
                   return buildMenuItem(
                       '${e['IdImagem']}  ${e['NomeImagem']}', null);
                 }).toList(),
-                onChanged: (value) {
+                onChanged: (value) async {
+                  setState(() {
+                    imagem = null;
+                  });
+                  await Future.delayed(const Duration(milliseconds: 1));
                   setState(() {
                     valueImagem = value;
-                    imagemAtual = null;
+                    imagemAtual = int.parse(valueImagem!.split(" ")[0]);
+                    imagem = BuscarImagem(
+                      id: imagemAtual!,
+                    );
                   });
                 });
           }
@@ -154,7 +164,7 @@ class _CadPaginaState extends State<CadPagina> {
           return const SizedBox();
         }),
         Builder(builder: (context) {
-          if (unidadeAtual != null) {
+          if (unidadeAtual != null && value == 'Capitulo') {
             return DropdownButton(
                 value: valueCapitulo,
                 items: partes[parteAtual]['Unidade'][unidadeAtual]['Capitulo']
@@ -173,16 +183,13 @@ class _CadPaginaState extends State<CadPagina> {
                 });
           }
 
-          if (imagemAtual == null && valueImagem != null) {
-            imagemAtual = int.parse(valueImagem!.split(" ")[0]);
-            return BuscarImagem(
-              id: imagemAtual!,
-            );
+          if (imagem != null) {
+            return BuscarImagem(id: imagemAtual!);
           }
 
           return const SizedBox();
         }),
-        SizedBox(
+        const SizedBox(
           height: 20,
         ),
         Align(
@@ -195,26 +202,12 @@ class _CadPaginaState extends State<CadPagina> {
                   if (value != null) {
                     int pagina = int.parse(controllerPagina.text);
                     try {
-                      await SupaDB.instance
-                          .insert('Pagina', {'IdPagina': pagina});
-
-                      if (value == 'Parte' && parteAtual != null) {
-                        cadPaginaParte(parteAtual!, pagina);
-                      }
-                      if (value == 'Unidade' && unidadeAtual != null) {
-                        cadPaginaUnidade(parteAtual!, unidadeAtual!, pagina);
-                      }
-                      if (value == 'Capitulo' && capituloAtual != null) {
-                        cadPaginaCapitulo(
-                            parteAtual!, unidadeAtual!, capituloAtual!, pagina);
-                      }
-                    } catch (e) {
+                      await fazInsert(pagina);
+                      mensagem.mensagem(context, 'Cadastro feito com sucesso',
+                          'Página cadastrada com sucesso', null);
+                    } on PostgrestException catch (e) {
                       print(e);
-                      mensagem.mensagem(
-                          context,
-                          'Erro ao cadastrar pagina $pagina',
-                          'Essa página já está cadastrada',
-                          null);
+                      mensagemInsert(context, pagina);
                     }
                   }
                 }
@@ -223,6 +216,28 @@ class _CadPaginaState extends State<CadPagina> {
         )
       ],
     );
+  }
+
+  fazInsert(int pagina) async {
+    if (value == 'Parte' && parteAtual != null) {
+      await SupaDB.instance.clienteSupaBase
+          .from('Pagina')
+          .insert({'IdPagina': pagina, 'Parte': parteAtual});
+    } else if (value == 'Unidade' && unidadeAtual != null) {
+      await SupaDB.instance.clienteSupaBase.from('Pagina').insert(
+          {'IdPagina': pagina, 'Parte': parteAtual, 'Unidade': unidadeAtual});
+    } else if (value == 'Capitulo' && capituloAtual != null) {
+      await SupaDB.instance.clienteSupaBase.from('Pagina').insert({
+        'IdPagina': pagina,
+        'Parte': parteAtual,
+        'Unidade': unidadeAtual,
+        'Capitulo': capituloAtual
+      });
+    } else if (value == 'Imagem' && imagemAtual != null) {
+      await SupaDB.instance.clienteSupaBase
+          .from('Pagina')
+          .insert({"IdPagina": pagina, 'IdImagem': imagemAtual});
+    }
   }
 
   DropdownMenuItem<String> buildMenuItem(String item, var map) =>
@@ -236,30 +251,43 @@ class _CadPaginaState extends State<CadPagina> {
                 )),
           ));
 
-  cadPaginaParte(int parteAtual, int pagina) async {
-    await SupaDB.instance
-        .insert('Pagina_Partes', {'IdPagina': pagina, 'IdParte': parteAtual});
-    mensagem.mensagem(context, 'Cadastro feito com sucesso',
-        'Página cadastrada com sucesso', null);
+  Widget alert(BuildContext context, int pagina) {
+    return AlertDialog(
+      title: const Text('Pagina já existe'),
+      content: Text(
+          'Deseja inserir ela no lugar da página $pagina e mudar o número das posteriores?'),
+      actions: [
+        TextButton(
+            onPressed: () async {
+              int maxPagina =
+                  await SupaDB.instance.clienteSupaBase.rpc('max_value_pagina');
+              while (maxPagina >= pagina) {
+                print(maxPagina);
+                await SupaDB.instance.clienteSupaBase.from('Pagina').update(
+                    {'IdPagina': maxPagina + 1}).match({'IdPagina': maxPagina});
+                print(maxPagina + 1);
+                maxPagina--;
+              }
+              await fazInsert(pagina);
+
+              Navigator.of(context).pop();
+            },
+            child: Text('Inserir')),
+        TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: const Text("Cancelar"))
+      ],
+    );
   }
 
-  cadPaginaUnidade(int parteAtual, int unidadeAtual, int pagina) async {
-    await SupaDB.instance.insert('Pagina_Partes',
-        {'IdPagina': pagina, 'IdParte': parteAtual, 'IdUnidade': unidadeAtual});
-    mensagem.mensagem(context, 'Cadastro feito com sucesso',
-        'Página cadastrada com sucesso', null);
-  }
-
-  cadPaginaCapitulo(
-      int parteAtual, int unidadeAtual, int capituloAtual, int pagina) async {
-    await SupaDB.instance.insert('Pagina_Partes', {
-      'IdPagina': pagina,
-      'IdParte': parteAtual,
-      'IdUnidade': unidadeAtual,
-      'IdCapitulo': capituloAtual
-    });
-    mensagem.mensagem(context, 'Cadastro feito com sucesso',
-        'Página cadastrada com sucesso', null);
+  Future<dynamic> mensagemInsert(BuildContext context, int pagina) async {
+    return await showDialog(
+      context: context,
+      builder: (_) => alert(context, pagina),
+      barrierDismissible: true,
+    );
   }
 
   @override
