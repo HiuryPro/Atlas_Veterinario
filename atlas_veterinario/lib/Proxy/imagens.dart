@@ -3,15 +3,17 @@
 import 'package:atlas_veterinario/DadosDB/supa.dart';
 import 'package:atlas_veterinario/Proxy/proxyinteface.dart';
 
-class Imagem implements ProxyInteface {
+class Imagem implements ProxyInterface {
   // a key representa o IdImagem e o value o nome e o bytecode
   Map imagens = {};
 
   buscadoBanco(int id) async {
     List resultados = await SupaDB.instance.select(
         'Imagem',
-        'IdImagem, Imagem ,NomeImagem, Width, Height, Imagem_Texto(*), Imagem_Seta(*), Imagem_Contorno(*)',
-        {'IdImagem': id});
+        'IdImagem, Imagem ,NomeImagem, Width, Height, RotationImage,Imagem_Texto(*)',
+        {'IdImagem': id},
+        'IdImagem',
+        true);
 
     imagens[resultados[0]['IdImagem']] = resultados[0];
     imagens[id]!.remove('IdImagem');
@@ -19,19 +21,35 @@ class Imagem implements ProxyInteface {
     for (Map texto in imagens[id]!['Imagem_Texto']) {
       texto.remove('IdImagem');
     }
+  }
 
-    for (Map seta in imagens[id]!['Imagem_Seta']) {
-      seta.remove('IdImagem');
-    }
+  buscadoBancoFull() async {
+    List resultados = await SupaDB.instance.select(
+        'Imagem',
+        'IdImagem, Imagem ,NomeImagem, Width, Height,RotationImage,Imagem_Texto(*)',
+        {},
+        'IdImagem',
+        true);
 
-    for (Map contorno in imagens[id]!['Imagem_Contorno']) {
-      contorno.remove('IdImagem');
+    for (Map resultado in resultados) {
+      imagens[resultado['IdImagem']] = resultado;
+      imagens[resultado['IdImagem']]!.remove('IdImagem');
+
+      for (Map texto in imagens[resultado['IdImagem']]!['Imagem_Texto']) {
+        texto.remove('IdImagem');
+      }
     }
   }
 
   @override
-  find(int id) async {
+  find(int id, bool atualizar) async {
     print('Dados da imagem buscada');
     return imagens[id];
+  }
+
+  @override
+  findFull(bool atualizar) {
+    print('Dados da imagem buscada');
+    return imagens;
   }
 }

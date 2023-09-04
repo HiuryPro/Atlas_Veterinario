@@ -11,6 +11,15 @@ class FutureImageVet extends StatefulWidget {
 }
 
 class _FutureImageVetState extends State<FutureImageVet> {
+  TransformationController controller = TransformationController();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<Uint8List?>(
@@ -25,8 +34,9 @@ class _FutureImageVetState extends State<FutureImageVet> {
         if (!snapshot.hasData || snapshot.data == null) {
           return const SizedBox();
         }
-        return InteractiveViewer(
-            maxScale: 10, child: Image.memory(snapshot.data!));
+        return Center(
+          child: Image.memory(snapshot.data!, fit: BoxFit.fill),
+        );
       },
     );
   }

@@ -10,11 +10,21 @@ class SupaDB {
         dotenv.env['SUPABASE_URL']!, dotenv.env['SUPABASE_KEY']!);
   }
 
-  select(String tabela, String select, Map where) async {
-    return await clienteSupaBase.from(tabela).select(select).match(where);
+  select(
+      String tabela, String select, Map where, String order, bool asc) async {
+    return await clienteSupaBase
+        .from(tabela)
+        .select(select)
+        .match(where)
+        .order(order, ascending: asc);
   }
 
   insert(String tabela, Map insert) async {
-    return await clienteSupaBase.from(tabela).insert(insert).select();
+    try {
+      return await clienteSupaBase.from(tabela).insert(insert).select();
+    } on PostgrestException catch (e) {
+      print(e);
+      return null;
+    }
   }
 }
