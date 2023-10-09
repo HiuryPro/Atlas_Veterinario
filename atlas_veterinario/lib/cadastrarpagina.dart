@@ -295,6 +295,11 @@ class _CadPaginaState extends State<CadPagina> {
     return Scaffold(
         appBar: AppBar(
           title: const Text('Cadastrar Página'),
+          leading: IconButton(
+              onPressed: () {
+                Navigator.of(context).pushNamed('/home');
+              },
+              icon: const Icon(Icons.arrow_back)),
         ),
         body: body());
   }

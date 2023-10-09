@@ -1,4 +1,5 @@
 import 'package:atlas_veterinario/DadosDB/supa.dart';
+import 'package:atlas_veterinario/Fala/textoprafala.dart';
 import 'package:atlas_veterinario/Utils/app_controller.dart';
 import 'package:atlas_veterinario/app_widget.dart';
 import 'package:flutter/material.dart';
@@ -18,6 +19,7 @@ void main() async {
 
     AppController.instance.totalPaginas = paginas[0]['IdPagina'];
     runApp(const AppWidget());
+    await Fala.instance.initTts();
   } catch (e) {
     print(e);
   }

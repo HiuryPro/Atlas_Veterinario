@@ -14,6 +14,39 @@ class _TesteGeralState extends State<TesteGeral> {
       width: MediaQuery.of(context).size.width,
       height: MediaQuery.of(context).size.height,
       child: Column(children: [
+        const Text(
+          '1 2',
+          style: TextStyle(
+            fontSize: 60,
+            shadows: [
+              Shadow(
+                  color: Colors.yellow, // Border color
+                  offset: Offset(-2, -2),
+                  blurRadius: 2.5 // Adjust this for border width
+                  ),
+              Shadow(
+                  color: Colors.yellow, // Border color
+                  offset: Offset(2, -2),
+                  blurRadius: 2.5 // Adjust this for border width
+                  ),
+              Shadow(
+                  color: Colors.yellow, // Border color
+                  offset: Offset(-2, 2),
+                  blurRadius: 2.5 // Adjust this for border width
+                  ),
+              Shadow(
+                  color: Colors.yellow, // Border color
+                  offset: Offset(2, 2),
+                  blurRadius: 2.5 // Adjust this for border width
+                  ),
+            ],
+          ),
+        ),
+        ElevatedButton(
+            onPressed: () {
+              print(Colors.yellow.value);
+            },
+            child: Text('Teste')),
         ElevatedButton(
             onPressed: () async {
               int maxPagina =

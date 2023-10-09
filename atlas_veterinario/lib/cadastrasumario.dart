@@ -22,7 +22,7 @@ class _CadastraSumarioState extends State<CadastraSumario> {
   TextEditingController nomeCapituloController = TextEditingController();
   Mensagem mensagem = Mensagem();
 
-  Map<String, List<String>> mapPartes = {'IdParte': [], 'Parte': []};
+  Map<String, List<String>> mapPartes = {'Parte': []};
   Map<String, List<String>> mapUnidades = {
     'IdUnidade': [],
     'NumUnidade': [],
@@ -34,19 +34,17 @@ class _CadastraSumarioState extends State<CadastraSumario> {
 
   Future<void> partesSelect() async {
     List<String> idParte = [];
-    List<String> parteNum = [];
     var dados = await SupaDB.instance.clienteSupaBase
         .from('Parte')
-        .select('IdParte, Parte')
-        .order('IdParte', ascending: true);
+        .select('Parte')
+        .order('Parte', ascending: true);
     ;
     print(dados);
     for (var parte in dados) {
-      idParte.add(parte['IdParte'].toString());
-      parteNum.add(parte['Parte'].toString());
+      idParte.add(parte['Parte'].toString());
     }
     setState(() {
-      mapPartes.addAll({'IdParte': idParte, 'Parte': parteNum});
+      mapPartes.addAll({'Parte': idParte});
     });
   }
 
@@ -57,7 +55,7 @@ class _CadastraSumarioState extends State<CadastraSumario> {
     var dados = await SupaDB.instance.clienteSupaBase
         .from('Unidade')
         .select('IdUnidade, NumUnidade, NomeUnidade')
-        .match({'IdParte': parte});
+        .match({'Parte': parte});
     print(dados);
     for (var parte in dados) {
       idUnidade.add(parte['IdUnidade'].toString());
@@ -189,19 +187,19 @@ class _CadastraSumarioState extends State<CadastraSumario> {
         ElevatedButton(
             onPressed: () async {
               int index = mapPartes['Parte']!.indexOf(parteUnidade.toString());
-              int idParte = int.parse(mapPartes['IdParte']![index]);
+              int idParte = int.parse(mapPartes['Parte']![index]);
 
               List resultado = await SupaDB.instance.clienteSupaBase
                   .from('Unidade')
                   .select("*")
                   .match({
-                'IdParte': idParte,
+                'Parte': idParte,
                 'NumUnidade': int.parse(numUnidadeController.text)
               });
               if (resultado.isEmpty) {
-                print(mapPartes['IdParte']![index]);
+                print(mapPartes['Parte']![index]);
                 await SupaDB.instance.clienteSupaBase.from('Unidade').insert({
-                  'IdParte': idParte,
+                  'Parte': idParte,
                   "NumUnidade": int.parse(numUnidadeController.text),
                   'NomeUnidade': nomeUnidadeController.text
                 });
@@ -244,7 +242,7 @@ class _CadastraSumarioState extends State<CadastraSumario> {
                   onChanged: (value) async {
                     print(mapPartes);
                     int index = mapPartes['Parte']!.indexOf(value!);
-                    int idParte = int.parse(mapPartes['IdParte']![index]);
+                    int idParte = int.parse(mapPartes['Parte']![index]);
                     print(idParte);
                     setState(() {
                       unidadeCapitulo = null;
@@ -365,6 +363,11 @@ class _CadastraSumarioState extends State<CadastraSumario> {
         child: Scaffold(
             appBar: AppBar(
               title: const Text('Cadastrar Sumário'),
+              leading: IconButton(
+                  onPressed: () {
+                    Navigator.of(context).pushNamed('/home');
+                  },
+                  icon: const Icon(Icons.arrow_back)),
               bottom: const TabBar(tabs: [
                 Text(
                   'Cadastrar Parte',

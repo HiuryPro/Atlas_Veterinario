@@ -85,8 +85,12 @@ class _BuscarImagemState extends State<BuscarImagem> {
       controller.background = image.backgroundDrawable;
     });
 
-    width = resultados['Width'];
-    height = resultados['Height'];
+    width = resultados['Width'].runtimeType == int
+        ? resultados['Width'].toDouble()
+        : resultados['Width'];
+    height = resultados['Height'].runtimeType == int
+        ? resultados['Height'].toDouble()
+        : resultados['Height'];
     rotationImagem = resultados['RotationImage'] + rotation;
 
     setState(() {
@@ -107,6 +111,8 @@ class _BuscarImagemState extends State<BuscarImagem> {
       coresDestaque.add(Color(imagemTexto['CorDestaque']));
 
       String texto = imagemTexto['Numero'];
+
+      Color corBorda = Color(imagemTexto['CorBorda']);
 
       double zoom = imagemTexto['Zoom'].runtimeType == int
           ? imagemTexto['Zoom'].toDouble()
@@ -132,6 +138,28 @@ class _BuscarImagemState extends State<BuscarImagem> {
             style: TextStyle(
               fontSize: fontSize,
               color: Colors.black,
+              shadows: [
+                Shadow(
+                    color: corBorda, // Border color
+                    offset: Offset(-2, -2),
+                    blurRadius: 2.5 // Adjust this for border width
+                    ),
+                Shadow(
+                    color: corBorda, // Border color
+                    offset: Offset(2, -2),
+                    blurRadius: 2.5 // Adjust this for border width
+                    ),
+                Shadow(
+                    color: corBorda, // Border color
+                    offset: Offset(-2, 2),
+                    blurRadius: 2.5 // Adjust this for border width
+                    ),
+                Shadow(
+                    color: corBorda, // Border color
+                    offset: Offset(2, 2),
+                    blurRadius: 2.5 // Adjust this for border width
+                    ),
+              ],
             ),
             locked: true)
       ]);
@@ -140,8 +168,11 @@ class _BuscarImagemState extends State<BuscarImagem> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureImageVet(
-      imageFuture: imageFuture,
+    return RotatedBox(
+      quarterTurns: rotationImagem,
+      child: FutureImageVet(
+        imageFuture: imageFuture,
+      ),
     );
   }
 }

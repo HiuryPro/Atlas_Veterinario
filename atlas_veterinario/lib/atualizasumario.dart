@@ -21,10 +21,7 @@ class _AtualizaSumarioState extends State<AtualizaSumario> {
   TextEditingController nomeCapituloController = TextEditingController();
   Mensagem mensagem = Mensagem();
 
-  Map<String, List<String>> mapPartes = {
-    'IdParte': ['1'],
-    'Parte': ['1']
-  };
+  Map<String, List<String>> mapPartes = {'Parte': []};
   Map<String, List<String>> mapUnidades = {
     'IdUnidade': [],
     'NumUnidade': [],
@@ -45,23 +42,20 @@ class _AtualizaSumarioState extends State<AtualizaSumario> {
 
   Future<void> partesSelect() async {
     List<String> idParte = [];
-    List<String> parteNum = [];
     List<String> descricao = [];
     var dados = await SupaDB.instance.clienteSupaBase
         .from('Parte')
         .select(
-          'IdParte, Parte, Descricao',
+          'Parte, Descricao',
         )
-        .order('IdParte', ascending: true);
+        .order('Parte', ascending: true);
     print(dados);
     for (var parte in dados) {
-      idParte.add(parte['IdParte'].toString());
-      parteNum.add(parte['Parte'].toString());
+      idParte.add(parte['Parte'].toString());
       descricao.add(parte['Descricao'].toString());
     }
     setState(() {
-      mapPartes.addAll(
-          {'IdParte': idParte, 'Parte': parteNum, 'Descricao': descricao});
+      mapPartes.addAll({'Parte': idParte, 'Descricao': descricao});
     });
     print(mapPartes);
   }
@@ -73,7 +67,7 @@ class _AtualizaSumarioState extends State<AtualizaSumario> {
     var dados = await SupaDB.instance.clienteSupaBase
         .from('Unidade')
         .select('IdUnidade, NumUnidade, NomeUnidade')
-        .match({'IdParte': parte});
+        .match({'Parte': parte});
     print(dados);
     for (var parte in dados) {
       idUnidade.add(parte['IdUnidade'].toString());
@@ -170,11 +164,11 @@ class _AtualizaSumarioState extends State<AtualizaSumario> {
         ElevatedButton(
             onPressed: () async {
               int index = mapPartes['Parte']!.indexOf(parteUnidade!);
-              int idParte = int.parse(mapPartes['IdParte']![index]);
+              int idParte = int.parse(mapPartes['Parte']![index]);
               await SupaDB.instance.clienteSupaBase
                   .from("Parte")
                   .update({"Descricao": descricaoParteController.text}).match(
-                      {'IdParte': idParte});
+                      {'Parte': idParte});
               await partesSelect();
               await mensagem.mensagem(context, 'Atualização feita com sucesso',
                   'A parte foi atulizada com sucesso', null);
@@ -211,7 +205,7 @@ class _AtualizaSumarioState extends State<AtualizaSumario> {
                   onChanged: (value) async {
                     print(mapPartes);
                     int index = mapPartes['Parte']!.indexOf(value!);
-                    int idParte = int.parse(mapPartes['IdParte']![index]);
+                    int idParte = int.parse(mapPartes['Parte']![index]);
                     print(idParte);
                     setState(() {
                       unidadeCapitulo = null;
@@ -318,7 +312,7 @@ class _AtualizaSumarioState extends State<AtualizaSumario> {
                   onChanged: (value) async {
                     print(mapPartes);
                     int index = mapPartes['Parte']!.indexOf(value!);
-                    int idParte = int.parse(mapPartes['IdParte']![index]);
+                    int idParte = int.parse(mapPartes['Parte']![index]);
                     print(idParte);
                     setState(() {
                       unidadeCapitulo = null;
@@ -459,18 +453,23 @@ class _AtualizaSumarioState extends State<AtualizaSumario> {
         length: 3,
         child: Scaffold(
             appBar: AppBar(
-              title: const Text('Cadastrar Sumário'),
+              title: const Text('Atualizar Sumário'),
+              leading: IconButton(
+                  onPressed: () {
+                    Navigator.of(context).pushNamed('/home');
+                  },
+                  icon: const Icon(Icons.arrow_back)),
               bottom: const TabBar(tabs: [
                 Text(
-                  'Cadastrar Parte',
+                  'Atualizar Parte',
                   style: TextStyle(fontSize: 15),
                 ),
                 Text(
-                  'Cadastrar Unidade',
+                  'Atualizar Unidade',
                   style: TextStyle(fontSize: 15),
                 ),
                 Text(
-                  'Cadastrar Capítulo',
+                  'Atualizar Capítulo',
                   style: TextStyle(fontSize: 15),
                 )
               ]),

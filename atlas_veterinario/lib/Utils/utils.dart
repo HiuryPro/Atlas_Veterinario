@@ -1,6 +1,8 @@
 import 'dart:typed_data';
 import 'dart:ui';
 
+import 'package:atlas_veterinario/Fala/textoprafala.dart';
+import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 class Utils {
@@ -64,5 +66,19 @@ class Utils {
     }
 
     return null;
+  }
+
+  GestureDetector retornaFala(
+      BuildContext context, Widget widget, String fala) {
+    return GestureDetector(
+      onLongPress: () async {
+        await Fala.instance.flutterTts.stop();
+        await Fala.instance.flutterTts.speak(fala);
+      },
+      onDoubleTap: () async {
+        await Fala.instance.flutterTts.stop();
+      },
+      child: widget,
+    );
   }
 }

@@ -6,8 +6,10 @@ import 'package:atlas_veterinario/Capa_Sumario/capitulo.dart';
 import 'package:atlas_veterinario/Capa_Sumario/folharosto.dart';
 import 'package:atlas_veterinario/Capa_Sumario/introducao.dart';
 import 'package:atlas_veterinario/Capa_Sumario/parte.dart';
+import 'package:atlas_veterinario/Fala/textoprafala.dart';
 import 'package:atlas_veterinario/Utils/mensagens.dart';
 import 'package:atlas_veterinario/Utils/tutorial.dart';
+import 'package:atlas_veterinario/Utils/utils.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/services.dart';
 import 'package:turn_page_transition/src/turn_direction.dart';
@@ -30,6 +32,7 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   final GlobalKey<ScaffoldState> _keyS = GlobalKey();
+  Utils util = Utils();
   Future<Map?>? conteudos;
   bool isImage = false;
   Map<int, Widget> parteInicial = {
@@ -87,27 +90,29 @@ class _HomeState extends State<Home> {
               child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    IconButton(
-                        iconSize: 48,
-                        tooltip: 'Abre opções do Aplicativo',
-                        onPressed: () => _keyS.currentState!.openDrawer(),
-                        icon: Image.asset('assets/images/unipam.png')),
+                    util.retornaFala(
+                        context,
+                        IconButton(
+                            iconSize: 48,
+                            tooltip: 'Abre opções do Aplicativo',
+                            onPressed: () => _keyS.currentState!.openDrawer(),
+                            icon: Image.asset('assets/images/unipam.png')),
+                        'Abre opções do Aplicativo'),
                     const SizedBox(
                       width: 5,
                     ),
-                    Container(
-                      decoration: const BoxDecoration(
-                          color: Color(0xff386e41), shape: BoxShape.circle),
-                      child: IconButton(
-                          onPressed: () {
-                            if (isImage) {
-                              AppController.instance.mudaTutorial2();
-                            } else {
-                              AppController.instance.mudaTutorial1();
-                            }
-                          },
-                          icon: const Icon(Icons.question_mark)),
-                    ),
+                    util.retornaFala(
+                        context,
+                        Container(
+                          decoration: const BoxDecoration(
+                              color: Color(0xff386e41), shape: BoxShape.circle),
+                          child: IconButton(
+                              onPressed: () {
+                                AppController.instance.mudaTutorial1();
+                              },
+                              icon: const Icon(Icons.question_mark)),
+                        ),
+                        'Ajuda'),
                     const SizedBox(
                       width: 5,
                     ),
@@ -126,13 +131,13 @@ class _HomeState extends State<Home> {
                     const SizedBox(
                       width: 5,
                     ),
-                    opcoesdaPagina(),
+                    util.retornaFala(
+                        context, opcoesdaPagina(), 'Opções de texto')
                   ]),
             ),
             Expanded(
               child: GestureDetector(
                   onLongPressMoveUpdate: (details) {
-                    print('lonog');
                     print(details.globalPosition);
                     print(MediaQuery.of(context).size.width);
                     if (details.globalPosition.dx >
@@ -154,8 +159,6 @@ class _HomeState extends State<Home> {
                         });
                         Navigator.of(context)
                             .push(passaPagina(TurnDirection.leftToRight));
-                      } else {
-                        print('Puta DANJARO');
                       }
                     }
                   },
@@ -181,16 +184,8 @@ class _HomeState extends State<Home> {
                         });
                         Navigator.of(context)
                             .push(passaPagina(TurnDirection.leftToRight));
-                      } else {
-                        print('Puta DANJARO');
                       }
                     }
-                  },
-                  onTap: () {
-                    print('Teste');
-                  },
-                  onHorizontalDragCancel: () {
-                    print('What bortha');
                   },
                   onHorizontalDragUpdate: (details) {
                     if (!isImage) {
@@ -231,15 +226,21 @@ class _HomeState extends State<Home> {
               child: Center(
                 child: Tooltip(
                   message: 'Abre opções de passagem de página',
-                  child: IconButton(
-                    iconSize: 36,
-                    icon: const Icon(Icons.arrow_drop_up),
-                    onPressed: () {
-                      setState(() {
-                        isOpen = !isOpen;
-                      });
-                      paginaSelector();
+                  child: GestureDetector(
+                    onLongPress: () async {
+                      await Fala.instance.flutterTts
+                          .speak('Abre opções de passagem de página');
                     },
+                    child: IconButton(
+                      iconSize: 36,
+                      icon: const Icon(Icons.arrow_drop_up),
+                      onPressed: () {
+                        setState(() {
+                          isOpen = !isOpen;
+                        });
+                        paginaSelector();
+                      },
+                    ),
                   ),
                 ),
               ),
@@ -683,73 +684,157 @@ class _HomeState extends State<Home> {
                 child: Text(AppController.instance.nome))),
         Expanded(
           child: ListView(shrinkWrap: true, children: [
-            Tooltip(
-              message: 'Clique para acessar o Sumário',
-              child: ListTile(
-                onTap: () {
-                  Navigator.of(context).pushNamed('/sumario');
-                },
-                leading: const Icon(Icons.manage_search),
-                title: const Text('Sumário'),
-              ),
-            ),
-            if (AppController.instance.isAdmin)
-              Tooltip(
-                message: 'Clique para cadastrar o Sumário',
+            GestureDetector(
+              onLongPress: () async {
+                await Fala.instance.flutterTts.stop();
+                await Fala.instance.flutterTts
+                    .speak('Clique para acessar o Sumário');
+              },
+              onDoubleTap: () async {
+                await Fala.instance.flutterTts.stop();
+              },
+              child: Tooltip(
+                message: 'Clique para acessar o Sumário',
                 child: ListTile(
                   onTap: () {
-                    Navigator.of(context).pushNamed('/cadastrarsumario');
+                    Navigator.of(context).pushNamed('/sumario');
                   },
-                  leading: const Icon(Icons.edit_document),
-                  title: const Text('Cadastrar Sumário'),
+                  leading: const Icon(Icons.manage_search),
+                  title: const Text('Sumário'),
                 ),
               ),
-            Tooltip(
-              message: 'Clique para Atualizar o Sumário',
-              child: ListTile(
-                onTap: () {
-                  Navigator.of(context).pushNamed('/atualizasumario');
-                },
-                leading: const Icon(Icons.edit_square),
-                title: const Text('Atualizar Sumário'),
-              ),
             ),
-            Tooltip(
-              message: 'Clique para Cadastrar as Páginas',
-              child: ListTile(
-                onTap: () {
-                  Navigator.of(context).pushNamed('/cadastrarpaginas');
-                },
-                leading: const Icon(Icons.note_add),
-                title: const Text('Cadastrar Página'),
-              ),
-            ),
-            Tooltip(
-              message: 'Clique para Atualizar as Páginas',
-              child: ListTile(
-                onTap: () {
-                  Navigator.of(context).pushNamed('/atualizarpaginas');
-                },
-                leading: const Icon(Icons.edit_note),
-                title: const Text('Atualizar Página'),
-              ),
-            ),
+            if (AppController.instance.isAdmin) ...optionsAdmin()
           ]),
         ),
-        Tooltip(
-          message: 'Clique para fazer Logout',
-          child: ListTile(
-            onTap: () async {
-              var mensagem = Mensagem();
-              await mensagem.mensagemOpcao(context, 'Fazer Logout',
-                  'Deseja realmente fazer logout?', '/login');
-            },
-            leading: const Icon(Icons.logout),
-            title: const Text('Logout'),
+        GestureDetector(
+          onLongPress: () async {
+            await Fala.instance.flutterTts.stop();
+            await Fala.instance.flutterTts.speak('Clique para fazer Logout');
+          },
+          onDoubleTap: () async {
+            await Fala.instance.flutterTts.stop();
+          },
+          child: Tooltip(
+            message: 'Clique para fazer Logout',
+            child: ListTile(
+              onTap: () async {
+                var mensagem = Mensagem();
+                await mensagem.mensagemOpcao(context, 'Fazer Logout',
+                    'Deseja realmente fazer logout?', '/login');
+              },
+              leading: const Icon(Icons.logout),
+              title: const Text('Logout'),
+            ),
           ),
         ),
       ]),
     ));
+  }
+
+  List<Widget> optionsAdmin() {
+    return [
+      GestureDetector(
+        onLongPress: () async {
+          await Fala.instance.flutterTts.stop();
+          await Fala.instance.flutterTts
+              .speak('Clique para cadastrar o Sumário');
+        },
+        onDoubleTap: () async {
+          await Fala.instance.flutterTts.stop();
+        },
+        child: Tooltip(
+          message: 'Clique para cadastrar o Sumário',
+          child: ListTile(
+            onTap: () {
+              Navigator.of(context).pushNamed('/cadastrarsumario');
+            },
+            leading: const Icon(Icons.edit_document),
+            title: const Text('Cadastrar Sumário'),
+          ),
+        ),
+      ),
+      GestureDetector(
+        onLongPress: () async {
+          await Fala.instance.flutterTts.stop();
+          await Fala.instance.flutterTts
+              .speak('Clique para Atualizar o Sumário');
+        },
+        onDoubleTap: () async {
+          await Fala.instance.flutterTts.stop();
+        },
+        child: Tooltip(
+          message: 'Clique para Atualizar o Sumário',
+          child: ListTile(
+            onTap: () {
+              Navigator.of(context).pushNamed('/atualizasumario');
+            },
+            leading: const Icon(Icons.edit_square),
+            title: const Text('Atualizar Sumário'),
+          ),
+        ),
+      ),
+      GestureDetector(
+        onLongPress: () async {
+          await Fala.instance.flutterTts.stop();
+          await Fala.instance.flutterTts
+              .speak('Clique para Cadastrar as Imagens');
+        },
+        onDoubleTap: () async {
+          await Fala.instance.flutterTts.stop();
+        },
+        child: Tooltip(
+          message: 'Clique para Cadastrar as Imagens',
+          child: ListTile(
+            onTap: () {
+              Navigator.of(context).pushNamed('/cadastrarimagem');
+            },
+            leading: const Icon(Icons.image),
+            title: const Text('Cadastrar Imagem'),
+          ),
+        ),
+      ),
+      GestureDetector(
+        onLongPress: () async {
+          await Fala.instance.flutterTts.stop();
+          await Fala.instance.flutterTts
+              .speak('Clique para Cadastrar as Páginas');
+        },
+        onDoubleTap: () async {
+          await Fala.instance.flutterTts.stop();
+        },
+        child: Tooltip(
+          message: 'Clique para Cadastrar as Páginas',
+          child: ListTile(
+            onTap: () {
+              Navigator.of(context).pushNamed('/cadastrarpaginas');
+            },
+            leading: const Icon(Icons.note_add),
+            title: const Text('Cadastrar Página'),
+          ),
+        ),
+      ),
+      GestureDetector(
+        onLongPress: () async {
+          await Fala.instance.flutterTts.stop();
+          await Fala.instance.flutterTts
+              .speak('Clique para Atualizar as Páginas');
+        },
+        onDoubleTap: () async {
+          await Fala.instance.flutterTts.stop();
+        },
+        child: Tooltip(
+          message: 'Clique para Atualizar as Páginas',
+          child: ListTile(
+            onTap: () {
+              Navigator.of(context).pushNamed('/atualizarpaginas');
+            },
+            leading: const Icon(Icons.edit_note),
+            title: const Text('Atualizar Página'),
+          ),
+        ),
+      ),
+    ];
   }
 
   @override

@@ -24,13 +24,14 @@ class CadastraImagem {
   }
 
   cadastrarImagemTexto(int idImagem, String legenda, Color corDestaque,
-      TextDrawable textD) async {
+      Color corBorda, TextDrawable textD) async {
     Map imagemTextoDb = {};
 
     imagemTextoDb['IdImagem'] = idImagem;
     imagemTextoDb['Numero'] = textD.text;
     imagemTextoDb['FontSize'] = textD.style.fontSize!.toInt();
     imagemTextoDb['CorDestaque'] = corDestaque.value;
+    imagemTextoDb['CorBorda'] = corBorda.value;
     imagemTextoDb['Zoom'] = textD.scale;
     imagemTextoDb['Dx'] = textD.position.dx;
     imagemTextoDb['Dy'] = textD.position.dy;

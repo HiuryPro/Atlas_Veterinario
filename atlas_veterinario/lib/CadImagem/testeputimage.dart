@@ -15,14 +15,14 @@ import '../Utils/utils.dart';
 import '../Proxy/proxyimagens.dart';
 import 'cadastraimagem.dart';
 
-class FlutterPainterExample extends StatefulWidget {
-  const FlutterPainterExample({Key? key}) : super(key: key);
+class CadastrarImagem extends StatefulWidget {
+  const CadastrarImagem({Key? key}) : super(key: key);
 
   @override
   FlutterPainterExampleState createState() => FlutterPainterExampleState();
 }
 
-class FlutterPainterExampleState extends State<FlutterPainterExample> {
+class FlutterPainterExampleState extends State<CadastrarImagem> {
   Utils utils = Utils();
   Uint8List? logoBase64;
 
@@ -43,6 +43,7 @@ class FlutterPainterExampleState extends State<FlutterPainterExample> {
     Colors.green,
     Colors.blue,
     Colors.orange,
+    Colors.yellow,
     const Color(0xffa00000),
     const Color(0xff0b226e),
     const Color(0xff14381e)
@@ -50,10 +51,16 @@ class FlutterPainterExampleState extends State<FlutterPainterExample> {
 
   // imagem com a legenda em outra tela, mas na mesma linha
 
-  Map textoImagem = {'numero': '', 'tamanhoFonte': 30, 'cor': null};
+  Map textoImagem = {
+    'numero': '',
+    'tamanhoFonte': 30,
+    'cor': const Color(0xffa00000),
+    'corBorda': Colors.yellow
+  };
 
   List<String> legendas = [];
   List<Color> coresDestaque = [];
+  List<Color> coresBorda = [];
 
   bool adicionandoTexto = false;
   bool atualizandoTexto = false;
@@ -124,6 +131,8 @@ class FlutterPainterExampleState extends State<FlutterPainterExample> {
           legendas[controller.drawables.indexOf(drawbleT)];
       textoImagem['cor'] =
           coresDestaque[controller.drawables.indexOf(drawbleT)];
+      textoImagem['corBorda'] =
+          coresBorda[controller.drawables.indexOf(drawbleT)];
     }
 
     textFocusNode.unfocus();
@@ -293,12 +302,18 @@ class FlutterPainterExampleState extends State<FlutterPainterExample> {
                                   idImagem,
                                   legendas[index],
                                   coresDestaque[index],
+                                  coresBorda[index],
                                   drawables as TextDrawable);
                               print(insertedIT);
                             }
                           }
 
                           print(idImagem);
+                          controller.background = null;
+                          controller.clearDrawables();
+                          nomeImagemController.text = '';
+                          setState(() {});
+
                           mensagem.mensagem(context, 'Cadastrado com Sucesso',
                               'Imagem cadastrada com sucesso', null);
                         },
@@ -402,6 +417,37 @@ class FlutterPainterExampleState extends State<FlutterPainterExample> {
                         border: Border.all(
                             width: 2,
                             color: textoImagem['cor'] == cor
+                                ? const Color.fromARGB(255, 249, 240, 158)
+                                : Colors.black),
+                        color: cor,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                  ),
+                )
+                .toList()),
+      ),
+      const SizedBox(
+        height: 5,
+      ),
+      SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: cores
+                .map(
+                  (cor) => GestureDetector(
+                    onTap: (() {
+                      textoImagem['corBorda'] = cor;
+                      setState(() {});
+                    }),
+                    child: Container(
+                      width: 30,
+                      height: 30,
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                            width: 2,
+                            color: textoImagem['corBorda'] == cor
                                 ? Colors.yellow
                                 : Colors.black),
                         color: cor,
@@ -418,7 +464,30 @@ class FlutterPainterExampleState extends State<FlutterPainterExample> {
       Text(
         numeroImagemController.text,
         style: TextStyle(
-            color: textoImagem['cor'], fontSize: tamanhoFonte.toDouble()),
+            color: textoImagem['cor'],
+            shadows: [
+              Shadow(
+                  color: textoImagem['corBorda'], // Border color
+                  offset: Offset(-2, -2),
+                  blurRadius: 2.5 // Adjust this for border width
+                  ),
+              Shadow(
+                  color: textoImagem['corBorda'], // Border color
+                  offset: Offset(2, -2),
+                  blurRadius: 2.5 // Adjust this for border width
+                  ),
+              Shadow(
+                  color: textoImagem['corBorda'], // Border color
+                  offset: Offset(-2, 2),
+                  blurRadius: 2.5 // Adjust this for border width
+                  ),
+              Shadow(
+                  color: textoImagem['corBorda'], // Border color
+                  offset: Offset(2, 2),
+                  blurRadius: 2.5 // Adjust this for border width
+                  ),
+            ],
+            fontSize: tamanhoFonte.toDouble()),
       ),
       ElevatedButton(
           onPressed: () {
@@ -431,6 +500,7 @@ class FlutterPainterExampleState extends State<FlutterPainterExample> {
                 addText();
                 legendas.add(legendaImagemController.text);
                 coresDestaque.add(textoImagem['cor']);
+                coresBorda.add(textoImagem['corBorda']);
               } else {
                 atualizaText();
               }
@@ -467,6 +537,7 @@ class FlutterPainterExampleState extends State<FlutterPainterExample> {
 
     legendas[index] = legendaImagemController.text;
     coresDestaque[index] = textoImagem['cor'];
+    coresBorda[index] = textoImagem['corBorda'];
 
     controller.replaceDrawable(controller.selectedObjectDrawable!, newDrawable);
     setState(() {});
@@ -481,6 +552,24 @@ class FlutterPainterExampleState extends State<FlutterPainterExample> {
           text: textoImagem['numero'],
           position: Offset(render.size.width / 2, render.size.height / 2),
           style: TextStyle(
+            shadows: [
+              Shadow(
+                color: textoImagem['corBorda'], // Border color
+                offset: Offset(-2, -2), // Adjust this for border width
+              ),
+              Shadow(
+                color: textoImagem['corBorda'], // Border color
+                offset: Offset(2, -2), // Adjust this for border width
+              ),
+              Shadow(
+                color: textoImagem['corBorda'], // Border color
+                offset: Offset(-2, 2), // Adjust this for border width
+              ),
+              Shadow(
+                color: textoImagem['corBorda'], // Border color
+                offset: Offset(2, 2), // Adjust this for border width
+              ),
+            ],
             fontSize: textoImagem['fonteTamanho'],
             color: Colors.black,
           ))
@@ -501,6 +590,7 @@ class FlutterPainterExampleState extends State<FlutterPainterExample> {
     if (selectedDrawable != null) {
       legendas.removeAt(controller.drawables.indexOf(selectedDrawable));
       coresDestaque.removeAt(controller.drawables.indexOf(selectedDrawable));
+      coresBorda.removeAt(controller.drawables.indexOf(selectedDrawable));
       controller.removeDrawable(selectedDrawable);
     }
   }

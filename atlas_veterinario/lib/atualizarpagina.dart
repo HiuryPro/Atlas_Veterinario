@@ -168,7 +168,7 @@ class _AtualizaPaginaState extends State<AtualizaPagina> {
                     setState(() {
                       imagem = null;
                     });
-                    await Future.delayed(Duration(milliseconds: 1));
+                    await Future.delayed(const Duration(milliseconds: 1));
                     setState(() {
                       imagem = BuscarImagem(
                         id: paginaEscolhida['IdImagem'],
@@ -179,7 +179,7 @@ class _AtualizaPaginaState extends State<AtualizaPagina> {
                   }
                 });
           }
-          return SizedBox();
+          return const SizedBox();
         }),
         const SizedBox(height: 10),
         Builder(builder: (context) {
@@ -201,7 +201,7 @@ class _AtualizaPaginaState extends State<AtualizaPagina> {
                   setState(() {});
                 });
           }
-          return SizedBox();
+          return const SizedBox();
         }),
         const SizedBox(height: 10),
         Builder(builder: (context) {
@@ -397,7 +397,7 @@ class _AtualizaPaginaState extends State<AtualizaPagina> {
               });
               Navigator.of(context).pop();
             },
-            child: Text('Atualizar')),
+            child: const Text('Atualizar')),
         TextButton(
             onPressed: () {
               Navigator.of(context).pop();
@@ -420,6 +420,11 @@ class _AtualizaPaginaState extends State<AtualizaPagina> {
     return Scaffold(
         appBar: AppBar(
           title: const Text('Atualzar Página'),
+          leading: IconButton(
+              onPressed: () {
+                Navigator.of(context).pushNamed('/home');
+              },
+              icon: const Icon(Icons.arrow_back)),
         ),
         body: body());
   }

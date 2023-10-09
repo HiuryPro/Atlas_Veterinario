@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:atlas_veterinario/CadImagem/geraimagem.dart';
+import 'package:atlas_veterinario/Fala/textoprafala.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:carousel_slider/carousel_controller.dart';
 import 'package:flutter/foundation.dart';
@@ -84,7 +85,6 @@ class BuscarImagemPainterState extends State<BuscarImagemPainter> {
   void initBackground(int id, int rotation) async {
     Map resultados = await imagemProxy.find(id, false);
     Uint8List logoBase64 = base64.decode(resultados['Imagem']);
-
     final image = await MemoryImage(logoBase64).image;
 
     setState(() {
@@ -92,8 +92,13 @@ class BuscarImagemPainterState extends State<BuscarImagemPainter> {
       controller.background = image.backgroundDrawable;
     });
 
-    width = resultados['Width'];
-    height = resultados['Height'];
+    width = resultados['Width'].runtimeType == int
+        ? resultados['Width'].toDouble()
+        : resultados['Width'];
+    height = resultados['Height'].runtimeType == int
+        ? resultados['Height'].toDouble()
+        : resultados['Height'];
+
     rotationImagem = resultados['RotationImage'] + rotation;
 
     setState(() {
@@ -110,10 +115,17 @@ class BuscarImagemPainterState extends State<BuscarImagemPainter> {
 
   adicionatexto(Map resultados) {
     for (Map imagemTexto in resultados['Imagem_Texto']) {
-      legendas.add(imagemTexto['Legenda']);
-      coresDestaque.add(Color(imagemTexto['CorDestaque']));
-
       String texto = imagemTexto['Numero'];
+
+      if (legendas.length <= resultados['Imagem_Texto'].length) {
+        legendas.add("$texto ${imagemTexto['Legenda']}");
+      }
+
+      if (coresDestaque.length <= resultados['Imagem_Texto'].length) {
+        coresDestaque.add(Color(imagemTexto['CorDestaque']));
+      }
+
+      Color corBorda = Color(imagemTexto['CorBorda']);
 
       double zoom = imagemTexto['Zoom'].runtimeType == int
           ? imagemTexto['Zoom'].toDouble()
@@ -139,6 +151,28 @@ class BuscarImagemPainterState extends State<BuscarImagemPainter> {
             style: TextStyle(
               fontSize: fontSize,
               color: Colors.black,
+              shadows: [
+                Shadow(
+                    color: corBorda, // Border color
+                    offset: Offset(-2, -2),
+                    blurRadius: 2.5 // Adjust this for border width
+                    ),
+                Shadow(
+                    color: corBorda, // Border color
+                    offset: Offset(2, -2),
+                    blurRadius: 2.5 // Adjust this for border width
+                    ),
+                Shadow(
+                    color: corBorda, // Border color
+                    offset: Offset(-2, 2),
+                    blurRadius: 2.5 // Adjust this for border width
+                    ),
+                Shadow(
+                    color: corBorda, // Border color
+                    offset: Offset(2, 2),
+                    blurRadius: 2.5 // Adjust this for border width
+                    ),
+              ],
             ),
             locked: true)
       ]);
@@ -146,90 +180,65 @@ class BuscarImagemPainterState extends State<BuscarImagemPainter> {
   }
 
   Widget buildDefault(BuildContext context) {
-    if (isLegendas) {
-      return criaButoesLegenda();
-    } else {
-      return Column(
-        children: [
-          Container(
-            margin: const EdgeInsets.only(bottom: 5),
-            decoration: const BoxDecoration(
-                border: Border(
-                    bottom: BorderSide(color: Color(0xff386e41), width: 3))),
-            child: Padding(
-              padding: const EdgeInsets.only(left: 10, bottom: 5),
-              child: Row(
-                children: [
-                  Expanded(
-                      child: AutoSizeText(nomeImagem,
-                          maxLines: 2,
-                          minFontSize: 10,
-                          style: const TextStyle(fontSize: 20))),
-                  IconButton(
-                      tooltip: 'Clique para rotacionar a imagem.',
-                      onPressed: () {
-                        setState(() {
-                          incrementalRotation += 1;
-                          if (incrementalRotation == 4) {
-                            incrementalRotation = 0;
-                          }
-                        });
-                        print(incrementalRotation);
-                        controller.clearDrawables();
-                        initBackground(widget.id, incrementalRotation);
-                      },
-                      icon: Icon(PhosphorIcons.fill.arrowClockwise)),
-                ],
-              ),
+    return Column(
+      children: [
+        Container(
+          margin: const EdgeInsets.only(bottom: 5),
+          decoration: const BoxDecoration(
+              border: Border(
+                  bottom: BorderSide(color: Color(0xff386e41), width: 3))),
+          child: Padding(
+            padding: const EdgeInsets.only(left: 10, bottom: 5),
+            child: Row(
+              children: [
+                Expanded(
+                    child: AutoSizeText(nomeImagem,
+                        maxLines: 2,
+                        minFontSize: 10,
+                        style: const TextStyle(fontSize: 20))),
+                IconButton(
+                    tooltip: 'Clique para rotacionar a imagem.',
+                    onPressed: () async {
+                      setState(() {
+                        incrementalRotation += 1;
+                        if (incrementalRotation == 4) {
+                          incrementalRotation = 0;
+                        }
+                      });
+                      print(incrementalRotation);
+                      legendas.clear();
+                      initBackground(widget.id, incrementalRotation);
+                      await Future.delayed(Duration(milliseconds: 100));
+                      print(legendaAtual);
+                      destacandoNumero(legendaAtual);
+                      setState(() {});
+                    },
+                    icon: Icon(PhosphorIcons.fill.arrowClockwise)),
+              ],
             ),
           ),
-          Expanded(
-              child: RotatedBox(
-            quarterTurns: rotationImagem,
-            child: InteractiveViewer(
-              maxScale: 10,
-              child: FutureImageVet(
-                imageFuture: imageFuture,
-              ),
+        ),
+        Expanded(
+            child: RotatedBox(
+          quarterTurns: rotationImagem,
+          child: InteractiveViewer(
+            maxScale: 10,
+            child: FutureImageVet(
+              imageFuture: imageFuture,
             ),
-          )),
-          if (legendas.isNotEmpty)
-            Container(
-                margin: const EdgeInsets.only(top: 5),
-                decoration: const BoxDecoration(
-                    border: Border(
-                        top: BorderSide(color: Color(0xff386e41), width: 3))),
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 5),
-                  child: testeDrop(),
-                ))
-        ],
-      );
-    }
-  }
-
-  Widget criaButoesLegenda() {
-    return ListView(
-      children: legendas
-          .map((legenda) => Padding(
-                padding: const EdgeInsets.only(bottom: 5, top: 5),
-                child: ElevatedButton(
-                    onPressed: () async {
-                      if (old != null) {
-                        destacaNumero(old!, Colors.black);
-                      }
-                      int index = legendas.indexOf(legenda);
-
-                      destacaNumero(controller.drawables[index] as TextDrawable,
-                          coresDestaque[index]);
-                      old = controller.drawables[index] as TextDrawable;
-                      setState(() {
-                        isLegendas = false;
-                      });
-                    },
-                    child: Text(legenda)),
+          ),
+        )),
+        if (legendas.isNotEmpty)
+          Container(
+              margin: const EdgeInsets.only(top: 5),
+              decoration: const BoxDecoration(
+                  border: Border(
+                      top: BorderSide(color: Color(0xff386e41), width: 3))),
+              child: Padding(
+                padding: const EdgeInsets.only(top: 5),
+                child: testeDrop(),
               ))
-          .toList(),
+      ],
     );
   }
 
@@ -243,6 +252,22 @@ class BuscarImagemPainterState extends State<BuscarImagemPainter> {
     imageFuture = controller
         .renderImage(Size(width, height))
         .then<Uint8List?>((ui.Image image) => image.pngBytes);
+  }
+
+  destacandoNumero(String value) {
+    if (old != null) {
+      destacaNumero(old!, Colors.black);
+    }
+    print(value);
+
+    if (value != "") {
+      int index = legendas.indexOf(value) - 1;
+      print(index);
+      print(controller.drawables);
+      destacaNumero(
+          controller.drawables[index] as TextDrawable, coresDestaque[index]);
+      old = controller.drawables[index] as TextDrawable;
+    }
   }
 
   DropdownMenuItem<String> buildMenuItem(String item) => DropdownMenuItem(
@@ -267,19 +292,15 @@ class BuscarImagemPainterState extends State<BuscarImagemPainter> {
         hint: const Text('Escolha a Parte'),
         value: legendaAtual,
         items: legendas.map((String valor) => buildMenuItem(valor)).toList(),
-        onChanged: (value) {
-          if (old != null) {
-            destacaNumero(old!, Colors.black);
+        onChanged: (value) async {
+          String valorTexto = value.toString();
+          int indexEspaco = valorTexto.indexOf(' ');
+          if (valorTexto != '') {
+            valorTexto = valorTexto.substring(indexEspaco + 1);
           }
 
-          if (value != "") {
-            int index = legendas.indexOf(value) - 1;
-
-            destacaNumero(controller.drawables[index] as TextDrawable,
-                coresDestaque[index]);
-            old = controller.drawables[index] as TextDrawable;
-          }
-
+          destacandoNumero(value);
+          await Fala.instance.flutterTts.speak(valorTexto);
           setState(() {
             isLegendas = false;
             legendaAtual = value;
