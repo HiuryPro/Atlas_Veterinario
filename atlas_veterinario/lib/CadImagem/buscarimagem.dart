@@ -33,6 +33,7 @@ class BuscarImagemPainterState extends State<BuscarImagemPainter> {
   String legendaAtual = "";
   int rotationImagem = 1;
   int incrementalRotation = 0;
+  bool isFalando = false;
 
   Future<Uint8List?>? imageFuture;
   Utils utils = Utils();
@@ -191,11 +192,24 @@ class BuscarImagemPainterState extends State<BuscarImagemPainter> {
             padding: const EdgeInsets.only(left: 10, bottom: 5),
             child: Row(
               children: [
-                Expanded(
-                    child: AutoSizeText(nomeImagem,
-                        maxLines: 2,
-                        minFontSize: 10,
-                        style: const TextStyle(fontSize: 20))),
+                AutoSizeText(nomeImagem,
+                    maxLines: 2,
+                    minFontSize: 10,
+                    style: const TextStyle(fontSize: 20)),
+                SizedBox(
+                  width: 5,
+                ),
+                IconButton(
+                    onPressed: () {
+                      falar(nomeImagem);
+                    },
+                    icon: const Icon(Icons.record_voice_over)),
+                Expanded(child: SizedBox()),
+                IconButton(
+                    onPressed: () {
+                      falar('Clique para rotacionar a imagem.');
+                    },
+                    icon: const Icon(Icons.record_voice_over)),
                 IconButton(
                     tooltip: 'Clique para rotacionar a imagem.',
                     onPressed: () async {
@@ -229,15 +243,28 @@ class BuscarImagemPainterState extends State<BuscarImagemPainter> {
           ),
         )),
         if (legendas.isNotEmpty)
-          Container(
-              margin: const EdgeInsets.only(top: 5),
-              decoration: const BoxDecoration(
-                  border: Border(
-                      top: BorderSide(color: Color(0xff386e41), width: 3))),
-              child: Padding(
-                padding: const EdgeInsets.only(top: 5),
-                child: testeDrop(),
-              ))
+          Padding(
+            padding: const EdgeInsets.all(8),
+            child: Row(
+              children: [
+                Expanded(
+                    child: Container(
+                        decoration: BoxDecoration(
+                            border: Border.all(color: Colors.black)),
+                        child: testeDrop())),
+                IconButton(
+                    onPressed: () {
+                      String valorTexto = legendaAtual;
+                      int indexEspaco = valorTexto.indexOf(' ');
+                      if (valorTexto != '') {
+                        valorTexto = valorTexto.substring(indexEspaco + 1);
+                      }
+                      falar(valorTexto);
+                    },
+                    icon: const Icon(Icons.record_voice_over))
+              ],
+            ),
+          )
       ],
     );
   }
@@ -293,19 +320,29 @@ class BuscarImagemPainterState extends State<BuscarImagemPainter> {
         value: legendaAtual,
         items: legendas.map((String valor) => buildMenuItem(valor)).toList(),
         onChanged: (value) async {
-          String valorTexto = value.toString();
-          int indexEspaco = valorTexto.indexOf(' ');
-          if (valorTexto != '') {
-            valorTexto = valorTexto.substring(indexEspaco + 1);
-          }
-
           destacandoNumero(value);
-          await Fala.instance.flutterTts.speak(valorTexto);
           setState(() {
             isLegendas = false;
             legendaAtual = value;
           });
         });
+  }
+
+  void falar(String fala) async {
+    setState(() {
+      isFalando = !isFalando;
+    });
+
+    if (isFalando) {
+      await Fala.instance.flutterTts.stop();
+      await Fala.instance.flutterTts.speak(fala);
+    } else {
+      await Fala.instance.flutterTts.stop();
+    }
+
+    setState(() {
+      isFalando = false;
+    });
   }
 
   @override

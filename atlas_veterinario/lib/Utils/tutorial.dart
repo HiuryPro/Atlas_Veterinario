@@ -10,6 +10,8 @@ class Tutorial1 extends StatefulWidget {
 }
 
 class _Tutorial1State extends State<Tutorial1> {
+  bool isFalando = false;
+
   String textoGrande =
       'Para navegar pelas páginas, você pode executar a ação de deslizar o dedo '
       'pela tela. Deslizar o dedo para a esquerda permitirá avançar para a próxima '
@@ -39,6 +41,24 @@ class _Tutorial1State extends State<Tutorial1> {
       'opções de alteração de texto e tema do app. No canto superior esquerdo '
       'há uma imagem da logo do UNIPAM que ao ser clicado apresenta '
       'o menu lateral do app com mais opções';
+
+  void falar(String fala) async {
+    setState(() {
+      isFalando = !isFalando;
+    });
+
+    if (isFalando) {
+      await Fala.instance.flutterTts.stop();
+      await Fala.instance.flutterTts.speak(fala);
+    } else {
+      await Fala.instance.flutterTts.stop();
+    }
+
+    setState(() {
+      isFalando = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -49,213 +69,193 @@ class _Tutorial1State extends State<Tutorial1> {
         padding: const EdgeInsets.only(bottom: 10, top: 10),
         child: ListView(
           children: [
-            Center(
-              child: Card(
-                color: Colors.white,
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border.all(color: Colors.black)),
                 child: Column(
                   children: [
-                    GestureDetector(
-                      onLongPress: () async {
-                        await Fala.instance.flutterTts.stop();
-                        await Fala.instance.flutterTts.speak('Ajuda');
-                      },
-                      onDoubleTap: () async {
-                        await Fala.instance.flutterTts.stop();
-                      },
-                      child: const Center(
-                        child: Padding(
-                          padding: EdgeInsets.all(5.0),
-                          child: Text(
-                            'Ajuda',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 30),
-                          ),
-                        ),
-                      ),
+                    Align(
+                      alignment: Alignment.topRight,
+                      child: IconButton(
+                          onPressed: () {
+                            falar(
+                                'Ajuda. Observação: Clique no Icone de fala para ouvir o que está escrito. Clique novamente para parar.');
+                          },
+                          icon: const Icon(Icons.record_voice_over)),
                     ),
-                    GestureDetector(
-                      onLongPress: () async {
-                        await Fala.instance.flutterTts.stop();
-                        await Fala.instance.flutterTts.speak(
-                            'Observação: Segurar habilita a fala, duplo clique cancela (Exceção Imagens)');
-                      },
-                      onDoubleTap: () async {
-                        await Fala.instance.flutterTts.stop();
-                      },
-                      child: const Center(
-                        child: Padding(
-                          padding: EdgeInsets.all(5.0),
-                          child: Text(
-                            'Observação: Segurar habilita a fala, duplo clique cancela (Exceção Imagens)',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 30),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            Center(
-              child: Card(
-                color: Colors.white,
-                child: Column(
-                  children: [
-                    GestureDetector(
-                      onLongPress: () async {
-                        await Fala.instance.flutterTts.stop();
-                        await Fala.instance.flutterTts
-                            .speak('Passagem de páginas');
-                      },
-                      onDoubleTap: () async {
-                        await Fala.instance.flutterTts.stop();
-                      },
-                      child: const Center(
-                        child: Padding(
-                          padding: EdgeInsets.all(5.0),
-                          child: Text(
-                            'Passagem de páginas',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 30),
-                          ),
-                        ),
-                      ),
-                    ),
-                    GestureDetector(
-                      onLongPress: () async {
-                        await Fala.instance.flutterTts.stop();
-                        await Fala.instance.flutterTts.speak(textoGrande);
-                      },
-                      onDoubleTap: () async {
-                        await Fala.instance.flutterTts.stop();
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.all(5.0),
-                        child: Center(
-                          child: Text(
-                            textoGrande,
-                            style: const TextStyle(fontSize: 18),
-                            textAlign: TextAlign.justify,
-                          ),
-                        ),
-                      ),
-                    ),
-                    GestureDetector(
-                      onLongPress: () async {
-                        await Fala.instance.flutterTts.stop();
-                        await Fala.instance.flutterTts.speak(textoGrande2);
-                      },
-                      onDoubleTap: () async {
-                        await Fala.instance.flutterTts.stop();
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.all(5.0),
-                        child: Center(
-                          child: Text(
-                            textoGrande2,
-                            style: const TextStyle(fontSize: 18),
-                            textAlign: TextAlign.justify,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            Center(
-              child: Card(
-                color: Colors.white,
-                child: Column(
-                  children: [
-                    GestureDetector(
-                      onLongPress: () async {
-                        await Fala.instance.flutterTts.stop();
-                        await Fala.instance.flutterTts.speak('Imagens');
-                      },
-                      onDoubleTap: () async {
-                        await Fala.instance.flutterTts.stop();
-                      },
-                      child: const Center(
-                        child: Padding(
-                          padding: EdgeInsets.all(5.0),
-                          child: Text(
-                            'Imagens',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 30),
-                          ),
-                        ),
-                      ),
-                    ),
-                    GestureDetector(
-                      onLongPress: () async {
-                        await Fala.instance.flutterTts.stop();
-                        await Fala.instance.flutterTts.speak(textoGrande3);
-                      },
-                      onDoubleTap: () async {
-                        await Fala.instance.flutterTts.stop();
-                      },
+                    const Center(
                       child: Padding(
                         padding: EdgeInsets.all(5.0),
-                        child: Center(
-                          child: Text(
-                            textoGrande3,
-                            style: TextStyle(fontSize: 18),
-                            textAlign: TextAlign.justify,
-                          ),
+                        child: Text(
+                          'Ajuda',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 30),
                         ),
                       ),
+                    ),
+                    const Wrap(
+                      alignment: WrapAlignment.center,
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.all(5.0),
+                          child: Text(
+                            'Observação: Clique no Icone ',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                color: Color(0xff386e41),
+                                fontWeight: FontWeight.bold,
+                                fontSize: 30),
+                          ),
+                        ),
+                        Center(child: Icon(Icons.record_voice_over)),
+                        Padding(
+                          padding: EdgeInsets.all(5.0),
+                          child: Text(
+                            'para ouvir o que está escrito. Clique novamente para parar.',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                color: Color(0xff386e41),
+                                fontWeight: FontWeight.bold,
+                                fontSize: 30),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
               ),
             ),
-            Center(
-              child: Card(
-                color: Colors.white,
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border.all(color: Colors.black)),
                 child: Column(
                   children: [
-                    GestureDetector(
-                      onLongPress: () async {
-                        await Fala.instance.flutterTts.stop();
-                        await Fala.instance.flutterTts.speak('Utilidades');
-                      },
-                      onDoubleTap: () async {
-                        await Fala.instance.flutterTts.stop();
-                      },
+                    Align(
+                      alignment: Alignment.topRight,
+                      child: IconButton(
+                          onPressed: () {
+                            falar(
+                                'Passagem de páginas. $textoGrande $textoGrande2');
+                          },
+                          icon: const Icon(Icons.record_voice_over)),
+                    ),
+                    const Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(5.0),
+                        child: Text(
+                          'Passagem de páginas',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 30),
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(5.0),
                       child: Center(
-                        child: Padding(
-                          padding: EdgeInsets.all(5.0),
-                          child: Text(
-                            'Utilidades',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 30),
-                          ),
+                        child: Text(
+                          textoGrande,
+                          style: const TextStyle(fontSize: 18),
+                          textAlign: TextAlign.justify,
                         ),
                       ),
                     ),
-                    GestureDetector(
-                      onLongPress: () async {
-                        await Fala.instance.flutterTts.stop();
-                        await Fala.instance.flutterTts.speak(textoGrande4);
-                      },
-                      onDoubleTap: () async {
-                        await Fala.instance.flutterTts.stop();
-                      },
+                    Padding(
+                      padding: const EdgeInsets.all(5.0),
+                      child: Center(
+                        child: Text(
+                          textoGrande2,
+                          style: const TextStyle(fontSize: 18),
+                          textAlign: TextAlign.justify,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border.all(color: Colors.black)),
+                child: Column(
+                  children: [
+                    Align(
+                      alignment: Alignment.topRight,
+                      child: IconButton(
+                          onPressed: () {
+                            falar('Imagens. $textoGrande3');
+                          },
+                          icon: const Icon(Icons.record_voice_over)),
+                    ),
+                    const Center(
                       child: Padding(
                         padding: EdgeInsets.all(5.0),
-                        child: Center(
-                          child: Text(
-                            textoGrande4,
-                            style: TextStyle(fontSize: 18),
-                            textAlign: TextAlign.justify,
-                          ),
+                        child: Text(
+                          'Imagens',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 30),
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(5.0),
+                      child: Center(
+                        child: Text(
+                          textoGrande3,
+                          style: const TextStyle(fontSize: 18),
+                          textAlign: TextAlign.justify,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border.all(color: Colors.black)),
+                child: Column(
+                  children: [
+                    Align(
+                      alignment: Alignment.topRight,
+                      child: IconButton(
+                          onPressed: () {
+                            falar('Utilidades. $textoGrande4');
+                          },
+                          icon: const Icon(Icons.record_voice_over)),
+                    ),
+                    const Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(5.0),
+                        child: Text(
+                          'Utilidades',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 30),
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(5.0),
+                      child: Center(
+                        child: Text(
+                          textoGrande4,
+                          style: const TextStyle(fontSize: 18),
+                          textAlign: TextAlign.justify,
                         ),
                       ),
                     ),

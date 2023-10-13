@@ -194,7 +194,7 @@ class FlutterPainterExampleState extends State<CadastrarImagem> {
         height: MediaQuery.of(context).size.height,
         child: Column(
           children: [
-            if (backgroundImage != null) ...[
+            if (controller.value.background != null) ...[
               TextField(
                   controller: nomeImagemController,
                   decoration: const InputDecoration(
@@ -225,20 +225,21 @@ class FlutterPainterExampleState extends State<CadastrarImagem> {
                         children: [
                           Flexible(
                             child: Container(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 15),
-                              decoration: const BoxDecoration(
-                                borderRadius: BorderRadius.vertical(
-                                    top: Radius.circular(20)),
-                                color: Colors.white54,
-                              ),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  if (adicionandoTexto) ...adicionaTexto(),
-                                ],
-                              ),
-                            ),
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 15),
+                                decoration: const BoxDecoration(
+                                  borderRadius: BorderRadius.vertical(
+                                      top: Radius.circular(20)),
+                                  color: Colors.white54,
+                                ),
+                                child: Builder(builder: (context) {
+                                  if (adicionandoTexto) {
+                                    return Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: adicionaTexto());
+                                  }
+                                  return const SizedBox();
+                                })),
                           ),
                         ],
                       ),
@@ -468,22 +469,22 @@ class FlutterPainterExampleState extends State<CadastrarImagem> {
             shadows: [
               Shadow(
                   color: textoImagem['corBorda'], // Border color
-                  offset: Offset(-2, -2),
+                  offset: const Offset(-2, -2),
                   blurRadius: 2.5 // Adjust this for border width
                   ),
               Shadow(
                   color: textoImagem['corBorda'], // Border color
-                  offset: Offset(2, -2),
+                  offset: const Offset(2, -2),
                   blurRadius: 2.5 // Adjust this for border width
                   ),
               Shadow(
                   color: textoImagem['corBorda'], // Border color
-                  offset: Offset(-2, 2),
+                  offset: const Offset(-2, 2),
                   blurRadius: 2.5 // Adjust this for border width
                   ),
               Shadow(
                   color: textoImagem['corBorda'], // Border color
-                  offset: Offset(2, 2),
+                  offset: const Offset(2, 2),
                   blurRadius: 2.5 // Adjust this for border width
                   ),
             ],
@@ -522,7 +523,12 @@ class FlutterPainterExampleState extends State<CadastrarImagem> {
     numeroImagemController.text = "";
     legendaImagemController.text = "";
     fontController.text = "30";
-    textoImagem = {'numero': '', 'tamanhoFonte': 30, 'cor': null};
+    textoImagem = {
+      'numero': '',
+      'tamanhoFonte': 30,
+      'cor': const Color(0xffa00000),
+      'corBorda': Colors.yellow
+    };
   }
 
   void atualizaText() {
@@ -555,19 +561,19 @@ class FlutterPainterExampleState extends State<CadastrarImagem> {
             shadows: [
               Shadow(
                 color: textoImagem['corBorda'], // Border color
-                offset: Offset(-2, -2), // Adjust this for border width
+                offset: const Offset(-2, -2), // Adjust this for border width
               ),
               Shadow(
                 color: textoImagem['corBorda'], // Border color
-                offset: Offset(2, -2), // Adjust this for border width
+                offset: const Offset(2, -2), // Adjust this for border width
               ),
               Shadow(
                 color: textoImagem['corBorda'], // Border color
-                offset: Offset(-2, 2), // Adjust this for border width
+                offset: const Offset(-2, 2), // Adjust this for border width
               ),
               Shadow(
                 color: textoImagem['corBorda'], // Border color
-                offset: Offset(2, 2), // Adjust this for border width
+                offset: const Offset(2, 2), // Adjust this for border width
               ),
             ],
             fontSize: textoImagem['fonteTamanho'],

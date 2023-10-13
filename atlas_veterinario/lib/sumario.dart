@@ -21,7 +21,7 @@ class _SumarioState extends State<Sumario> {
     super.initState();
     Future.delayed(Duration.zero, () async {
       var res = await SupaDB.instance.clienteSupaBase.from('Capitulo').select(
-          'NumCapitulo, NomeCapitulo, PaginaInicio ,Unidade!inner(NumUnidade, NomeUnidade ,Parte!inner(Parte))');
+          'NumCapitulo, NomeCapitulo,Unidade!inner(NumUnidade, NomeUnidade ,Parte!inner(Parte))');
       setState(() {
         for (var pegaPartes in res) {
           partes.add(pegaPartes['Unidade']['Parte']['Parte']);

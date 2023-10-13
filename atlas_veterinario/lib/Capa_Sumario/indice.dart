@@ -1,3 +1,4 @@
+import 'package:atlas_veterinario/Fala/textoprafala.dart';
 import 'package:atlas_veterinario/Proxy/proxyindices.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +12,7 @@ class Indices extends StatefulWidget {
 
 class _IndicesState extends State<Indices> {
   List<Widget> testes = [];
+  bool isFalando = false;
   ProxyIndices proxyIndices = ProxyIndices().getInterface();
   @override
   void initState() {
@@ -51,9 +53,41 @@ class _IndicesState extends State<Indices> {
     );
   }
 
+  void falar(String fala) async {
+    setState(() {
+      isFalando = !isFalando;
+    });
+
+    if (isFalando) {
+      await Fala.instance.flutterTts.stop();
+      await Fala.instance.flutterTts.speak(fala);
+    } else {
+      await Fala.instance.flutterTts.stop();
+    }
+
+    setState(() {
+      isFalando = false;
+    });
+  }
+
   teste() async {
     Map resultados = await proxyIndices.findFull(false);
+
     testes = [
+      Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          Align(
+            alignment: Alignment.topRight,
+            child: IconButton(
+                onPressed: () {
+                  falar(
+                      'Ajuda Observação: Clique no Icone de fala para ouvir o que está escrito. Clique novamente para parar.');
+                },
+                icon: const Icon(Icons.record_voice_over)),
+          ),
+        ],
+      ),
       const AutoSizeText(
         'ÍNDICE',
         style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),
