@@ -2,6 +2,9 @@
 
 import 'package:atlas_veterinario/DadosDB/supa.dart';
 import 'package:atlas_veterinario/Proxy/proxyindices.dart';
+import 'package:atlas_veterinario/Proxy/proxypagina.dart';
+import 'package:atlas_veterinario/Proxy/sumarioP.dart';
+import 'package:atlas_veterinario/Utils/app_controller.dart';
 import 'package:atlas_veterinario/Utils/mensagens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -18,6 +21,8 @@ class CadPagina extends StatefulWidget {
 
 class _CadPaginaState extends State<CadPagina> {
   Mensagem mensagem = Mensagem();
+  List<int> reservados = [1, 2, 3, 4];
+
   Map partes = {};
   List<String> itemsParte = ['Parte', 'Unidade', 'Capitulo', 'Imagem'];
   TextEditingController controllerPagina = TextEditingController();
@@ -72,10 +77,15 @@ class _CadPaginaState extends State<CadPagina> {
         TextField(
           inputFormatters: [FilteringTextInputFormatter.digitsOnly],
           controller: controllerPagina,
-          decoration: const InputDecoration(label: Text('Página')),
+          decoration: const InputDecoration(
+              label: Text('Página'),
+              hintText: 'Escreva o número da página a ser inserida',
+              helperText: 'Escreva o número da página a ser inserida'),
         ),
         const SizedBox(height: 10),
         DropdownButton(
+            hint: const Text(
+                'Clique para escolher o tipo do coteúdo para a página'),
             value: value,
             items: itemsParte.map((e) => buildMenuItem(e, null)).toList(),
             onChanged: (value) async {
@@ -95,6 +105,7 @@ class _CadPaginaState extends State<CadPagina> {
         Builder(builder: (context) {
           if (value != 'Imagem' && value != null) {
             return DropdownButton(
+                hint: const Text('Clique para escolher qual Parte'),
                 value: valueParte,
                 items: partes.values
                     .toList()
@@ -117,9 +128,11 @@ class _CadPaginaState extends State<CadPagina> {
         }),
         const SizedBox(height: 10),
         Builder(builder: (context) {
-          if (parteAtual != null && value == 'Unidade') {
+          if (parteAtual != null &&
+              (value == 'Unidade' || value == 'Capitulo')) {
             print('Teste');
             return DropdownButton(
+                hint: const Text('Clique para escolher qual Unidade'),
                 value: valueUnidade,
                 items: partes[parteAtual]['Unidade']
                     .values
@@ -141,6 +154,7 @@ class _CadPaginaState extends State<CadPagina> {
 
           if (value == 'Imagem' && imagens.isNotEmpty) {
             return DropdownButton(
+                hint: const Text('Clique para escolher qual Imagem'),
                 value: valueImagem,
                 items: imagens.map<DropdownMenuItem<String>>((e) {
                   return buildMenuItem(
@@ -166,6 +180,7 @@ class _CadPaginaState extends State<CadPagina> {
         Builder(builder: (context) {
           if (unidadeAtual != null && value == 'Capitulo') {
             return DropdownButton(
+                hint: const Text('Clique para escolher qual Capitulo'),
                 value: valueCapitulo,
                 items: partes[parteAtual]['Unidade'][unidadeAtual]['Capitulo']
                     .values
@@ -201,13 +216,37 @@ class _CadPaginaState extends State<CadPagina> {
                 if (controllerPagina.text != '') {
                   if (value != null) {
                     int pagina = int.parse(controllerPagina.text);
-                    try {
-                      await fazInsert(pagina);
-                      mensagem.mensagem(context, 'Cadastro feito com sucesso',
-                          'Página cadastrada com sucesso', null);
-                    } on PostgrestException catch (e) {
-                      print(e);
-                      mensagemInsert(context, pagina);
+
+                    if (reservados.contains(pagina)) {
+                      mensagem.mensagem(
+                          context,
+                          'Páginas Iniciais',
+                          'As páginas 1 a 4 não podem ser alteradas, são as paginas de capa etc',
+                          '');
+                    } else {
+                      try {
+                        await fazInsert(pagina);
+                        List paginas = await SupaDB.instance.clienteSupaBase
+                            .from('Pagina')
+                            .select(
+                              '*',
+                            )
+                            .order('IdPagina', ascending: false);
+                        print(paginas[0]['IdPagina']);
+
+                        AppController.instance.totalPaginas =
+                            paginas[0]['IdPagina'];
+
+                        ProxyPagina().getInstance().pagina.paginas.clear();
+                        SumarioP.instance.sumarioLista.clear();
+
+                        setState(() {});
+                        mensagem.mensagem(context, 'Cadastro feito com sucesso',
+                            'Página cadastrada com sucesso', null);
+                      } on PostgrestException catch (e) {
+                        print(e);
+                        mensagemInsert(context, pagina);
+                      }
                     }
                   }
                 }
@@ -237,6 +276,13 @@ class _CadPaginaState extends State<CadPagina> {
       await SupaDB.instance.clienteSupaBase
           .from('Pagina')
           .insert({"IdPagina": pagina, 'IdImagem': imagemAtual});
+    }
+
+    int completar = AppController.instance.totalPaginas + 1;
+    for (completar; completar < pagina; completar++) {
+      await SupaDB.instance.clienteSupaBase
+          .from('Pagina')
+          .insert({"IdPagina": completar});
     }
   }
 
@@ -272,7 +318,7 @@ class _CadPaginaState extends State<CadPagina> {
 
               Navigator.of(context).pop();
             },
-            child: Text('Inserir')),
+            child: const Text('Inserir')),
         TextButton(
             onPressed: () {
               Navigator.of(context).pop();

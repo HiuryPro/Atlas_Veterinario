@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:atlas_veterinario/DadosDB/supa.dart';
@@ -114,12 +115,14 @@ class _CadastroState extends State<Cadastro> {
                           codigo += randomNumber.toString();
                         }
                         try {
+                          Codec<String, String> stringToBase64 =
+                              utf8.fuse(base64);
                           await SupaDB.instance.clienteSupaBase
                               .from('Usuario')
                               .insert({
                             'Nome': nome,
                             'Email': email,
-                            'Senha': senha,
+                            'Senha': stringToBase64.encode(senha),
                             'Codigo': codigo,
                             'IsAtivo': false
                           });

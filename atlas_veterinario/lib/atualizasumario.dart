@@ -418,8 +418,13 @@ class _AtualizaSumarioState extends State<AtualizaSumario> {
         ),
         ElevatedButton(
             onPressed: () async {
+              print(unidadeCapitulo);
+              print(mapCapitulos['IdCapitulo']);
+              print(capitulo.toString().split(' ')[0]);
+              print(mapCapitulos['NumCapitulo']);
+
               int index = mapCapitulos['NumCapitulo']!
-                  .indexOf(unidadeCapitulo.toString().split(' ')[0]);
+                  .indexOf(capitulo.toString().split(' ')[0]);
               int idCapitulo = int.parse(mapCapitulos['IdCapitulo']![index]);
               print(idCapitulo);
 
@@ -427,6 +432,11 @@ class _AtualizaSumarioState extends State<AtualizaSumario> {
                   .from('Capitulo')
                   .update({'NomeCapitulo': nomeCapituloController.text}).match(
                       {'IdCapitulo': idCapitulo});
+
+              setState(() {
+                mapCapitulos['NomeCapitulo']![index] =
+                    nomeCapituloController.text;
+              });
               await mensagem.mensagem(context, 'Atualização feita com sucesso',
                   'O capítulo foi atulizada com sucesso', null);
             },

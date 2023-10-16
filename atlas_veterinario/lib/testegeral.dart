@@ -1,4 +1,7 @@
 import 'package:atlas_veterinario/DadosDB/supa.dart';
+import 'package:atlas_veterinario/Proxy/proxyindices.dart';
+import 'package:atlas_veterinario/Proxy/proxypagina.dart';
+import 'package:atlas_veterinario/Proxy/sumarioP.dart';
 import 'package:flutter/material.dart';
 
 class TesteGeral extends StatefulWidget {
@@ -43,10 +46,31 @@ class _TesteGeralState extends State<TesteGeral> {
           ),
         ),
         ElevatedButton(
-            onPressed: () {
+            onPressed: () async {
+              List teste = await SumarioP.instance.findFull();
+              print(teste);
+            },
+            child: Text('Teste2')),
+        ElevatedButton(
+            onPressed: () async {
+              Map sumario = {'pagina': 1};
+              Map full = await ProxyIndices().getInterface().findFull(false);
+              Map parte = full[1];
+              Map unidade = parte['Unidade'][1];
+              Map capitulo = unidade['Capitulo'][1];
               print(Colors.yellow.value);
+              print(capitulo);
+              sumario.addAll(capitulo);
+              print(sumario);
             },
             child: Text('Teste')),
+        ElevatedButton(
+            onPressed: () async {
+              List<int> listaNum = [1, 2, 3, 4];
+
+              print(listaNum.contains(1));
+            },
+            child: Text('Teste5')),
         ElevatedButton(
             onPressed: () async {
               int maxPagina =
@@ -61,6 +85,19 @@ class _TesteGeralState extends State<TesteGeral> {
             child: Text('Teste'))
       ]),
     );
+  }
+
+  Future<Map<int, Map>?> buscaTelaConteudo() async {
+    ProxyPagina instance = ProxyPagina().getInstance();
+    Map<int, Map>? resultado = await instance.findFull(false);
+    print(resultado);
+    if (resultado != null) {
+      resultado.forEach((key, value) {
+        value.removeWhere((key, value) => value == null);
+      });
+    }
+
+    return resultado;
   }
 
   @override

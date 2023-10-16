@@ -1,5 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'dart:convert';
+
 import 'package:atlas_veterinario/DadosDB/supa.dart';
 import 'package:flutter/material.dart';
 
@@ -81,10 +83,13 @@ class _LoginState extends State<Login> {
 
                   if (emailValid) {
                     try {
+                      Codec<String, String> stringToBase64 = utf8.fuse(base64);
+
+                      String senhaDec = stringToBase64.encode(senha);
                       List user = await SupaDB.instance.clienteSupaBase
                           .from('Usuario')
                           .select('*')
-                          .match({'Email': email, 'Senha': senha});
+                          .match({'Email': email, 'Senha': senhaDec});
 
                       if (user.isEmpty) {
                         setState(() {
@@ -95,6 +100,8 @@ class _LoginState extends State<Login> {
                         AppController.instance.senha = senha;
                         AppController.instance.nome = user[0]['Nome'];
                         AppController.instance.isAdmin = user[0]['IsAdmin'];
+                        AppController.instance.isFirstTime =
+                            user[0]['IsFirstTime'];
 
                         if (user[0]['IsAtivo']) {
                           Navigator.of(context).pushNamed('/home');

@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:atlas_veterinario/DadosDB/supa.dart';
 import 'package:flutter/material.dart';
 import '../Utils/app_controller.dart';
@@ -50,16 +52,23 @@ class _ConfirmarCadastroState extends State<ConfirmarCadastro> {
                 onPressed: () async {
                   var mensagem = Mensagem();
                   try {
-                    await SupaDB.instance.clienteSupaBase
+                    List result = await SupaDB.instance.clienteSupaBase
                         .from('Usuario')
                         .update({'IsAtivo': true, 'Codigo': null}).match({
                       'Email': AppController.instance.email,
-                      'Senha': AppController.instance.senha,
                       'Codigo': condigoController.text
-                    });
-                    // ignore: use_build_context_synchronously
-                    await mensagem.mensagem(context, 'Conta Ativada!!',
-                        'Agora você tem acesso ao Atlas Veterinário', '/home');
+                    }).select();
+
+                    if (result.isNotEmpty) {
+                      await mensagem.mensagem(
+                          context,
+                          'Conta Ativada!!',
+                          'Agora você tem acesso ao Atlas Veterinário',
+                          '/home');
+                    } else {
+                      await mensagem.mensagem(context, 'Codigo Errado',
+                          'Codigo Informado está incorreto', null);
+                    }
                   } catch (e) {
                     print(e);
                   }

@@ -2,6 +2,7 @@ import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:atlas_veterinario/Fala/textoprafala.dart';
+import 'package:atlas_veterinario/Utils/app_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -80,5 +81,17 @@ class Utils {
       },
       child: widget,
     );
+  }
+
+  void falar(String fala) async {
+    AppController.instance.falando(!AppController.instance.isFalando);
+
+    await Fala.instance.flutterTts.stop();
+
+    if (AppController.instance.isFalando) {
+      await Fala.instance.flutterTts.speak(fala);
+    }
+
+    AppController.instance.falando(false);
   }
 }

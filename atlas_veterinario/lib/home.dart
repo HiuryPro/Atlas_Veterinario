@@ -6,6 +6,7 @@ import 'package:atlas_veterinario/Capa_Sumario/capitulo.dart';
 import 'package:atlas_veterinario/Capa_Sumario/folharosto.dart';
 import 'package:atlas_veterinario/Capa_Sumario/introducao.dart';
 import 'package:atlas_veterinario/Capa_Sumario/parte.dart';
+import 'package:atlas_veterinario/Capa_Sumario/vazio.dart';
 import 'package:atlas_veterinario/Fala/textoprafala.dart';
 import 'package:atlas_veterinario/Utils/mensagens.dart';
 import 'package:atlas_veterinario/Utils/tutorial.dart';
@@ -99,7 +100,7 @@ class _HomeState extends State<Home> {
                         icon: Image.asset('assets/images/unipam.png')),
                     IconButton(
                         onPressed: () async {
-                          falar('Clique para abrir opções do app');
+                          util.falar('Clique para abrir opções do app');
                         },
                         icon: const Icon(Icons.record_voice_over)),
                     const SizedBox(
@@ -116,7 +117,7 @@ class _HomeState extends State<Home> {
                     ),
                     IconButton(
                         onPressed: () async {
-                          falar('Clique para Ajuda');
+                          util.falar('Clique para Ajuda');
                         },
                         icon: const Icon(Icons.record_voice_over)),
                     const SizedBox(
@@ -128,7 +129,7 @@ class _HomeState extends State<Home> {
                     ),
                     IconButton(
                         onPressed: () async {
-                          falar('Clique para Opções de texto');
+                          util.falar('Clique para Opções de texto');
                         },
                         icon: const Icon(Icons.record_voice_over)),
                     opcoesdaPagina()
@@ -136,56 +137,6 @@ class _HomeState extends State<Home> {
             ),
             Expanded(
               child: GestureDetector(
-                  onLongPressMoveUpdate: (details) {
-                    print(details.globalPosition);
-                    print(MediaQuery.of(context).size.width);
-                    if (details.globalPosition.dx >
-                            (MediaQuery.of(context).size.width / 2) &&
-                        details.globalPosition.dy > 100) {
-                      if (pagina < AppController.instance.totalPaginas) {
-                        setState(() {
-                          pagina += 1;
-                        });
-                        Navigator.of(context)
-                            .push(passaPagina(TurnDirection.rightToLeft));
-                      }
-                    } else if (details.globalPosition.dx <=
-                            (MediaQuery.of(context).size.width / 2) &&
-                        details.globalPosition.dy > 100) {
-                      if (pagina > 1) {
-                        setState(() {
-                          pagina -= 1;
-                        });
-                        Navigator.of(context)
-                            .push(passaPagina(TurnDirection.leftToRight));
-                      }
-                    }
-                  },
-                  onDoubleTapDown: (details) {
-                    print(details.globalPosition);
-                    print(MediaQuery.of(context).size.width);
-                    if (details.globalPosition.dx >
-                            (MediaQuery.of(context).size.width / 2) &&
-                        details.globalPosition.dy > 100) {
-                      if (pagina < AppController.instance.totalPaginas) {
-                        setState(() {
-                          pagina += 1;
-                        });
-                        Navigator.of(context)
-                            .push(passaPagina(TurnDirection.rightToLeft));
-                      }
-                    } else if (details.globalPosition.dx <=
-                            (MediaQuery.of(context).size.width / 2) &&
-                        details.globalPosition.dy > 100) {
-                      if (pagina > 1) {
-                        setState(() {
-                          pagina -= 1;
-                        });
-                        Navigator.of(context)
-                            .push(passaPagina(TurnDirection.leftToRight));
-                      }
-                    }
-                  },
                   onHorizontalDragUpdate: (details) {
                     if (!isImage) {
                       if (details.delta.dx.isNegative) {
@@ -228,7 +179,8 @@ class _HomeState extends State<Home> {
                   children: [
                     IconButton(
                         onPressed: () async {
-                          falar('Clique para Opções de passagem de página');
+                          util.falar(
+                              'Clique para Opções de passagem de página');
                         },
                         icon: const Icon(Icons.record_voice_over)),
                     Tooltip(
@@ -296,7 +248,7 @@ class _HomeState extends State<Home> {
   }
 
   Widget criaTela(Map conteudo) {
-    if (!conteudo.containsKey('IdImagem')) {
+    if (!conteudo.containsKey('IdImagem') && conteudo.isNotEmpty) {
       int parteId;
       int unidadeId;
       int capituloId;
@@ -317,6 +269,8 @@ class _HomeState extends State<Home> {
       return Parte(
         parte: parteId,
       );
+    } else if (conteudo.isEmpty) {
+      return const Vazio();
     } else {
       isImage = true;
       int idImagem = conteudo['IdImagem'];
@@ -326,9 +280,9 @@ class _HomeState extends State<Home> {
 
   PopupMenuButton<dynamic> opcoesdaPagina() {
     return PopupMenuButton(
-        iconSize: 48,
+        iconSize: 35,
         tooltip: "Abre opções de Texto",
-        icon: const Icon(Icons.menu, color: Colors.black),
+        icon: const Icon(Icons.settings, color: Colors.black),
         itemBuilder: (BuildContext context) => <PopupMenuEntry>[
               PopupMenuItem(child: StatefulBuilder(
                 builder: ((context, setState) {
@@ -471,12 +425,14 @@ class _HomeState extends State<Home> {
                           child: IconButton(
                               iconSize: 50,
                               onPressed: () {
-                                setState(() {
-                                  pagina -= 1;
-                                });
-                                Navigator.of(context).pop();
-                                Navigator.of(context).push(
-                                    passaPagina(TurnDirection.leftToRight));
+                                if (pagina > 1) {
+                                  setState(() {
+                                    pagina -= 1;
+                                  });
+                                  Navigator.of(context).pop();
+                                  Navigator.of(context).push(
+                                      passaPagina(TurnDirection.leftToRight));
+                                }
                               },
                               icon: const Icon(Icons.arrow_back)),
                         ),
@@ -544,12 +500,15 @@ class _HomeState extends State<Home> {
                           child: IconButton(
                               iconSize: 50,
                               onPressed: () {
-                                setState(() {
-                                  pagina += 1;
-                                });
-                                Navigator.of(context).pop();
-                                Navigator.of(context).push(
-                                    passaPagina(TurnDirection.rightToLeft));
+                                if (pagina <
+                                    AppController.instance.totalPaginas) {
+                                  setState(() {
+                                    pagina += 1;
+                                  });
+                                  Navigator.of(context).pop();
+                                  Navigator.of(context).push(
+                                      passaPagina(TurnDirection.rightToLeft));
+                                }
                               },
                               icon: const Icon(Icons.arrow_forward)),
                         ),
@@ -712,7 +671,7 @@ class _HomeState extends State<Home> {
                   title: const Text('Sumário'),
                   trailing: IconButton(
                       onPressed: () async {
-                        falar('Clique para acessar o sumario');
+                        util.falar('Clique para acessar o sumario');
                       },
                       icon: const Icon(Icons.record_voice_over)),
                 ),
@@ -733,7 +692,7 @@ class _HomeState extends State<Home> {
               title: const Text('Logout'),
               trailing: IconButton(
                   onPressed: () async {
-                    falar('Clique para fazer logout');
+                    util.falar('Clique para fazer logout');
                   },
                   icon: const Icon(Icons.record_voice_over))),
         ),
@@ -753,7 +712,7 @@ class _HomeState extends State<Home> {
             title: const Text('Cadastrar Sumário'),
             trailing: IconButton(
                 onPressed: () async {
-                  falar('Clique para cadastrar o Sumário');
+                  util.falar('Clique para cadastrar o Sumário');
                 },
                 icon: const Icon(Icons.record_voice_over))),
       ),
@@ -767,7 +726,7 @@ class _HomeState extends State<Home> {
             title: const Text('Atualizar Sumário'),
             trailing: IconButton(
                 onPressed: () async {
-                  falar('Clique para atualizar o Sumário');
+                  util.falar('Clique para atualizar o Sumário');
                 },
                 icon: const Icon(Icons.record_voice_over))),
       ),
@@ -781,7 +740,7 @@ class _HomeState extends State<Home> {
             title: const Text('Cadastrar Imagens'),
             trailing: IconButton(
                 onPressed: () async {
-                  falar('Clique para cadastrar as Imagens');
+                  util.falar('Clique para cadastrar as Imagens');
                 },
                 icon: const Icon(Icons.record_voice_over))),
       ),
@@ -795,7 +754,7 @@ class _HomeState extends State<Home> {
             title: const Text('Cadastrar Páginas'),
             trailing: IconButton(
                 onPressed: () async {
-                  falar('Clique para cadastrar as Páginas');
+                  util.falar('Clique para cadastrar as Páginas');
                 },
                 icon: const Icon(Icons.record_voice_over))),
       ),
@@ -809,28 +768,11 @@ class _HomeState extends State<Home> {
             title: const Text('Atualizar Páginas'),
             trailing: IconButton(
                 onPressed: () async {
-                  falar('Clique para atualizar as Páginas');
+                  util.falar('Clique para atualizar as Páginas');
                 },
                 icon: const Icon(Icons.record_voice_over))),
       ),
     ];
-  }
-
-  void falar(String fala) async {
-    setState(() {
-      isFalando = !isFalando;
-    });
-
-    if (isFalando) {
-      await Fala.instance.flutterTts.stop();
-      await Fala.instance.flutterTts.speak(fala);
-    } else {
-      await Fala.instance.flutterTts.stop();
-    }
-
-    setState(() {
-      isFalando = false;
-    });
   }
 
   @override
@@ -844,7 +786,50 @@ class _HomeState extends State<Home> {
               body: Stack(
                 children: [
                   body(),
-                  if (AppController.instance.tutorial1) const Tutorial1(),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Container(
+                      decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.grey.withOpacity(0.3)),
+                      child: IconButton(
+                        onPressed: () {
+                          if (pagina > 1) {
+                            setState(() {
+                              pagina -= 1;
+                            });
+
+                            Navigator.of(context)
+                                .push(passaPagina(TurnDirection.leftToRight));
+                          }
+                        },
+                        icon: Icon(Icons.arrow_back),
+                      ),
+                    ),
+                  ),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: Container(
+                      decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.grey.withOpacity(0.3)),
+                      child: IconButton(
+                        onPressed: () {
+                          if (pagina < AppController.instance.totalPaginas) {
+                            setState(() {
+                              pagina += 1;
+                            });
+                            Navigator.of(context)
+                                .push(passaPagina(TurnDirection.rightToLeft));
+                          }
+                        },
+                        icon: Icon(Icons.arrow_forward),
+                      ),
+                    ),
+                  ),
+                  if (AppController.instance.tutorial1 ||
+                      AppController.instance.isFirstTime)
+                    const Tutorial1(),
                 ],
               ));
         });

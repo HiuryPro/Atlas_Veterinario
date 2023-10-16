@@ -125,6 +125,8 @@ class FlutterPainterExampleState extends State<CadastrarImagem> {
       print(drawbleT.rotationAngle);
       controller.textStyle = drawbleT.style;
 
+      print(drawbleT.scale);
+
       fontController.text = drawbleT.style.fontSize.toString();
       numeroImagemController.text = drawbleT.text;
       legendaImagemController.text =
@@ -151,13 +153,15 @@ class FlutterPainterExampleState extends State<CadastrarImagem> {
             valueListenable: controller,
             child: Row(children: [
               IconButton(
+                  tooltip: 'Clique para adicionar uma imagem',
                   onPressed: () {
                     initBackground();
                     for (var drawable in controller.drawables) {
                       controller.removeDrawable(drawable);
                     }
                   },
-                  icon: Icon(PhosphorIcons.fill.image)),
+                  icon: ImageIcon(
+                      size: 80, AssetImage('assets/images/imageattach.png'))),
             ]),
             builder: (context, _, child) {
               return AppBar(
@@ -165,6 +169,7 @@ class FlutterPainterExampleState extends State<CadastrarImagem> {
                 actions: [
                   // Delete the selected drawable
                   IconButton(
+                    tooltip: 'Clique para pagar o número selecionado',
                     icon: Icon(
                       PhosphorIcons.fill.trash,
                     ),
@@ -173,6 +178,7 @@ class FlutterPainterExampleState extends State<CadastrarImagem> {
                         : removeSelectedDrawable,
                   ),
                   IconButton(
+                    tooltip: 'Clique para desfazer',
                     icon: Icon(
                       PhosphorIcons.fill.arrowClockwise,
                     ),
@@ -180,6 +186,7 @@ class FlutterPainterExampleState extends State<CadastrarImagem> {
                   ),
                   // Undo action
                   IconButton(
+                    tooltip: 'Clique para refazer',
                     icon: Icon(
                       PhosphorIcons.fill.arrowCounterClockwise,
                     ),
@@ -254,6 +261,7 @@ class FlutterPainterExampleState extends State<CadastrarImagem> {
                   children: [
                     Expanded(
                       child: IconButton(
+                        tooltip: 'Clique para adicionar texto',
                         icon: Icon(
                           PhosphorIcons.fill.textT,
                           color: adicionandoTexto ? Colors.yellow : null,
@@ -268,6 +276,7 @@ class FlutterPainterExampleState extends State<CadastrarImagem> {
                     ),
                     Expanded(
                       child: IconButton(
+                          tooltip: 'Clique para rotacionar a imagem',
                           onPressed: () {
                             rotation += 1;
                             if (rotation == 4) {
@@ -275,10 +284,11 @@ class FlutterPainterExampleState extends State<CadastrarImagem> {
                             }
                             setState(() {});
                           },
-                          icon: const Icon(Icons.flip)),
+                          icon: Icon(PhosphorIcons.fill.arrowsClockwise)),
                     ),
                     Expanded(
                       child: IconButton(
+                        tooltip: 'Clique para salvar a imagem',
                         icon: Icon(
                           PhosphorIcons.fill.floppyDisk,
                         ),

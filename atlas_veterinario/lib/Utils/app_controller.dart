@@ -8,8 +8,10 @@ class AppController extends ChangeNotifier {
 
   bool isDarkTheme = false;
   ThemeData? temaEmUso;
+  bool isFalando = false;
   bool isTema = false;
   bool isAdmin = false;
+  bool isFirstTime = false;
   Color theme1 = Colors.black;
   Color theme2 = Colors.white;
   Color themeCustom = Colors.white;
@@ -61,6 +63,11 @@ class AppController extends ChangeNotifier {
 
   mudaTutorial2() {
     tutorial2 = !tutorial2;
+    notifyListeners();
+  }
+
+  falando(bool falando) {
+    isFalando = falando;
     notifyListeners();
   }
 }

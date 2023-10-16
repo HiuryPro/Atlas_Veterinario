@@ -1,5 +1,6 @@
-import 'package:atlas_veterinario/Fala/textoprafala.dart';
+import 'package:atlas_veterinario/DadosDB/supa.dart';
 import 'package:atlas_veterinario/Utils/app_controller.dart';
+import 'package:atlas_veterinario/Utils/utils.dart';
 import 'package:flutter/material.dart';
 
 class Tutorial1 extends StatefulWidget {
@@ -10,14 +11,15 @@ class Tutorial1 extends StatefulWidget {
 }
 
 class _Tutorial1State extends State<Tutorial1> {
+  Utils util = Utils();
   bool isFalando = false;
 
   String textoGrande =
       'Para navegar pelas páginas, você pode executar a ação de deslizar o dedo '
       'pela tela. Deslizar o dedo para a esquerda permitirá avançar para a próxima '
       'página, enquanto deslizar o dedo para a direita o levará de volta à página '
-      'anterior. Alternativamente, você também pode utilizar o gesto de duplo clique '
-      'na parte esquerda ou direita da tela para efetuar a troca de página. '
+      'anterior. Alternativamente, você também pode utilizar as setas que estão '
+      'na parte esquerda e direita da tela para efetuar a troca de página. '
       'Outra opção para navegação é clicar no pequeno triângulo localizado na parte inferior da página. '
       'Ao fazer isso, você abrirá um menu que apresentará diversas opções para avançar ou retroceder '
       'nas páginas, oferecendo uma experiência de leitura mais flexível e intuitiva.';
@@ -40,24 +42,8 @@ class _Tutorial1State extends State<Tutorial1> {
       'No canto superior direito há um menu que ao ser clicado apresenta '
       'opções de alteração de texto e tema do app. No canto superior esquerdo '
       'há uma imagem da logo do UNIPAM que ao ser clicado apresenta '
-      'o menu lateral do app com mais opções';
-
-  void falar(String fala) async {
-    setState(() {
-      isFalando = !isFalando;
-    });
-
-    if (isFalando) {
-      await Fala.instance.flutterTts.stop();
-      await Fala.instance.flutterTts.speak(fala);
-    } else {
-      await Fala.instance.flutterTts.stop();
-    }
-
-    setState(() {
-      isFalando = false;
-    });
-  }
+      'o menu lateral do app com mais opções. Ao lado do icone do Unipam tem um icone de Interrogação '
+      'que ao ser clicado ou leva a tela de ajuda (Tela atual).';
 
   @override
   Widget build(BuildContext context) {
@@ -81,8 +67,8 @@ class _Tutorial1State extends State<Tutorial1> {
                       alignment: Alignment.topRight,
                       child: IconButton(
                           onPressed: () {
-                            falar(
-                                'Ajuda. Observação: Clique no Icone de fala para ouvir o que está escrito. Clique novamente para parar.');
+                            util.falar(
+                                'Ajuda. Observação: Clique no Icone de fala para ouvir o que está escrito. Clique novamente para parar. Para escutar outra fala espere ou cancele a atual.');
                           },
                           icon: const Icon(Icons.record_voice_over)),
                     ),
@@ -123,6 +109,17 @@ class _Tutorial1State extends State<Tutorial1> {
                                 fontSize: 30),
                           ),
                         ),
+                        Padding(
+                          padding: EdgeInsets.all(5.0),
+                          child: Text(
+                            'Para escutar outra fala espere ou cancele a atual.',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                color: Color(0xff386e41),
+                                fontWeight: FontWeight.bold,
+                                fontSize: 30),
+                          ),
+                        ),
                       ],
                     ),
                   ],
@@ -141,7 +138,7 @@ class _Tutorial1State extends State<Tutorial1> {
                       alignment: Alignment.topRight,
                       child: IconButton(
                           onPressed: () {
-                            falar(
+                            util.falar(
                                 'Passagem de páginas. $textoGrande $textoGrande2');
                           },
                           icon: const Icon(Icons.record_voice_over)),
@@ -193,7 +190,7 @@ class _Tutorial1State extends State<Tutorial1> {
                       alignment: Alignment.topRight,
                       child: IconButton(
                           onPressed: () {
-                            falar('Imagens. $textoGrande3');
+                            util.falar('Imagens. $textoGrande3');
                           },
                           icon: const Icon(Icons.record_voice_over)),
                     ),
@@ -234,7 +231,7 @@ class _Tutorial1State extends State<Tutorial1> {
                       alignment: Alignment.topRight,
                       child: IconButton(
                           onPressed: () {
-                            falar('Utilidades. $textoGrande4');
+                            util.falar('Utilidades. $textoGrande4');
                           },
                           icon: const Icon(Icons.record_voice_over)),
                     ),
@@ -266,7 +263,17 @@ class _Tutorial1State extends State<Tutorial1> {
             Align(
               alignment: Alignment.bottomCenter,
               child: ElevatedButton(
-                  onPressed: () {
+                  onPressed: () async {
+                    if (AppController.instance.isFirstTime) {
+                      await SupaDB.instance.clienteSupaBase
+                          .from('Usuario')
+                          .update({'IsFirstTime': false}).match(
+                              {'Email': AppController.instance.email});
+                      setState(() {
+                        AppController.instance.isFirstTime = false;
+                        AppController.instance.mudaTutorial1();
+                      });
+                    }
                     setState(() {
                       AppController.instance.mudaTutorial1();
                     });

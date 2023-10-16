@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:atlas_veterinario/CadImagem/geraimagem.dart';
-import 'package:atlas_veterinario/Fala/textoprafala.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:carousel_slider/carousel_controller.dart';
 import 'package:flutter/foundation.dart';
@@ -155,22 +154,22 @@ class BuscarImagemPainterState extends State<BuscarImagemPainter> {
               shadows: [
                 Shadow(
                     color: corBorda, // Border color
-                    offset: Offset(-2, -2),
+                    offset: const Offset(-2, -2),
                     blurRadius: 2.5 // Adjust this for border width
                     ),
                 Shadow(
                     color: corBorda, // Border color
-                    offset: Offset(2, -2),
+                    offset: const Offset(2, -2),
                     blurRadius: 2.5 // Adjust this for border width
                     ),
                 Shadow(
                     color: corBorda, // Border color
-                    offset: Offset(-2, 2),
+                    offset: const Offset(-2, 2),
                     blurRadius: 2.5 // Adjust this for border width
                     ),
                 Shadow(
                     color: corBorda, // Border color
-                    offset: Offset(2, 2),
+                    offset: const Offset(2, 2),
                     blurRadius: 2.5 // Adjust this for border width
                     ),
               ],
@@ -196,18 +195,18 @@ class BuscarImagemPainterState extends State<BuscarImagemPainter> {
                     maxLines: 2,
                     minFontSize: 10,
                     style: const TextStyle(fontSize: 20)),
-                SizedBox(
+                const SizedBox(
                   width: 5,
                 ),
                 IconButton(
                     onPressed: () {
-                      falar(nomeImagem);
+                      utils.falar(nomeImagem);
                     },
                     icon: const Icon(Icons.record_voice_over)),
-                Expanded(child: SizedBox()),
+                const Expanded(child: SizedBox()),
                 IconButton(
                     onPressed: () {
-                      falar('Clique para rotacionar a imagem.');
+                      utils.falar('Clique para rotacionar a imagem.');
                     },
                     icon: const Icon(Icons.record_voice_over)),
                 IconButton(
@@ -222,7 +221,7 @@ class BuscarImagemPainterState extends State<BuscarImagemPainter> {
                       print(incrementalRotation);
                       legendas.clear();
                       initBackground(widget.id, incrementalRotation);
-                      await Future.delayed(Duration(milliseconds: 100));
+                      await Future.delayed(const Duration(milliseconds: 100));
                       print(legendaAtual);
                       destacandoNumero(legendaAtual);
                       setState(() {});
@@ -259,7 +258,7 @@ class BuscarImagemPainterState extends State<BuscarImagemPainter> {
                       if (valorTexto != '') {
                         valorTexto = valorTexto.substring(indexEspaco + 1);
                       }
-                      falar(valorTexto);
+                      utils.falar(valorTexto);
                     },
                     icon: const Icon(Icons.record_voice_over))
               ],
@@ -326,23 +325,6 @@ class BuscarImagemPainterState extends State<BuscarImagemPainter> {
             legendaAtual = value;
           });
         });
-  }
-
-  void falar(String fala) async {
-    setState(() {
-      isFalando = !isFalando;
-    });
-
-    if (isFalando) {
-      await Fala.instance.flutterTts.stop();
-      await Fala.instance.flutterTts.speak(fala);
-    } else {
-      await Fala.instance.flutterTts.stop();
-    }
-
-    setState(() {
-      isFalando = false;
-    });
   }
 
   @override
