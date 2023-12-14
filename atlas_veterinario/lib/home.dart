@@ -1,17 +1,19 @@
 // ignore: implementation_imports
 // ignore: implementation_imports
+import 'dart:convert';
+
 import 'package:atlas_veterinario/CadImagem/buscarimagem.dart';
-import 'package:atlas_veterinario/Capa_Sumario/capa.dart';
 import 'package:atlas_veterinario/Capa_Sumario/capitulo.dart';
 import 'package:atlas_veterinario/Capa_Sumario/folharosto.dart';
 import 'package:atlas_veterinario/Capa_Sumario/introducao.dart';
 import 'package:atlas_veterinario/Capa_Sumario/parte.dart';
 import 'package:atlas_veterinario/Capa_Sumario/vazio.dart';
 import 'package:atlas_veterinario/Fala/textoprafala.dart';
+import 'package:atlas_veterinario/Proxy/proxycapa.dart';
+import 'package:atlas_veterinario/Utils/IconButtonVoice.dart';
 import 'package:atlas_veterinario/Utils/mensagens.dart';
 import 'package:atlas_veterinario/Utils/tutorial.dart';
 import 'package:atlas_veterinario/Utils/utils.dart';
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/services.dart';
 import 'package:turn_page_transition/src/turn_direction.dart';
 import 'package:flutter/material.dart';
@@ -33,11 +35,13 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   final GlobalKey<ScaffoldState> _keyS = GlobalKey();
+
+  String? imagem;
+  Image? imagemWiget;
   Utils util = Utils();
-  Future<Map?>? conteudos;
+  Future<Map<String, dynamic>?>? conteudos;
   bool isImage = false;
   Map<int, Widget> parteInicial = {
-    1: const Capa(),
     2: const FolhaRosto(),
     3: const Indices(),
     4: const Introducao()
@@ -58,6 +62,16 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
+
+    Future.delayed(Duration.zero, () async {
+      var resultados = await ProxyCapa.instance.find(1, false);
+      print(resultados);
+      imagem = resultados['Capa'];
+      print(imagem);
+      imagemWiget = Image.memory(base64.decode(imagem!), fit: BoxFit.contain);
+
+      setState(() {});
+    });
     setState(() {
       pagina = widget.pagina;
       print(pagina);
@@ -97,12 +111,11 @@ class _HomeState extends State<Home> {
                         iconSize: 48,
                         tooltip: 'Abre opções do Aplicativo',
                         onPressed: () => _keyS.currentState!.openDrawer(),
-                        icon: Image.asset('assets/images/unipam.png')),
-                    IconButton(
-                        onPressed: () async {
-                          util.falar('Clique para abrir opções do app');
-                        },
-                        icon: const Icon(Icons.record_voice_over)),
+                        icon: const Icon(Icons.menu)),
+                    const IconButtonVoice(
+                      fala: 'Clique para abrir opções do app',
+                      cor: Colors.white,
+                    ),
                     const SizedBox(
                       width: 5,
                     ),
@@ -115,11 +128,10 @@ class _HomeState extends State<Home> {
                           },
                           icon: const Icon(Icons.question_mark)),
                     ),
-                    IconButton(
-                        onPressed: () async {
-                          util.falar('Clique para Ajuda');
-                        },
-                        icon: const Icon(Icons.record_voice_over)),
+                    const IconButtonVoice(
+                      fala: 'Clique para Ajuda',
+                      cor: Colors.white,
+                    ),
                     const SizedBox(
                       width: 5,
                     ),
@@ -127,38 +139,13 @@ class _HomeState extends State<Home> {
                     const SizedBox(
                       width: 5,
                     ),
-                    IconButton(
-                        onPressed: () async {
-                          util.falar('Clique para Opções de texto');
-                        },
-                        icon: const Icon(Icons.record_voice_over)),
+                    const IconButtonVoice(
+                        cor: Colors.black, fala: 'Clique para Opções de texto'),
                     opcoesdaPagina()
                   ]),
             ),
             Expanded(
-              child: GestureDetector(
-                  onHorizontalDragUpdate: (details) {
-                    if (!isImage) {
-                      if (details.delta.dx.isNegative) {
-                        if (pagina < AppController.instance.totalPaginas) {
-                          setState(() {
-                            pagina += 1;
-                          });
-                          Navigator.of(context)
-                              .push(passaPagina(TurnDirection.rightToLeft));
-                        }
-                      } else if (details.delta.dx > 0) {
-                        if (pagina > 1) {
-                          setState(() {
-                            pagina -= 1;
-                          });
-                          Navigator.of(context)
-                              .push(passaPagina(TurnDirection.leftToRight));
-                        }
-                      }
-                    }
-                  },
-                  child: buscaTela()),
+              child: buscaTela(),
             ),
             Container(
               decoration: const BoxDecoration(
@@ -177,25 +164,25 @@ class _HomeState extends State<Home> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    IconButton(
-                        onPressed: () async {
-                          util.falar(
-                              'Clique para Opções de passagem de página');
-                        },
-                        icon: const Icon(Icons.record_voice_over)),
-                    Tooltip(
-                      message: 'Abre opções de passagem de página',
-                      child: IconButton(
-                        iconSize: 36,
-                        icon: const Icon(Icons.arrow_drop_up),
-                        onPressed: () {
-                          setState(() {
-                            isOpen = !isOpen;
-                          });
-                          paginaSelector();
-                        },
-                      ),
+                    const Expanded(
+                      child: SizedBox(),
                     ),
+                    const IconButtonVoice(
+                        cor: Colors.black,
+                        fala: 'Clique para Pesquisar as páginas'),
+                    Expanded(child: paginaSelector()),
+                    const Expanded(
+                      child: SizedBox(),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(right: 10),
+                      child: Image.asset(
+                        'assets/images/unipam.png',
+                        width: 44,
+                        height: 44,
+                        fit: BoxFit.cover,
+                      ),
+                    )
                   ],
                 ),
               ),
@@ -205,7 +192,13 @@ class _HomeState extends State<Home> {
   }
 
   Widget buscaTela() {
-    if (parteInicial.containsKey(widget.pagina)) {
+    if (widget.pagina == 1) {
+      return imagemWiget == null
+          ? SizedBox()
+          : SizedBox(
+              width: MediaQuery.of(context).size.width,
+              child: InteractiveViewer(maxScale: 10, child: imagemWiget!));
+    } else if (parteInicial.containsKey(widget.pagina)) {
       return parteInicial[widget.pagina]!;
     } else {
       return FutureBuilder(
@@ -234,47 +227,46 @@ class _HomeState extends State<Home> {
     }
   }
 
-  Future<Map?> buscaTelaConteudo() async {
-    ProxyPagina instance = ProxyPagina().getInstance();
-    Map? resultado = await instance.find(widget.pagina, false);
-    print(resultado);
-    if (resultado != null) {
-      resultado.removeWhere(
-        (key, value) => value == null,
-      );
-    }
+  Future<Map<String, dynamic>?> buscaTelaConteudo() async {
+    ProxyPagina instance = ProxyPagina.instance;
+    Map<String, dynamic>? resultado = await instance.find(widget.pagina, false);
 
     return resultado;
   }
 
-  Widget criaTela(Map conteudo) {
-    if (!conteudo.containsKey('IdImagem') && conteudo.isNotEmpty) {
+  Widget criaTela(Map<String, dynamic> conteudo) {
+    print(conteudo);
+    int paginaParte = conteudo['Pagina'];
+    if (!conteudo.containsKey('IdImagem')) {
       int parteId;
       int unidadeId;
       int capituloId;
       if (conteudo['Capitulo'] != null) {
-        capituloId = conteudo['Capitulo'];
-        unidadeId = conteudo['Unidade'];
-        parteId = conteudo['Parte'];
+        capituloId = conteudo['Capitulo']!;
+        unidadeId = conteudo['Unidade']!;
+        parteId = conteudo['Parte']!;
         return Capitulo(
-            parte: parteId, capitulo: capituloId, unidade: unidadeId);
+          parte: parteId,
+          capitulo: capituloId,
+          unidade: unidadeId,
+          pagina: paginaParte,
+        );
       } else if (conteudo['Unidade'] != null) {
-        unidadeId = conteudo['Unidade'];
-        parteId = conteudo['Parte'];
-        return Unidade(parte: parteId, unidade: unidadeId);
+        unidadeId = conteudo['Unidade']!;
+        parteId = conteudo['Parte']!;
+        return Unidade(parte: parteId, unidade: unidadeId, pagina: paginaParte);
+      } else if (conteudo['Parte'] != null) {
+        parteId = conteudo['Parte']!;
+
+        return Parte(parte: parteId, pagina: paginaParte);
+      } else {
+        return Vazio(pagina: paginaParte);
       }
-
-      parteId = conteudo['Parte'];
-
-      return Parte(
-        parte: parteId,
-      );
-    } else if (conteudo.isEmpty) {
-      return const Vazio();
     } else {
       isImage = true;
-      int idImagem = conteudo['IdImagem'];
-      return BuscarImagemPainter(id: idImagem);
+      return BuscarImagemPainter(
+        dadosPaginaImagem: conteudo,
+      );
     }
   }
 
@@ -287,6 +279,15 @@ class _HomeState extends State<Home> {
               PopupMenuItem(child: StatefulBuilder(
                 builder: ((context, setState) {
                   return Column(children: [
+                    Align(
+                      alignment: Alignment.topLeft,
+                      child: IconButton(
+                          tooltip: 'Clique para fechar',
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          icon: const Icon(Icons.close)),
+                    ),
                     Row(
                       children: [
                         const Text('Tamanho da fonte'),
@@ -404,120 +405,47 @@ class _HomeState extends State<Home> {
     );
   }
 
-  Future<dynamic> paginaSelector() {
-    return showModalBottomSheet(
-        transitionAnimationController: bottomSheetController,
-        context: context,
-        builder: (ctx) {
-          return StatefulBuilder(
-            builder: (context, setState) {
-              return ClipRRect(
-                borderRadius: const BorderRadius.only(
-                  topRight: Radius.circular(20),
-                  topLeft: Radius.circular(20),
-                ),
-                child: SizedBox(
-                    height: 150,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Expanded(
-                          child: IconButton(
-                              iconSize: 50,
-                              onPressed: () {
-                                if (pagina > 1) {
-                                  setState(() {
-                                    pagina -= 1;
-                                  });
-                                  Navigator.of(context).pop();
-                                  Navigator.of(context).push(
-                                      passaPagina(TurnDirection.leftToRight));
-                                }
-                              },
-                              icon: const Icon(Icons.arrow_back)),
-                        ),
-                        Expanded(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                  '$pagina de ${AppController.instance.totalPaginas}'),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              TextField(
-                                textAlign: TextAlign.center,
-                                controller: paginaController,
-                                decoration: const InputDecoration(
-                                    border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(50)))),
-                                inputFormatters: [
-                                  FilteringTextInputFormatter.digitsOnly
-                                ],
-                              ),
-                              const SizedBox(
-                                height: 20,
-                              ),
-                              ElevatedButton(
-                                  onPressed: () {
-                                    String value = paginaController.text;
-                                    if (value != '') {
-                                      int paginaDigitada = int.parse(value);
-                                      if (paginaDigitada >= 1 &&
-                                          paginaDigitada <=
-                                              AppController
-                                                  .instance.totalPaginas) {
-                                        setState(() {
-                                          pagina = paginaDigitada;
-                                        });
+  TextField paginaSelector() {
+    return TextField(
+      textAlign: TextAlign.center,
+      controller: paginaController,
+      decoration: InputDecoration(
+          prefixIconColor: Colors.green,
+          focusedBorder: const OutlineInputBorder(
+              borderSide: BorderSide(width: 3, color: Colors.greenAccent),
+              borderRadius: BorderRadius.all(Radius.circular(30)),
+              gapPadding: 4 //<-- SEE HERE
+              ),
+          hintText:
+              'Pesquise uma página $pagina de ${AppController.instance.totalPaginas}',
+          prefixIcon: IconButton(
+              onPressed: () {
+                String value = paginaController.text;
+                if (value != '') {
+                  int paginaDigitada = int.parse(value);
+                  if (paginaDigitada >= 1 &&
+                      paginaDigitada <= AppController.instance.totalPaginas) {
+                    setState(() {
+                      pagina = paginaDigitada;
+                    });
 
-                                        if (pagina < paginaAntes) {
-                                          Navigator.of(context).pop();
-                                          Navigator.of(context).push(
-                                              passaPagina(
-                                                  TurnDirection.leftToRight));
-                                        } else if (pagina > paginaAntes) {
-                                          Navigator.of(context).pop();
-                                          Navigator.of(context).push(
-                                              passaPagina(
-                                                  TurnDirection.rightToLeft));
-                                        }
-                                      }
-                                    }
-                                  },
-                                  child: const Center(
-                                      child: AutoSizeText(
-                                    'Passar Pagina',
-                                    textAlign: TextAlign.center,
-                                    minFontSize: 10,
-                                    maxLines: 3,
-                                  )))
-                            ],
-                          ),
-                        ),
-                        Expanded(
-                          child: IconButton(
-                              iconSize: 50,
-                              onPressed: () {
-                                if (pagina <
-                                    AppController.instance.totalPaginas) {
-                                  setState(() {
-                                    pagina += 1;
-                                  });
-                                  Navigator.of(context).pop();
-                                  Navigator.of(context).push(
-                                      passaPagina(TurnDirection.rightToLeft));
-                                }
-                              },
-                              icon: const Icon(Icons.arrow_forward)),
-                        ),
-                      ],
-                    )),
-              );
-            },
-          );
-        });
+                    if (pagina < paginaAntes) {
+                      Navigator.of(context).pop();
+                      Navigator.of(context)
+                          .push(passaPagina(TurnDirection.leftToRight));
+                    } else if (pagina > paginaAntes) {
+                      Navigator.of(context).pop();
+                      Navigator.of(context)
+                          .push(passaPagina(TurnDirection.rightToLeft));
+                    }
+                  }
+                }
+              },
+              icon: const Icon(Icons.search)),
+          border: const OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(50)))),
+      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+    );
   }
 
   coresFonte() {
@@ -669,11 +597,8 @@ class _HomeState extends State<Home> {
                   },
                   leading: const Icon(Icons.manage_search),
                   title: const Text('Sumário'),
-                  trailing: IconButton(
-                      onPressed: () async {
-                        util.falar('Clique para acessar o sumario');
-                      },
-                      icon: const Icon(Icons.record_voice_over)),
+                  trailing: const IconButtonVoice(
+                      cor: Colors.black, fala: 'Clique para acessar o sumario'),
                 ),
               ),
             ),
@@ -683,18 +608,16 @@ class _HomeState extends State<Home> {
         Tooltip(
           message: 'Clique para fazer Logout',
           child: ListTile(
-              onTap: () async {
-                var mensagem = Mensagem();
-                await mensagem.mensagemOpcao(context, 'Fazer Logout',
-                    'Deseja realmente fazer logout?', '/login');
-              },
-              leading: const Icon(Icons.logout),
-              title: const Text('Logout'),
-              trailing: IconButton(
-                  onPressed: () async {
-                    util.falar('Clique para fazer logout');
-                  },
-                  icon: const Icon(Icons.record_voice_over))),
+            onTap: () async {
+              var mensagem = Mensagem();
+              await mensagem.mensagemOpcao(context, 'Fazer Logout',
+                  'Deseja realmente fazer logout?', '/login');
+            },
+            leading: const Icon(Icons.logout),
+            title: const Text('Logout'),
+            trailing: const IconButtonVoice(
+                cor: Colors.black, fala: 'Clique para fazer logout'),
+          ),
         ),
       ]),
     ));
@@ -705,72 +628,86 @@ class _HomeState extends State<Home> {
       Tooltip(
         message: 'Clique para cadastrar o Sumário',
         child: ListTile(
-            onTap: () {
-              Navigator.of(context).pushNamed('/cadastrarsumario');
-            },
-            leading: const Icon(Icons.edit_document),
-            title: const Text('Cadastrar Sumário'),
-            trailing: IconButton(
-                onPressed: () async {
-                  util.falar('Clique para cadastrar o Sumário');
-                },
-                icon: const Icon(Icons.record_voice_over))),
+          onTap: () {
+            Navigator.of(context).pushNamed('/cadastrarsumario');
+          },
+          leading: const Icon(Icons.edit_document),
+          title: const Text('Cadastrar Sumário'),
+          trailing: const IconButtonVoice(
+              cor: Colors.black, fala: 'Clique para cadastrar o Sumário'),
+        ),
       ),
       Tooltip(
         message: 'Clique para Atualizar o Sumário',
         child: ListTile(
-            onTap: () {
-              Navigator.of(context).pushNamed('/atualizasumario');
-            },
-            leading: const Icon(Icons.edit_square),
-            title: const Text('Atualizar Sumário'),
-            trailing: IconButton(
-                onPressed: () async {
-                  util.falar('Clique para atualizar o Sumário');
-                },
-                icon: const Icon(Icons.record_voice_over))),
+          onTap: () {
+            Navigator.of(context).pushNamed('/atualizasumario');
+          },
+          leading: const Icon(Icons.edit_square),
+          title: const Text('Atualizar Sumário'),
+          trailing: const IconButtonVoice(
+              cor: Colors.black, fala: 'Clique para atualizar o Sumário'),
+        ),
+      ),
+      Tooltip(
+        message: 'Clique para Cadastrar a Capa',
+        child: ListTile(
+          onTap: () {
+            Navigator.of(context).pushNamed('/cadastracapa');
+          },
+          leading: const Icon(Icons.add_a_photo),
+          title: const Text('Cadastrar Capa'),
+          trailing: const IconButtonVoice(
+              cor: Colors.black, fala: 'Clique para Cadastrar a Capa'),
+        ),
+      ),
+      Tooltip(
+        message: 'Clique para Cadastrar a Introdução',
+        child: ListTile(
+          onTap: () {
+            Navigator.of(context).pushNamed('/cadastrarintroducao');
+          },
+          leading: const Icon(Icons.article),
+          title: const Text('Cadastrar Introdução'),
+          trailing: const IconButtonVoice(
+              cor: Colors.black, fala: 'Clique para Cadastrar a Introdução'),
+        ),
       ),
       Tooltip(
         message: 'Clique para Cadastrar as Imagens',
         child: ListTile(
-            onTap: () {
-              Navigator.of(context).pushNamed('/cadastrarimagem');
-            },
-            leading: const Icon(Icons.image),
-            title: const Text('Cadastrar Imagens'),
-            trailing: IconButton(
-                onPressed: () async {
-                  util.falar('Clique para cadastrar as Imagens');
-                },
-                icon: const Icon(Icons.record_voice_over))),
+          onTap: () {
+            Navigator.of(context).pushNamed('/cadastrarimagem');
+          },
+          leading: const Icon(Icons.image),
+          title: const Text('Cadastrar Imagens'),
+          trailing: const IconButtonVoice(
+              cor: Colors.black, fala: 'Clique para cadastrar as Imagens'),
+        ),
       ),
       Tooltip(
         message: 'Clique para Cadastrar as Páginas',
         child: ListTile(
-            onTap: () {
-              Navigator.of(context).pushNamed('/cadastrarpaginas');
-            },
-            leading: const Icon(Icons.note_add),
-            title: const Text('Cadastrar Páginas'),
-            trailing: IconButton(
-                onPressed: () async {
-                  util.falar('Clique para cadastrar as Páginas');
-                },
-                icon: const Icon(Icons.record_voice_over))),
+          onTap: () {
+            Navigator.of(context).pushNamed('/cadastrarpaginas');
+          },
+          leading: const Icon(Icons.note_add),
+          title: const Text('Cadastrar Páginas'),
+          trailing: const IconButtonVoice(
+              cor: Colors.black, fala: 'Clique para cadastrar as Imagens'),
+        ),
       ),
       Tooltip(
         message: 'Clique para Atualizar as Páginas',
         child: ListTile(
-            onTap: () {
-              Navigator.of(context).pushNamed('/atualizarpaginas');
-            },
-            leading: const Icon(Icons.edit_note),
-            title: const Text('Atualizar Páginas'),
-            trailing: IconButton(
-                onPressed: () async {
-                  util.falar('Clique para atualizar as Páginas');
-                },
-                icon: const Icon(Icons.record_voice_over))),
+          onTap: () {
+            Navigator.of(context).pushNamed('/atualizarpaginas');
+          },
+          leading: const Icon(Icons.edit_note),
+          title: const Text('Atualizar Páginas'),
+          trailing: const IconButtonVoice(
+              cor: Colors.black, fala: 'Clique para atualizar as Páginas'),
+        ),
       ),
     ];
   }
@@ -803,7 +740,7 @@ class _HomeState extends State<Home> {
                                 .push(passaPagina(TurnDirection.leftToRight));
                           }
                         },
-                        icon: Icon(Icons.arrow_back),
+                        icon: const Icon(Icons.arrow_back),
                       ),
                     ),
                   ),
@@ -823,7 +760,7 @@ class _HomeState extends State<Home> {
                                 .push(passaPagina(TurnDirection.rightToLeft));
                           }
                         },
-                        icon: Icon(Icons.arrow_forward),
+                        icon: const Icon(Icons.arrow_forward),
                       ),
                     ),
                   ),

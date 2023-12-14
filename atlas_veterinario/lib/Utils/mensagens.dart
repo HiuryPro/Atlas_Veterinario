@@ -9,6 +9,7 @@ class Mensagem {
       actions: [
         TextButton(
             onPressed: () {
+              print(context);
               Navigator.of(context).pop();
               if (rota != null) {
                 Navigator.of(context).pushNamed(rota);

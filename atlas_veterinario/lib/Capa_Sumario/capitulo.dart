@@ -1,4 +1,5 @@
 import 'package:atlas_veterinario/Proxy/proxyindices.dart';
+import 'package:atlas_veterinario/Utils/utils.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 
@@ -6,19 +7,22 @@ class Capitulo extends StatefulWidget {
   final int parte;
   final int unidade;
   final int capitulo;
+  final int pagina;
   const Capitulo(
       {super.key,
       required this.parte,
       required this.capitulo,
-      required this.unidade});
+      required this.unidade,
+      required this.pagina});
 
   @override
   State<Capitulo> createState() => _CapituloState();
 }
 
 class _CapituloState extends State<Capitulo> {
-  ProxyIndices proxyIndice = ProxyIndices().getInterface();
+  ProxyIndices proxyIndice = ProxyIndices.instance;
   List<Widget> testes = [const Text('')];
+  Utils util = Utils();
   @override
   void initState() {
     super.initState();
@@ -29,13 +33,13 @@ class _CapituloState extends State<Capitulo> {
   Widget body() {
     return SizedBox(
       child: Padding(
-        padding: const EdgeInsets.only(left: 15.0),
+        padding: const EdgeInsets.only(left: 30.0),
         child: Container(
           decoration: const BoxDecoration(
             border: Border(left: BorderSide(width: 6, color: Colors.black)),
           ),
           child: Padding(
-            padding: const EdgeInsets.only(left: 15.0),
+            padding: const EdgeInsets.only(left: 30.0),
             child: Center(
               child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -78,7 +82,9 @@ class _CapituloState extends State<Capitulo> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: body(),
+      body: Stack(
+        children: [body(), util.numeroPagina(widget.pagina.toString())],
+      ),
     );
   }
 }

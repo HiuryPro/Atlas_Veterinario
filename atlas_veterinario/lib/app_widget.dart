@@ -3,6 +3,8 @@ import 'package:atlas_veterinario/Capa_Sumario/folharosto.dart';
 import 'package:atlas_veterinario/Login_Cadastro/cadastrar.dart';
 import 'package:atlas_veterinario/Login_Cadastro/confirmarcadastro.dart';
 import 'package:atlas_veterinario/atualizasumario.dart';
+import 'package:atlas_veterinario/cadastrarcapa.dart';
+import 'package:atlas_veterinario/cadastrarintroducao.dart';
 import 'package:atlas_veterinario/cadastrarpagina.dart';
 import 'package:atlas_veterinario/cadastrasumario.dart';
 import 'package:atlas_veterinario/sumario.dart';
@@ -59,6 +61,9 @@ class AppWidget extends StatelessWidget {
                       pagina: 1,
                     ),
                 '/testegeral': (context) => const TesteGeral(),
+                '/cadastracapa': (context) => const CadastrarCapa(),
+                '/cadastrarintroducao': (context) =>
+                    const CadastrarIntroducao(),
                 '/cadastro': (context) => const Cadastro(),
                 '/login': (context) => const Login(),
                 '/confirmarCadastro': (context) => const ConfirmarCadastro(),
@@ -70,7 +75,7 @@ class AppWidget extends StatelessWidget {
                 '/atualizarpaginas': (context) => const AtualizaPagina(),
                 '/teste': (context) => const TesteGeral(),
                 '/cadastrarimagem': (context) => const CadastrarImagem(),
-                '/capa': (context) => const Capa(),
+                '/capa': (context) => const CapaTela(),
                 '/rosto': (context) => const FolhaRosto(),
                 '/indices': (context) => const Indices(),
                 '/introducao': (context) => const Introducao(),

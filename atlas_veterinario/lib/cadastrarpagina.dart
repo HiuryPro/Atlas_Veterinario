@@ -44,7 +44,7 @@ class _CadPaginaState extends State<CadPagina> {
   void initState() {
     super.initState();
     Future.delayed(Duration.zero, () async {
-      partes = await ProxyIndices().getInterface().findFull(false);
+      partes = await ProxyIndices.instance.findFull(false);
       print(partes.values.toList());
     });
     setState(() {});
@@ -84,6 +84,7 @@ class _CadPaginaState extends State<CadPagina> {
         ),
         const SizedBox(height: 10),
         DropdownButton(
+            isExpanded: true,
             hint: const Text(
                 'Clique para escolher o tipo do coteúdo para a página'),
             value: value,
@@ -105,6 +106,7 @@ class _CadPaginaState extends State<CadPagina> {
         Builder(builder: (context) {
           if (value != 'Imagem' && value != null) {
             return DropdownButton(
+                isExpanded: true,
                 hint: const Text('Clique para escolher qual Parte'),
                 value: valueParte,
                 items: partes.values
@@ -132,6 +134,7 @@ class _CadPaginaState extends State<CadPagina> {
               (value == 'Unidade' || value == 'Capitulo')) {
             print('Teste');
             return DropdownButton(
+                isExpanded: true,
                 hint: const Text('Clique para escolher qual Unidade'),
                 value: valueUnidade,
                 items: partes[parteAtual]['Unidade']
@@ -154,6 +157,7 @@ class _CadPaginaState extends State<CadPagina> {
 
           if (value == 'Imagem' && imagens.isNotEmpty) {
             return DropdownButton(
+                isExpanded: true,
                 hint: const Text('Clique para escolher qual Imagem'),
                 value: valueImagem,
                 items: imagens.map<DropdownMenuItem<String>>((e) {
@@ -180,6 +184,7 @@ class _CadPaginaState extends State<CadPagina> {
         Builder(builder: (context) {
           if (unidadeAtual != null && value == 'Capitulo') {
             return DropdownButton(
+                isExpanded: true,
                 hint: const Text('Clique para escolher qual Capitulo'),
                 value: valueCapitulo,
                 items: partes[parteAtual]['Unidade'][unidadeAtual]['Capitulo']
@@ -237,7 +242,7 @@ class _CadPaginaState extends State<CadPagina> {
                         AppController.instance.totalPaginas =
                             paginas[0]['IdPagina'];
 
-                        ProxyPagina().getInstance().pagina.paginas.clear();
+                        ProxyPagina.instance.pagina.paginas.clear();
                         SumarioP.instance.sumarioLista.clear();
 
                         setState(() {});
@@ -284,6 +289,8 @@ class _CadPaginaState extends State<CadPagina> {
           .from('Pagina')
           .insert({"IdPagina": completar});
     }
+
+    ProxyPagina.instance.findFull(true);
   }
 
   DropdownMenuItem<String> buildMenuItem(String item, var map) =>
@@ -340,12 +347,27 @@ class _CadPaginaState extends State<CadPagina> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Cadastrar Página'),
+          title: const Text('Cadastro de Pagina'),
           leading: IconButton(
               onPressed: () {
                 Navigator.of(context).pushNamed('/home');
               },
               icon: const Icon(Icons.arrow_back)),
+          shadowColor: Colors.transparent,
+          flexibleSpace: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Color(0xff1a4d34),
+                  Color(0xff386e41),
+                  Colors.white,
+                  Colors.white
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+          ),
         ),
         body: body());
   }

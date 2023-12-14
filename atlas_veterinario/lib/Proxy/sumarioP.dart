@@ -9,8 +9,9 @@ class SumarioP {
   List<Map<String, dynamic>> sumarioLista = [];
 
   preencheSumario() async {
-    Map partes = await ProxyIndices().getInterface().findFull(false);
-    Map<int, Map>? resultados = await buscaTelaConteudo();
+    Map partes = await ProxyIndices.instance.findFull(false);
+    Map<dynamic, dynamic>? resultados = await buscaTelaConteudo();
+    print(resultados);
     print(resultados!.keys);
     print('Teset');
     for (int i = 5; i <= AppController.instance.totalPaginas; i++) {
@@ -39,7 +40,7 @@ class SumarioP {
           sumarioItem.remove('Capitulo');
 
           sumarioLista.add(sumarioItem);
-        } else {
+        } else if (resultados[i]!['Parte'] != null) {
           parte = partes[resultados[i]!['Parte']];
 
           sumarioItem.addAll({'Tipo': 'Parte'});
@@ -63,16 +64,10 @@ class SumarioP {
     }
   }
 
-  Future<Map<int, Map>?> buscaTelaConteudo() async {
-    ProxyPagina instance = ProxyPagina().getInstance();
+  Future<Map<dynamic, dynamic>?> buscaTelaConteudo() async {
+    ProxyPagina instance = ProxyPagina.instance;
     instance.pagina.paginas.clear();
-    Map<int, Map>? resultado = await instance.findFull(false);
-    print(resultado);
-    if (resultado != null) {
-      resultado.forEach((key, value) {
-        value.removeWhere((key, value) => value == null);
-      });
-    }
+    Map<dynamic, dynamic>? resultado = await instance.findFull(false);
 
     return resultado;
   }

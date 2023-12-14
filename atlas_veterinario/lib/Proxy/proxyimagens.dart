@@ -5,18 +5,11 @@ import 'package:atlas_veterinario/Proxy/proxyinteface.dart';
 import 'imagens.dart';
 
 class ProxyImagens implements ProxyInterface {
-  static ProxyImagens? instance;
+  static ProxyImagens instance = ProxyImagens();
   late Imagem imagem;
 
   ProxyImagens() {
     imagem = Imagem();
-  }
-
-  ProxyImagens getInterface() {
-    if (instance == null) {
-      instance = ProxyImagens();
-    }
-    return instance!;
   }
 
   @override

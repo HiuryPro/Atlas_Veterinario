@@ -4,18 +4,11 @@ import 'package:atlas_veterinario/Proxy/indices.dart';
 import 'package:atlas_veterinario/Proxy/proxyinteface.dart';
 
 class ProxyIndices implements ProxyInterface {
-  static ProxyIndices? instance;
+  static ProxyIndices instance = ProxyIndices();
   late IndicesP indice;
 
   ProxyIndices() {
     indice = IndicesP();
-  }
-
-  ProxyIndices getInterface() {
-    if (instance == null) {
-      instance = ProxyIndices();
-    }
-    return instance!;
   }
 
   @override

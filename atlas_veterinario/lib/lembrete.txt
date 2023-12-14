@@ -1,0 +1,21 @@
+ onHorizontalDragUpdate: (details) {
+                    if (!isImage) {
+                      if (details.delta.dx.isNegative) {
+                        if (pagina < AppController.instance.totalPaginas) {
+                          setState(() {
+                            pagina += 1;
+                          });
+                          Navigator.of(context)
+                              .push(passaPagina(TurnDirection.rightToLeft));
+                        }
+                      } else if (details.delta.dx > 0) {
+                        if (pagina > 1) {
+                          setState(() {
+                            pagina -= 1;
+                          });
+                          Navigator.of(context)
+                              .push(passaPagina(TurnDirection.leftToRight));
+                        }
+                      }
+                    }
+                  },

@@ -1,5 +1,6 @@
 import 'package:atlas_veterinario/DadosDB/supa.dart';
 import 'package:atlas_veterinario/Fala/textoprafala.dart';
+import 'package:atlas_veterinario/Proxy/proxypagina.dart';
 import 'package:atlas_veterinario/Utils/app_controller.dart';
 import 'package:atlas_veterinario/app_widget.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +16,8 @@ void main() async {
           '*',
         )
         .order('IdPagina', ascending: false);
+
+    await ProxyPagina.instance.findFull(false);
     print(paginas[0]['IdPagina']);
 
     AppController.instance.totalPaginas = paginas[0]['IdPagina'];

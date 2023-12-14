@@ -1,7 +1,4 @@
-import 'package:atlas_veterinario/DadosDB/supa.dart';
-import 'package:atlas_veterinario/Proxy/proxyindices.dart';
 import 'package:atlas_veterinario/Proxy/proxypagina.dart';
-import 'package:atlas_veterinario/Proxy/sumarioP.dart';
 import 'package:flutter/material.dart';
 
 class TesteGeral extends StatefulWidget {
@@ -17,70 +14,25 @@ class _TesteGeralState extends State<TesteGeral> {
       width: MediaQuery.of(context).size.width,
       height: MediaQuery.of(context).size.height,
       child: Column(children: [
-        const Text(
-          '1 2',
-          style: TextStyle(
-            fontSize: 60,
-            shadows: [
-              Shadow(
-                  color: Colors.yellow, // Border color
-                  offset: Offset(-2, -2),
-                  blurRadius: 2.5 // Adjust this for border width
-                  ),
-              Shadow(
-                  color: Colors.yellow, // Border color
-                  offset: Offset(2, -2),
-                  blurRadius: 2.5 // Adjust this for border width
-                  ),
-              Shadow(
-                  color: Colors.yellow, // Border color
-                  offset: Offset(-2, 2),
-                  blurRadius: 2.5 // Adjust this for border width
-                  ),
-              Shadow(
-                  color: Colors.yellow, // Border color
-                  offset: Offset(2, 2),
-                  blurRadius: 2.5 // Adjust this for border width
-                  ),
-            ],
-          ),
-        ),
         ElevatedButton(
             onPressed: () async {
-              List teste = await SumarioP.instance.findFull();
-              print(teste);
-            },
-            child: Text('Teste2')),
-        ElevatedButton(
-            onPressed: () async {
-              Map sumario = {'pagina': 1};
-              Map full = await ProxyIndices().getInterface().findFull(false);
-              Map parte = full[1];
-              Map unidade = parte['Unidade'][1];
-              Map capitulo = unidade['Capitulo'][1];
-              print(Colors.yellow.value);
-              print(capitulo);
-              sumario.addAll(capitulo);
-              print(sumario);
-            },
-            child: Text('Teste')),
-        ElevatedButton(
-            onPressed: () async {
-              List<int> listaNum = [1, 2, 3, 4];
+              Map<int, Map>? dados = await ProxyPagina.instance.findFull(false);
+              print(dados);
+              // print(dados);
+              // for (var dado in dados!.entries) {
+              //   print(dado.key);
+              //   print(dado.value);
+              //   if (dado.value.containsKey('Capitulo')) {
+              //     cap = dado.value['Capitulo'];
+              //     print('Existe');
+              //   } else if (dado.value.containsKey('IdImagem')) {
+              //     Map<String, int> map = {'Capitulo': cap};
+              //     print(map.runtimeType);
+              //     dados2![dado.key]!.addAll(map);
+              //   }
 
-              print(listaNum.contains(1));
-            },
-            child: Text('Teste5')),
-        ElevatedButton(
-            onPressed: () async {
-              int maxPagina =
-                  await SupaDB.instance.clienteSupaBase.rpc('max_value_pagina');
-              while (maxPagina >= 12) {
-                await SupaDB.instance.clienteSupaBase.from('Pagina').update(
-                    {'IdPagina': maxPagina + 1}).match({'IdPagina': maxPagina});
-                print(maxPagina + 1);
-                maxPagina--;
-              }
+              //   print(dados2);
+              // }
             },
             child: Text('Teste'))
       ]),
@@ -88,12 +40,18 @@ class _TesteGeralState extends State<TesteGeral> {
   }
 
   Future<Map<int, Map>?> buscaTelaConteudo() async {
-    ProxyPagina instance = ProxyPagina().getInstance();
+    ProxyPagina instance = ProxyPagina.instance;
     Map<int, Map>? resultado = await instance.findFull(false);
-    print(resultado);
+    int cap = 1;
     if (resultado != null) {
       resultado.forEach((key, value) {
         value.removeWhere((key, value) => value == null);
+        if (value.containsKey('Capitulo')) {
+          cap = value['Capitulo'];
+        } else if (value.containsKey('IdImagem')) {
+          Map<String, int> map = {'Capitulo': cap};
+          value.addAll(map);
+        }
       });
     }
 

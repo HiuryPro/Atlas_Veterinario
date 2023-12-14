@@ -45,8 +45,8 @@ class _AtualizaPaginaState extends State<AtualizaPagina> {
     super.initState();
 
     Future.delayed(Duration.zero, () async {
-      partes = await ProxyIndices().getInterface().findFull(false);
-      paginas = await ProxyPagina().getInstance().findFull(false);
+      partes = await ProxyIndices.instance.findFull(false);
+      paginas = await ProxyPagina.instance.findFull(false);
 
       setState(() {});
 
@@ -105,9 +105,8 @@ class _AtualizaPaginaState extends State<AtualizaPagina> {
                     idUnidade = paginaEscolhida['Unidade'];
                     idCapitulo = paginaEscolhida['Capitulo'];
 
-                    conteudos = await ProxyIndices()
-                        .getInterface()
-                        .find(idParte, false);
+                    conteudos =
+                        await ProxyIndices.instance.find(idParte, false);
                     unidadeMap = conteudos['Unidade'][idUnidade];
                     capituloMap = unidadeMap['Capitulo'][idCapitulo];
 
@@ -128,9 +127,8 @@ class _AtualizaPaginaState extends State<AtualizaPagina> {
                   } else if (paginaEscolhida['Unidade'] != null) {
                     idParte = paginaEscolhida['Parte'];
                     idUnidade = paginaEscolhida['Unidade'];
-                    conteudos = await ProxyIndices()
-                        .getInterface()
-                        .find(idParte, false);
+                    conteudos =
+                        await ProxyIndices.instance.find(idParte, false);
                     unidadeMap = conteudos['Unidade'][idUnidade];
 
                     setState(() {
@@ -152,8 +150,7 @@ class _AtualizaPaginaState extends State<AtualizaPagina> {
                       parteAtual = idParte;
                     });
                   } else if (paginaEscolhida['IdImagem'] != null) {
-                    conteudos = await ProxyImagens()
-                        .getInterface()
+                    conteudos = await ProxyImagens.instance
                         .find(paginaEscolhida['IdImagem'], false);
                     print(conteudos);
                     setState(() {
@@ -318,6 +315,7 @@ class _AtualizaPaginaState extends State<AtualizaPagina> {
                     if (atualizar) {
                       try {
                         await fazUpdate(int.parse(paginaAtual!));
+
                         mensagem.mensagem(
                             context,
                             'Atualizaçao feita com sucesso',
@@ -330,7 +328,7 @@ class _AtualizaPaginaState extends State<AtualizaPagina> {
                     setState(() {
                       atualizar = false;
                     });
-                    paginas = await ProxyPagina().getInstance().findFull(true);
+                    paginas = await ProxyPagina.instance.findFull(true);
 
                     setState(() {});
                   }
@@ -419,12 +417,27 @@ class _AtualizaPaginaState extends State<AtualizaPagina> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Atualzar Página'),
+          title: const Text('Atualizar de Pagina'),
           leading: IconButton(
               onPressed: () {
                 Navigator.of(context).pushNamed('/home');
               },
               icon: const Icon(Icons.arrow_back)),
+          shadowColor: Colors.transparent,
+          flexibleSpace: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Color(0xff1a4d34),
+                  Color(0xff386e41),
+                  Colors.white,
+                  Colors.white
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+          ),
         ),
         body: body());
   }

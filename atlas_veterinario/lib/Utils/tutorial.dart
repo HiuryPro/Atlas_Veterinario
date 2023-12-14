@@ -1,4 +1,5 @@
 import 'package:atlas_veterinario/DadosDB/supa.dart';
+import 'package:atlas_veterinario/Utils/IconButtonVoice.dart';
 import 'package:atlas_veterinario/Utils/app_controller.dart';
 import 'package:atlas_veterinario/Utils/utils.dart';
 import 'package:flutter/material.dart';
@@ -55,35 +56,47 @@ class _Tutorial1State extends State<Tutorial1> {
         padding: const EdgeInsets.only(bottom: 10, top: 10),
         child: ListView(
           children: [
+            Align(
+              alignment: Alignment.topLeft,
+              child: IconButton(
+                onPressed: () async {
+                  await fechaTutorial();
+                },
+                icon: const Icon(
+                  Icons.arrow_back,
+                  color: Colors.white,
+                ),
+              ),
+            ),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Container(
                 decoration: BoxDecoration(
                     color: Colors.white,
                     border: Border.all(color: Colors.black)),
-                child: Column(
+                child: const Column(
                   children: [
                     Align(
                       alignment: Alignment.topRight,
-                      child: IconButton(
-                          onPressed: () {
-                            util.falar(
-                                'Ajuda. Observação: Clique no Icone de fala para ouvir o que está escrito. Clique novamente para parar. Para escutar outra fala espere ou cancele a atual.');
-                          },
-                          icon: const Icon(Icons.record_voice_over)),
+                      child: IconButtonVoice(
+                          cor: Colors.black,
+                          fala:
+                              'Ajuda. Observação: Clique no Icone de fala para ouvir o que está escrito. Clique novamente para parar. Para escutar outra fala espere ou cancele a atual.'),
                     ),
-                    const Center(
+                    Center(
                       child: Padding(
                         padding: EdgeInsets.all(5.0),
                         child: Text(
                           'Ajuda',
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 30),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 30,
+                              color: Color(0xff1a4d34)),
                         ),
                       ),
                     ),
-                    const Wrap(
+                    Wrap(
                       alignment: WrapAlignment.center,
                       children: [
                         Padding(
@@ -136,12 +149,10 @@ class _Tutorial1State extends State<Tutorial1> {
                   children: [
                     Align(
                       alignment: Alignment.topRight,
-                      child: IconButton(
-                          onPressed: () {
-                            util.falar(
-                                'Passagem de páginas. $textoGrande $textoGrande2');
-                          },
-                          icon: const Icon(Icons.record_voice_over)),
+                      child: IconButtonVoice(
+                          cor: Colors.black,
+                          fala:
+                              'Passagem de páginas. $textoGrande $textoGrande2'),
                     ),
                     const Center(
                       child: Padding(
@@ -150,7 +161,9 @@ class _Tutorial1State extends State<Tutorial1> {
                           'Passagem de páginas',
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 30),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 30,
+                              color: Color(0xff1a4d34)),
                         ),
                       ),
                     ),
@@ -159,7 +172,8 @@ class _Tutorial1State extends State<Tutorial1> {
                       child: Center(
                         child: Text(
                           textoGrande,
-                          style: const TextStyle(fontSize: 18),
+                          style: const TextStyle(
+                              fontSize: 20, color: Color(0xff1a4d34)),
                           textAlign: TextAlign.justify,
                         ),
                       ),
@@ -169,7 +183,8 @@ class _Tutorial1State extends State<Tutorial1> {
                       child: Center(
                         child: Text(
                           textoGrande2,
-                          style: const TextStyle(fontSize: 18),
+                          style: const TextStyle(
+                              fontSize: 20, color: Color(0xff1a4d34)),
                           textAlign: TextAlign.justify,
                         ),
                       ),
@@ -188,11 +203,8 @@ class _Tutorial1State extends State<Tutorial1> {
                   children: [
                     Align(
                       alignment: Alignment.topRight,
-                      child: IconButton(
-                          onPressed: () {
-                            util.falar('Imagens. $textoGrande3');
-                          },
-                          icon: const Icon(Icons.record_voice_over)),
+                      child: IconButtonVoice(
+                          cor: Colors.black, fala: 'Imagens. $textoGrande3'),
                     ),
                     const Center(
                       child: Padding(
@@ -201,7 +213,9 @@ class _Tutorial1State extends State<Tutorial1> {
                           'Imagens',
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 30),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 30,
+                              color: Color(0xff1a4d34)),
                         ),
                       ),
                     ),
@@ -210,7 +224,8 @@ class _Tutorial1State extends State<Tutorial1> {
                       child: Center(
                         child: Text(
                           textoGrande3,
-                          style: const TextStyle(fontSize: 18),
+                          style: const TextStyle(
+                              fontSize: 20, color: Color(0xff1a4d34)),
                           textAlign: TextAlign.justify,
                         ),
                       ),
@@ -229,11 +244,8 @@ class _Tutorial1State extends State<Tutorial1> {
                   children: [
                     Align(
                       alignment: Alignment.topRight,
-                      child: IconButton(
-                          onPressed: () {
-                            util.falar('Utilidades. $textoGrande4');
-                          },
-                          icon: const Icon(Icons.record_voice_over)),
+                      child: IconButtonVoice(
+                          cor: Colors.black, fala: 'Utilidades. $textoGrande4'),
                     ),
                     const Center(
                       child: Padding(
@@ -242,7 +254,9 @@ class _Tutorial1State extends State<Tutorial1> {
                           'Utilidades',
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 30),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 30,
+                              color: Color(0xff1a4d34)),
                         ),
                       ),
                     ),
@@ -251,7 +265,8 @@ class _Tutorial1State extends State<Tutorial1> {
                       child: Center(
                         child: Text(
                           textoGrande4,
-                          style: const TextStyle(fontSize: 18),
+                          style: const TextStyle(
+                              fontSize: 20, color: Color(0xff1a4d34)),
                           textAlign: TextAlign.justify,
                         ),
                       ),
@@ -264,19 +279,7 @@ class _Tutorial1State extends State<Tutorial1> {
               alignment: Alignment.bottomCenter,
               child: ElevatedButton(
                   onPressed: () async {
-                    if (AppController.instance.isFirstTime) {
-                      await SupaDB.instance.clienteSupaBase
-                          .from('Usuario')
-                          .update({'IsFirstTime': false}).match(
-                              {'Email': AppController.instance.email});
-                      setState(() {
-                        AppController.instance.isFirstTime = false;
-                        AppController.instance.mudaTutorial1();
-                      });
-                    }
-                    setState(() {
-                      AppController.instance.mudaTutorial1();
-                    });
+                    await fechaTutorial();
                   },
                   child: const Text('Ok')),
             )
@@ -284,5 +287,21 @@ class _Tutorial1State extends State<Tutorial1> {
         ),
       ),
     );
+  }
+
+  fechaTutorial() async {
+    if (AppController.instance.isFirstTime) {
+      await SupaDB.instance.clienteSupaBase
+          .from('Usuario')
+          .update({'IsFirstTime': false}).match(
+              {'Email': AppController.instance.email});
+      setState(() {
+        AppController.instance.isFirstTime = false;
+        AppController.instance.mudaTutorial1();
+      });
+    }
+    setState(() {
+      AppController.instance.mudaTutorial1();
+    });
   }
 }

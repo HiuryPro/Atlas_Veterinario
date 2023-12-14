@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:atlas_veterinario/CadImagem/geraimagem.dart';
+import 'package:atlas_veterinario/Utils/IconButtonVoice.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:carousel_slider/carousel_controller.dart';
 import 'package:flutter/foundation.dart';
@@ -15,21 +16,23 @@ import '../Utils/utils.dart';
 import '../Proxy/proxyimagens.dart';
 
 class BuscarImagemPainter extends StatefulWidget {
-  final int id;
-  const BuscarImagemPainter({Key? key, required this.id}) : super(key: key);
+  final Map<String, dynamic> dadosPaginaImagem;
+  const BuscarImagemPainter({Key? key, required this.dadosPaginaImagem})
+      : super(key: key);
 
   @override
   BuscarImagemPainterState createState() => BuscarImagemPainterState();
 }
 
 class BuscarImagemPainterState extends State<BuscarImagemPainter> {
-  ProxyImagens imagemProxy = ProxyImagens().getInterface();
-  List<String> legendas = [""];
+  ProxyImagens imagemProxy = ProxyImagens.instance;
+  List<String> legendas = [];
   List<Color> coresDestaque = [];
   String nomeImagem = '';
   TextDrawable? old;
   bool isLegendas = false;
-  String legendaAtual = "";
+  String? legendaAtual;
+  String legendaFiltrada = '';
   int rotationImagem = 1;
   int incrementalRotation = 0;
   bool isFalando = false;
@@ -79,7 +82,7 @@ class BuscarImagemPainterState extends State<BuscarImagemPainter> {
               minScale: 1,
               maxScale: 6,
             )));
-    initBackground(widget.id, 0);
+    initBackground(widget.dadosPaginaImagem['IdImagem']!, 0);
   }
 
   void initBackground(int id, int rotation) async {
@@ -101,8 +104,12 @@ class BuscarImagemPainterState extends State<BuscarImagemPainter> {
 
     rotationImagem = resultados['RotationImage'] + rotation;
 
+    if (rotationImagem >= 4) {
+      rotationImagem -= 4;
+    }
+
     setState(() {
-      adicionatexto(resultados);
+      adicionatexto(resultados, rotation);
     });
 
     imageFuture = controller
@@ -113,7 +120,7 @@ class BuscarImagemPainterState extends State<BuscarImagemPainter> {
     });
   }
 
-  adicionatexto(Map resultados) {
+  adicionatexto(Map resultados, int rotation) {
     for (Map imagemTexto in resultados['Imagem_Texto']) {
       String texto = imagemTexto['Numero'];
 
@@ -140,14 +147,14 @@ class BuscarImagemPainterState extends State<BuscarImagemPainter> {
           : imagemTexto['Dy'];
 
       double fontSize = imagemTexto['FontSize'].toDouble();
-      double rotation = imagemTexto['Rotation'].toDouble();
+      double rotationImg = imagemTexto['Rotation'].toDouble();
 
       controller.addDrawables([
         TextDrawable(
             text: texto,
             position: Offset(dx, dy),
             scale: zoom,
-            rotation: rotation + listRotation[rotationImagem],
+            rotation: rotationImg + listRotation[rotation.toInt()],
             style: TextStyle(
               fontSize: fontSize,
               color: Colors.black,
@@ -198,17 +205,11 @@ class BuscarImagemPainterState extends State<BuscarImagemPainter> {
                 const SizedBox(
                   width: 5,
                 ),
-                IconButton(
-                    onPressed: () {
-                      utils.falar(nomeImagem);
-                    },
-                    icon: const Icon(Icons.record_voice_over)),
+                IconButtonVoice(cor: Colors.black, fala: nomeImagem),
                 const Expanded(child: SizedBox()),
-                IconButton(
-                    onPressed: () {
-                      utils.falar('Clique para rotacionar a imagem.');
-                    },
-                    icon: const Icon(Icons.record_voice_over)),
+                const IconButtonVoice(
+                    cor: Colors.black,
+                    fala: 'Clique para rotacionar a imagem.'),
                 IconButton(
                     tooltip: 'Clique para rotacionar a imagem.',
                     onPressed: () async {
@@ -220,51 +221,115 @@ class BuscarImagemPainterState extends State<BuscarImagemPainter> {
                       });
                       print(incrementalRotation);
                       legendas.clear();
-                      initBackground(widget.id, incrementalRotation);
+                      controller.clearDrawables();
+                      initBackground(widget.dadosPaginaImagem['IdImagem']!,
+                          incrementalRotation);
                       await Future.delayed(const Duration(milliseconds: 100));
                       print(legendaAtual);
                       destacandoNumero(legendaAtual);
                       setState(() {});
                     },
                     icon: Icon(PhosphorIcons.fill.arrowClockwise)),
+                IconButton(
+                    tooltip: 'Clique para rotacionar a imagem.',
+                    onPressed: () async {
+                      setState(() {
+                        incrementalRotation -= 1;
+                        if (incrementalRotation < 0) {
+                          incrementalRotation = 3;
+                        }
+                      });
+                      print(incrementalRotation);
+                      legendas.clear();
+                      controller.clearDrawables();
+                      initBackground(widget.dadosPaginaImagem['IdImagem']!,
+                          incrementalRotation);
+                      await Future.delayed(const Duration(milliseconds: 100));
+                      print(legendaAtual);
+                      destacandoNumero(legendaAtual);
+                      setState(() {});
+                    },
+                    icon: Icon(PhosphorIcons.fill.arrowCounterClockwise))
               ],
             ),
           ),
         ),
         Expanded(
-            child: RotatedBox(
-          quarterTurns: rotationImagem,
-          child: InteractiveViewer(
-            maxScale: 10,
-            child: FutureImageVet(
-              imageFuture: imageFuture,
+            child: Stack(
+          children: [
+            RotatedBox(
+              quarterTurns: rotationImagem,
+              child: InteractiveViewer(
+                maxScale: 10,
+                child: FutureImageVet(
+                  imageFuture: imageFuture,
+                ),
+              ),
             ),
-          ),
+            Align(
+              alignment: Alignment.topLeft,
+              child: Container(
+                  decoration: BoxDecoration(
+                      shape: BoxShape.rectangle,
+                      border: Border.all(color: Colors.black)),
+                  child: Padding(
+                    padding: const EdgeInsets.all(2.0),
+                    child: Wrap(
+                      direction: Axis.vertical,
+                      children: [
+                        Container(
+                            decoration: const BoxDecoration(
+                              border: Border(
+                                  bottom: BorderSide(color: Colors.black)),
+                            ),
+                            child: textoFormatado(
+                                '${widget.dadosPaginaImagem['Pagina']}')),
+                        const SizedBox(
+                          height: 5,
+                        ),
+                        RotatedBox(
+                          quarterTurns: 3,
+                          child: textoFormatado(
+                              '${widget.dadosPaginaImagem['Capitulo']}'),
+                        ),
+                        const SizedBox(
+                          height: 4,
+                        ),
+                        RotatedBox(quarterTurns: 3, child: textoFormatado('P')),
+                        RotatedBox(quarterTurns: 3, child: textoFormatado('A')),
+                        RotatedBox(quarterTurns: 3, child: textoFormatado('C')),
+                        const SizedBox(
+                          height: 5,
+                        ),
+                      ],
+                    ),
+                  )),
+            ),
+          ],
         )),
         if (legendas.isNotEmpty)
           Padding(
             padding: const EdgeInsets.all(8),
             child: Row(
               children: [
-                Expanded(
-                    child: Container(
-                        decoration: BoxDecoration(
-                            border: Border.all(color: Colors.black)),
-                        child: testeDrop())),
-                IconButton(
-                    onPressed: () {
-                      String valorTexto = legendaAtual;
-                      int indexEspaco = valorTexto.indexOf(' ');
-                      if (valorTexto != '') {
-                        valorTexto = valorTexto.substring(indexEspaco + 1);
-                      }
-                      utils.falar(valorTexto);
-                    },
-                    icon: const Icon(Icons.record_voice_over))
+                Expanded(child: testeDrop()),
+                IconButtonVoice(
+                    cor: Colors.black,
+                    fala: legendaAtual != null ? legendaFiltrada : '')
               ],
             ),
           )
       ],
+    );
+  }
+
+  Text textoFormatado(String texto) {
+    return Text(
+      texto,
+      style: const TextStyle(
+          fontSize: 20.0,
+          color: Color(0xff006600),
+          fontWeight: FontWeight.bold),
     );
   }
 
@@ -280,14 +345,14 @@ class BuscarImagemPainterState extends State<BuscarImagemPainter> {
         .then<Uint8List?>((ui.Image image) => image.pngBytes);
   }
 
-  destacandoNumero(String value) {
+  destacandoNumero(String? value) {
     if (old != null) {
       destacaNumero(old!, Colors.black);
     }
     print(value);
 
-    if (value != "") {
-      int index = legendas.indexOf(value) - 1;
+    if (value != null) {
+      int index = legendas.indexOf(value);
       print(index);
       print(controller.drawables);
       destacaNumero(
@@ -310,21 +375,42 @@ class BuscarImagemPainterState extends State<BuscarImagemPainter> {
         ),
       ));
 
-  DropdownButton testeDrop() {
-    return DropdownButton(
-        focusColor: Colors.transparent,
-        alignment: Alignment.center,
-        isExpanded: true,
-        hint: const Text('Escolha a Parte'),
-        value: legendaAtual,
-        items: legendas.map((String valor) => buildMenuItem(valor)).toList(),
-        onChanged: (value) async {
-          destacandoNumero(value);
-          setState(() {
-            isLegendas = false;
-            legendaAtual = value;
-          });
-        });
+  DecoratedBox testeDrop() {
+    return DecoratedBox(
+      decoration: const ShapeDecoration(
+        color: Color(0xff23c423),
+        shape: RoundedRectangleBorder(
+          side: BorderSide(
+              width: 1.0, style: BorderStyle.solid, color: Color(0xff386e41)),
+          borderRadius: BorderRadius.all(Radius.circular(25.0)),
+        ),
+      ),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton(
+            dropdownColor: const Color(0xff23c423),
+            borderRadius: const BorderRadius.all(Radius.circular(40)),
+            focusColor: Colors.transparent,
+            alignment: Alignment.center,
+            isExpanded: true,
+            hint: const Text('Escolha a Parte do Membro'),
+            value: legendaAtual,
+            items:
+                legendas.map((String valor) => buildMenuItem(valor)).toList(),
+            onChanged: (value) async {
+              print(value);
+              destacandoNumero(value);
+              setState(() {
+                legendaAtual = value;
+              });
+              String valorTexto = legendaAtual!;
+
+              int indexEspaco = valorTexto.indexOf(' ');
+              valorTexto = valorTexto.substring(indexEspaco + 1);
+              legendaFiltrada = valorTexto;
+              setState(() {});
+            }),
+      ),
+    );
   }
 
   @override

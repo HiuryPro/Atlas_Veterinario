@@ -4,18 +4,11 @@ import 'package:atlas_veterinario/Proxy/paginap.dart';
 import 'package:atlas_veterinario/Proxy/proxyinteface.dart';
 
 class ProxyPagina implements ProxyInterface {
-  static ProxyPagina? instance;
+  static ProxyPagina instance = ProxyPagina();
   late PaginaP pagina;
 
   ProxyPagina() {
     pagina = PaginaP();
-  }
-
-  ProxyPagina getInstance() {
-    if (instance == null) {
-      instance = ProxyPagina();
-    }
-    return instance!;
   }
 
   @override

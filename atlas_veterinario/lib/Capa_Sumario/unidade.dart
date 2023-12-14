@@ -1,19 +1,26 @@
 import 'package:atlas_veterinario/Proxy/proxyindices.dart';
+import 'package:atlas_veterinario/Utils/utils.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 
 class Unidade extends StatefulWidget {
   final int parte;
   final int unidade;
-  const Unidade({super.key, required this.parte, required this.unidade});
+  final int pagina;
+  const Unidade(
+      {super.key,
+      required this.parte,
+      required this.unidade,
+      required this.pagina});
 
   @override
   State<Unidade> createState() => _UnidadeState();
 }
 
 class _UnidadeState extends State<Unidade> {
-  ProxyIndices proxyUnidade = ProxyIndices().getInterface();
+  ProxyIndices proxyUnidade = ProxyIndices.instance;
   List<Widget> testes = [const Text('')];
+  Utils util = Utils();
   @override
   void initState() {
     super.initState();
@@ -24,13 +31,13 @@ class _UnidadeState extends State<Unidade> {
   Widget body() {
     return SizedBox(
       child: Padding(
-        padding: const EdgeInsets.only(left: 15.0, right: 15),
+        padding: const EdgeInsets.only(left: 30.0, right: 15),
         child: Container(
           decoration: const BoxDecoration(
             border: Border(left: BorderSide(width: 6, color: Colors.black)),
           ),
           child: Padding(
-            padding: const EdgeInsets.only(left: 15.0),
+            padding: const EdgeInsets.only(left: 30.0),
             child: Center(
               child: ListView(shrinkWrap: true, children: testes),
             ),
@@ -121,7 +128,9 @@ class _UnidadeState extends State<Unidade> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: body(),
+      body: Stack(
+        children: [body(), util.numeroPagina(widget.pagina.toString())],
+      ),
     );
   }
 }

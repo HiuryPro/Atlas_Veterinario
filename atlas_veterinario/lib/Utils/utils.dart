@@ -1,8 +1,5 @@
 import 'dart:typed_data';
-import 'dart:ui';
-
 import 'package:atlas_veterinario/Fala/textoprafala.dart';
-import 'package:atlas_veterinario/Utils/app_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -83,15 +80,44 @@ class Utils {
     );
   }
 
-  void falar(String fala) async {
-    AppController.instance.falando(!AppController.instance.isFalando);
-
+  Future<void> falar(String fala, bool isAtivo) async {
     await Fala.instance.flutterTts.stop();
 
-    if (AppController.instance.isFalando) {
+    if (isAtivo) {
       await Fala.instance.flutterTts.speak(fala);
     }
+  }
 
-    AppController.instance.falando(false);
+  Text textoFormatado(String texto) {
+    return Text(
+      texto,
+      style: const TextStyle(
+          fontSize: 20.0,
+          color: Color(0xff006600),
+          fontWeight: FontWeight.bold),
+    );
+  }
+
+  Align numeroPagina(String numero) {
+    return Align(
+      alignment: Alignment.topLeft,
+      child: Container(
+          decoration: BoxDecoration(
+              shape: BoxShape.rectangle,
+              border: Border.all(color: Colors.black)),
+          child: Padding(
+            padding: const EdgeInsets.all(2.0),
+            child: Wrap(
+              direction: Axis.vertical,
+              children: [
+                Container(
+                    decoration: const BoxDecoration(
+                      border: Border(bottom: BorderSide(color: Colors.black)),
+                    ),
+                    child: textoFormatado(numero)),
+              ],
+            ),
+          )),
+    );
   }
 }

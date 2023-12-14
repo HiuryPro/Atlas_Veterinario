@@ -1,6 +1,6 @@
+import 'package:atlas_veterinario/DadosDB/supa.dart';
 import 'package:flutter/material.dart';
 
-import 'CadImagem/buscarimagem.dart';
 import 'Proxy/proxyimagens.dart';
 
 class TesteWidget extends StatefulWidget {
@@ -11,7 +11,7 @@ class TesteWidget extends StatefulWidget {
 }
 
 class _TesteWidgetState extends State<TesteWidget> {
-  ProxyImagens imagemProxy = ProxyImagens().getInterface();
+  ProxyImagens imagemProxy = ProxyImagens.instance;
   Widget body() {
     return SizedBox(
         width: MediaQuery.of(context).size.width,
@@ -21,14 +21,16 @@ class _TesteWidgetState extends State<TesteWidget> {
           child: Column(
             children: [
               ElevatedButton(
-                onPressed: () async {},
-                child: const Text('Test'),
-              ),
-              const Expanded(
-                child: BuscarImagemPainter(
-                  id: 3,
-                ),
-              ),
+                  onPressed: () async {
+                    List resultados = await SupaDB.instance.select(
+                        'Pagina',
+                        'IdPagina, Parte, Unidade, Capitulo,IdImagem',
+                        {},
+                        'IdPagina',
+                        true);
+                    print(resultados.runtimeType);
+                  },
+                  child: Text('Teste'))
             ],
           ),
         ));

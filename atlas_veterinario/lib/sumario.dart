@@ -26,7 +26,7 @@ class _SumarioState extends State<Sumario> {
   }
 
   Future<Map?> buscaTelaConteudo() async {
-    ProxyPagina instance = ProxyPagina().getInstance();
+    ProxyPagina instance = ProxyPagina.instance;
     Map<int, Map>? resultado = await instance.findFull(false);
     print(resultado);
     if (resultado != null) {
@@ -49,20 +49,23 @@ class _SumarioState extends State<Sumario> {
             children: listaSumario.map((e) {
               switch (e['Tipo']) {
                 case 'Imagem':
-                  return retornaLinhaSumario(e['NomeImagem'], e['pagina']);
+                  return retornaLinhaSumario(
+                      e['NomeImagem'], e['pagina'], Colors.yellow);
 
                 case 'Parte':
                   return retornaLinhaSumario(
-                      'Parte ${'I' * e['Parte']}', e['pagina']);
+                      'Parte ${'I' * e['Parte']}', e['pagina'], Colors.green);
 
                 case 'Unidade':
-                  return retornaLinhaSumario(e['NomeUnidade'], e['pagina']);
+                  return retornaLinhaSumario(
+                      e['NomeUnidade'], e['pagina'], Colors.purple);
 
                 case 'Capitulo':
-                  return retornaLinhaSumario(e['NomeCapitulo'], e['pagina']);
+                  return retornaLinhaSumario(
+                      e['NomeCapitulo'], e['pagina'], Colors.red);
                 case 'Vazio':
                   return retornaLinhaSumario(
-                      'Não possuiu conteúdo', e['pagina']);
+                      'Não possuiu conteúdo', e['pagina'], Colors.yellow);
               }
               return Text(e['Tipo']);
             }).toList(),
@@ -78,7 +81,7 @@ class _SumarioState extends State<Sumario> {
         maxLines: 2);
   }
 
-  ListTile retornaLinhaSumario(String texto, int pagina) {
+  ListTile retornaLinhaSumario(String texto, int pagina, Color cor) {
     return ListTile(
       onTap: () {
         Navigator.of(context).push(MaterialPageRoute(
@@ -86,6 +89,7 @@ class _SumarioState extends State<Sumario> {
         ));
       },
       title: formataTexto(texto),
+      tileColor: cor,
       trailing: formataTexto(pagina.toString()),
     );
   }
@@ -94,7 +98,28 @@ class _SumarioState extends State<Sumario> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Sumário'),
+        title: const Text('Sumario'),
+        leading: IconButton(
+            onPressed: () {
+              Navigator.of(context).pushNamed('/home');
+            },
+            icon: const Icon(Icons.arrow_back)),
+        shadowColor: Colors.transparent,
+        flexibleSpace: Container(
+            height: 56,
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Color(0xff1a4d34),
+                  Color(0xff386e41),
+                  Colors.white,
+                  Colors.white
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+            child: const SizedBox()),
       ),
       body: body(),
     );

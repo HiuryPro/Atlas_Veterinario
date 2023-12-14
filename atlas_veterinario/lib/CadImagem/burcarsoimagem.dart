@@ -18,7 +18,7 @@ class BuscarImagem extends StatefulWidget {
 }
 
 class _BuscarImagemState extends State<BuscarImagem> {
-  ProxyImagens imagemProxy = ProxyImagens().getInterface();
+  ProxyImagens imagemProxy = ProxyImagens.instance;
   List<String> legendas = [""];
   List<Color> coresDestaque = [];
   String nomeImagem = '';

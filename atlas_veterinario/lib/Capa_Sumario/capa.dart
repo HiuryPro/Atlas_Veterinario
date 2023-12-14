@@ -1,14 +1,17 @@
+import 'package:atlas_veterinario/Utils/utils.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 
-class Capa extends StatefulWidget {
-  const Capa({super.key});
+class CapaTela extends StatefulWidget {
+  const CapaTela({super.key});
 
   @override
-  State<Capa> createState() => _CapaState();
+  State<CapaTela> createState() => _CapaTelaState();
 }
 
-class _CapaState extends State<Capa> {
+class _CapaTelaState extends State<CapaTela> {
+  Utils util = Utils();
+
   Widget body() {
     return Container(
       decoration: const BoxDecoration(
@@ -87,6 +90,9 @@ class _CapaState extends State<Capa> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: body());
+    return Scaffold(
+        body: Stack(
+      children: [body(), util.numeroPagina('1')],
+    ));
   }
 }

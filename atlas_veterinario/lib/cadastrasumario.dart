@@ -1,6 +1,8 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:atlas_veterinario/DadosDB/supa.dart';
+import 'package:atlas_veterinario/Proxy/proxyindices.dart';
+import 'package:atlas_veterinario/Utils/rowcentralizada.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -118,6 +120,7 @@ class _CadastraSumarioState extends State<CadastraSumario> {
                 await partesSelect();
                 await mensagem.mensagem(context, 'Cadastro feito com sucesso',
                     'A parte foi cadastrada com sucesso', null);
+                await ProxyIndices.instance.findFull(true);
               } else {
                 print('Essa parte já existe');
                 await mensagem.mensagem(context, 'Falha ao Cadastrar',
@@ -134,18 +137,22 @@ class _CadastraSumarioState extends State<CadastraSumario> {
         child: ListView(
       shrinkWrap: true,
       children: [
-        DecoratedBox(
+        RowCentralizada(
+            componente: DecoratedBox(
           decoration: const ShapeDecoration(
-            color: Colors.cyan,
+            color: Color(0xff23c423),
             shape: RoundedRectangleBorder(
               side: BorderSide(
-                  width: 1.0, style: BorderStyle.solid, color: Colors.cyan),
+                  width: 1.0,
+                  style: BorderStyle.solid,
+                  color: Color(0xff23c423)),
               borderRadius: BorderRadius.all(Radius.circular(25.0)),
             ),
           ),
           child: DropdownButtonHideUnderline(
             child: Center(
               child: DropdownButton(
+                  isExpanded: true,
                   alignment: Alignment.center,
                   hint: const Text('Escolha a Parte'),
                   value: parteUnidade,
@@ -160,7 +167,7 @@ class _CadastraSumarioState extends State<CadastraSumario> {
                   }),
             ),
           ),
-        ),
+        )),
         const SizedBox(
           height: 15,
         ),
@@ -205,6 +212,7 @@ class _CadastraSumarioState extends State<CadastraSumario> {
                 });
                 await mensagem.mensagem(context, 'Cadastro feito com sucesso',
                     'A unidade foi cadastrada com sucesso', null);
+                await ProxyIndices.instance.findFull(true);
               } else {
                 print('Já existe');
                 await mensagem.mensagem(context, 'Falha ao Cadastrar',
@@ -221,12 +229,15 @@ class _CadastraSumarioState extends State<CadastraSumario> {
         child: ListView(
       shrinkWrap: true,
       children: [
-        DecoratedBox(
+        RowCentralizada(
+            componente: DecoratedBox(
           decoration: const ShapeDecoration(
-            color: Colors.cyan,
+            color: Color(0xff23c423),
             shape: RoundedRectangleBorder(
               side: BorderSide(
-                  width: 1.0, style: BorderStyle.solid, color: Colors.cyan),
+                  width: 1.0,
+                  style: BorderStyle.solid,
+                  color: Color(0xff23c423)),
               borderRadius: BorderRadius.all(Radius.circular(25.0)),
             ),
           ),
@@ -254,16 +265,19 @@ class _CadastraSumarioState extends State<CadastraSumario> {
                   }),
             ),
           ),
-        ),
+        )),
         const SizedBox(
           height: 15,
         ),
-        DecoratedBox(
+        RowCentralizada(
+            componente: DecoratedBox(
           decoration: const ShapeDecoration(
-            color: Colors.cyan,
+            color: Color(0xff23c423),
             shape: RoundedRectangleBorder(
               side: BorderSide(
-                  width: 1.0, style: BorderStyle.solid, color: Colors.cyan),
+                  width: 1.0,
+                  style: BorderStyle.solid,
+                  color: Color(0xff23c423)),
               borderRadius: BorderRadius.all(Radius.circular(25.0)),
             ),
           ),
@@ -287,7 +301,7 @@ class _CadastraSumarioState extends State<CadastraSumario> {
                   }),
             ),
           ),
-        ),
+        )),
         const SizedBox(
           height: 15,
         ),
@@ -333,6 +347,7 @@ class _CadastraSumarioState extends State<CadastraSumario> {
                 });
                 await mensagem.mensagem(context, 'Cadastro feito com sucesso',
                     'O capítulo foi cadastrada com sucesso', null);
+                await ProxyIndices.instance.findFull(true);
               } else {
                 print('Já existe');
                 await mensagem.mensagem(context, 'Falha ao Cadastrar',
@@ -362,12 +377,21 @@ class _CadastraSumarioState extends State<CadastraSumario> {
         length: 3,
         child: Scaffold(
             appBar: AppBar(
-              title: const Text('Cadastrar Sumário'),
-              leading: IconButton(
-                  onPressed: () {
-                    Navigator.of(context).pushNamed('/home');
-                  },
-                  icon: const Icon(Icons.arrow_back)),
+              shadowColor: Colors.transparent,
+              flexibleSpace: Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Color(0xff1a4d34),
+                      Color(0xff386e41),
+                      Colors.white,
+                      Colors.white
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                ),
+              ),
               bottom: const TabBar(tabs: [
                 Text(
                   'Cadastrar Parte',

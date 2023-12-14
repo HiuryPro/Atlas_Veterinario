@@ -3,7 +3,7 @@ import 'package:atlas_veterinario/Proxy/proxyinteface.dart';
 import '../DadosDB/supa.dart';
 
 class PaginaP implements ProxyInterface {
-  Map<int, Map> paginas = {};
+  Map paginas = {};
 
   buscadoBanco(int id) async {
     List resultados = await SupaDB.instance.select(
@@ -26,6 +26,19 @@ class PaginaP implements ProxyInterface {
       paginas[resultado['IdPagina']] = resultado;
       paginas[resultado['IdPagina']]!.remove('IdPagina');
     }
+
+    int cap = 1;
+
+    paginas.forEach((key, value) {
+      value.removeWhere((key, value) => value == null);
+      if (value.containsKey('Capitulo')) {
+        cap = value['Capitulo'];
+      } else if (value.containsKey('IdImagem')) {
+        Map<String, int> map = {'Capitulo': cap};
+        value.addAll(map);
+      }
+      value.addAll({'Pagina': key});
+    });
   }
 
   @override
@@ -39,7 +52,7 @@ class PaginaP implements ProxyInterface {
   }
 
   @override
-  Future<Map<int, Map>> findFull(bool atualizar) async {
+  Future<Map> findFull(bool atualizar) async {
     print('Dados da Pagina buscada');
     return paginas;
   }

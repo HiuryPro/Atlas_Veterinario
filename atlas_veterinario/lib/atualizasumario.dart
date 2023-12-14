@@ -1,6 +1,8 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:atlas_veterinario/DadosDB/supa.dart';
+import 'package:atlas_veterinario/Proxy/proxyindices.dart';
+import 'package:atlas_veterinario/Utils/rowcentralizada.dart';
 import 'package:flutter/material.dart';
 
 import 'Utils/mensagens.dart';
@@ -119,33 +121,38 @@ class _AtualizaSumarioState extends State<AtualizaSumario> {
         child: ListView(
       shrinkWrap: true,
       children: [
-        DecoratedBox(
-          decoration: const ShapeDecoration(
-            color: Colors.cyan,
-            shape: RoundedRectangleBorder(
-              side: BorderSide(
-                  width: 1.0, style: BorderStyle.solid, color: Colors.cyan),
-              borderRadius: BorderRadius.all(Radius.circular(25.0)),
+        RowCentralizada(
+          componente: DecoratedBox(
+            decoration: const ShapeDecoration(
+              color: Color(0xff23c423),
+              shape: RoundedRectangleBorder(
+                side: BorderSide(
+                    width: 1.0,
+                    style: BorderStyle.solid,
+                    color: Color(0xff23c423)),
+                borderRadius: BorderRadius.all(Radius.circular(25.0)),
+              ),
             ),
-          ),
-          child: DropdownButtonHideUnderline(
-            child: Center(
-              child: DropdownButton(
-                  alignment: Alignment.center,
-                  hint: const Text('Escolha a Parte'),
-                  value: parteUnidade,
-                  items: mapPartes['Parte']!
-                      .toList()
-                      .map((String valor) => buildMenuItem(valor, null))
-                      .toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      int index = mapPartes['Parte']!.indexOf(value!);
-                      parteUnidade = value;
-                      descricaoParteController.text =
-                          mapPartes['Descricao']![index];
-                    });
-                  }),
+            child: DropdownButtonHideUnderline(
+              child: Center(
+                child: DropdownButton(
+                    isExpanded: true,
+                    alignment: Alignment.center,
+                    hint: const Text('Escolha a Parte'),
+                    value: parteUnidade,
+                    items: mapPartes['Parte']!
+                        .toList()
+                        .map((String valor) => buildMenuItem(valor, null))
+                        .toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        int index = mapPartes['Parte']!.indexOf(value!);
+                        parteUnidade = value;
+                        descricaoParteController.text =
+                            mapPartes['Descricao']![index];
+                      });
+                    }),
+              ),
             ),
           ),
         ),
@@ -162,6 +169,7 @@ class _AtualizaSumarioState extends State<AtualizaSumario> {
           height: 15,
         ),
         ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: Color(0xff23c423)),
             onPressed: () async {
               int index = mapPartes['Parte']!.indexOf(parteUnidade!);
               int idParte = int.parse(mapPartes['Parte']![index]);
@@ -172,6 +180,7 @@ class _AtualizaSumarioState extends State<AtualizaSumario> {
               await partesSelect();
               await mensagem.mensagem(context, 'Atualização feita com sucesso',
                   'A parte foi atulizada com sucesso', null);
+              await ProxyIndices.instance.findFull(true);
             },
             child: const Text('Atualizar Parte'))
       ],
@@ -183,74 +192,84 @@ class _AtualizaSumarioState extends State<AtualizaSumario> {
         child: ListView(
       shrinkWrap: true,
       children: [
-        DecoratedBox(
-          decoration: const ShapeDecoration(
-            color: Colors.cyan,
-            shape: RoundedRectangleBorder(
-              side: BorderSide(
-                  width: 1.0, style: BorderStyle.solid, color: Colors.cyan),
-              borderRadius: BorderRadius.all(Radius.circular(25.0)),
+        RowCentralizada(
+          componente: DecoratedBox(
+            decoration: const ShapeDecoration(
+              color: Color(0xff23c423),
+              shape: RoundedRectangleBorder(
+                side: BorderSide(
+                    width: 1.0,
+                    style: BorderStyle.solid,
+                    color: Color(0xff23c423)),
+                borderRadius: BorderRadius.all(Radius.circular(25.0)),
+              ),
             ),
-          ),
-          child: DropdownButtonHideUnderline(
-            child: Center(
-              child: DropdownButton(
-                  alignment: Alignment.center,
-                  hint: const Text('Escolha a Parte'),
-                  value: parteUnidade,
-                  items: mapPartes['Parte']!
-                      .toList()
-                      .map((String valor) => buildMenuItem(valor, null))
-                      .toList(),
-                  onChanged: (value) async {
-                    print(mapPartes);
-                    int index = mapPartes['Parte']!.indexOf(value!);
-                    int idParte = int.parse(mapPartes['Parte']![index]);
-                    print(idParte);
-                    setState(() {
-                      unidadeCapitulo = null;
-                      parteUnidade = value;
-                    });
+            child: DropdownButtonHideUnderline(
+              child: Center(
+                child: DropdownButton(
+                    isExpanded: true,
+                    alignment: Alignment.center,
+                    hint: const Text('Escolha a Parte'),
+                    value: parteUnidade,
+                    items: mapPartes['Parte']!
+                        .toList()
+                        .map((String valor) => buildMenuItem(valor, null))
+                        .toList(),
+                    onChanged: (value) async {
+                      print(mapPartes);
+                      int index = mapPartes['Parte']!.indexOf(value!);
+                      int idParte = int.parse(mapPartes['Parte']![index]);
+                      print(idParte);
+                      setState(() {
+                        unidadeCapitulo = null;
+                        parteUnidade = value;
+                      });
 
-                    await unidadesSelect(idParte);
-                  }),
+                      await unidadesSelect(idParte);
+                    }),
+              ),
             ),
           ),
         ),
         const SizedBox(
           height: 15,
         ),
-        DecoratedBox(
-          decoration: const ShapeDecoration(
-            color: Colors.cyan,
-            shape: RoundedRectangleBorder(
-              side: BorderSide(
-                  width: 1.0, style: BorderStyle.solid, color: Colors.cyan),
-              borderRadius: BorderRadius.all(Radius.circular(25.0)),
+        RowCentralizada(
+          componente: DecoratedBox(
+            decoration: const ShapeDecoration(
+              color: Color(0xff23c423),
+              shape: RoundedRectangleBorder(
+                side: BorderSide(
+                    width: 1.0,
+                    style: BorderStyle.solid,
+                    color: Color(0xff23c423)),
+                borderRadius: BorderRadius.all(Radius.circular(25.0)),
+              ),
             ),
-          ),
-          child: DropdownButtonHideUnderline(
-            child: Center(
-              child: DropdownButton(
-                  alignment: Alignment.center,
-                  hint: const Text('Escolha a Parte'),
-                  value: unidade,
-                  items: mapUnidades['NumUnidade']!
-                      .toList()
-                      .map((String valor) => buildMenuItem(
-                          valor,
-                          mapUnidades['NomeUnidade']![
-                              mapUnidades['NumUnidade']!.indexOf(valor)]))
-                      .toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      unidade = value;
-                      int index = mapUnidades['NumUnidade']!
-                          .indexOf(unidade.toString().split(' ')[0]);
-                      String nomeUnidade = mapUnidades['NomeUnidade']![index];
-                      nomeUnidadeController.text = nomeUnidade;
-                    });
-                  }),
+            child: DropdownButtonHideUnderline(
+              child: Center(
+                child: DropdownButton(
+                    isExpanded: true,
+                    alignment: Alignment.center,
+                    hint: const Text('Escolha a Parte'),
+                    value: unidade,
+                    items: mapUnidades['NumUnidade']!
+                        .toList()
+                        .map((String valor) => buildMenuItem(
+                            valor,
+                            mapUnidades['NomeUnidade']![
+                                mapUnidades['NumUnidade']!.indexOf(valor)]))
+                        .toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        unidade = value;
+                        int index = mapUnidades['NumUnidade']!
+                            .indexOf(unidade.toString().split(' ')[0]);
+                        String nomeUnidade = mapUnidades['NomeUnidade']![index];
+                        nomeUnidadeController.text = nomeUnidade;
+                      });
+                    }),
+              ),
             ),
           ),
         ),
@@ -267,6 +286,7 @@ class _AtualizaSumarioState extends State<AtualizaSumario> {
           height: 15,
         ),
         ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: Color(0xff23c423)),
             onPressed: () async {
               int index =
                   mapUnidades['NumUnidade']!.indexOf(unidade!.split(' ')[0]);
@@ -280,6 +300,7 @@ class _AtualizaSumarioState extends State<AtualizaSumario> {
               });
               await mensagem.mensagem(context, 'Atualização feita com sucesso',
                   'A unidade foi atulizada com sucesso', null);
+              await ProxyIndices.instance.findFull(true);
             },
             child: const Text('Atualizar Unidade'))
       ],
@@ -291,116 +312,132 @@ class _AtualizaSumarioState extends State<AtualizaSumario> {
         child: ListView(
       shrinkWrap: true,
       children: [
-        DecoratedBox(
-          decoration: const ShapeDecoration(
-            color: Colors.cyan,
-            shape: RoundedRectangleBorder(
-              side: BorderSide(
-                  width: 1.0, style: BorderStyle.solid, color: Colors.cyan),
-              borderRadius: BorderRadius.all(Radius.circular(25.0)),
+        RowCentralizada(
+          componente: DecoratedBox(
+            decoration: const ShapeDecoration(
+              color: Color(0xff23c423),
+              shape: RoundedRectangleBorder(
+                side: BorderSide(
+                    width: 1.0,
+                    style: BorderStyle.solid,
+                    color: Color(0xff23c423)),
+                borderRadius: BorderRadius.all(Radius.circular(25.0)),
+              ),
             ),
-          ),
-          child: DropdownButtonHideUnderline(
-            child: Center(
-              child: DropdownButton(
-                  alignment: Alignment.center,
-                  hint: const Text('Escolha a Parte'),
-                  value: parteCapitulo,
-                  items: mapPartes['Parte']!
-                      .map((String valor) => buildMenuItem(valor, null))
-                      .toList(),
-                  onChanged: (value) async {
-                    print(mapPartes);
-                    int index = mapPartes['Parte']!.indexOf(value!);
-                    int idParte = int.parse(mapPartes['Parte']![index]);
-                    print(idParte);
-                    setState(() {
-                      unidadeCapitulo = null;
-                      capitulo = null;
-                      parteCapitulo = value;
-                      mapCapitulos.updateAll((key, value) => value = []);
-                      mapUnidades.updateAll((key, value) => value = []);
-                    });
+            child: DropdownButtonHideUnderline(
+              child: Center(
+                child: DropdownButton(
+                    isExpanded: true,
+                    alignment: Alignment.center,
+                    hint: const Text('Escolha a Parte'),
+                    value: parteCapitulo,
+                    items: mapPartes['Parte']!
+                        .map((String valor) => buildMenuItem(valor, null))
+                        .toList(),
+                    onChanged: (value) async {
+                      print(mapPartes);
+                      int index = mapPartes['Parte']!.indexOf(value!);
+                      int idParte = int.parse(mapPartes['Parte']![index]);
+                      print(idParte);
+                      setState(() {
+                        unidadeCapitulo = null;
+                        capitulo = null;
+                        parteCapitulo = value;
+                        mapCapitulos.updateAll((key, value) => value = []);
+                        mapUnidades.updateAll((key, value) => value = []);
+                      });
 
-                    await unidadesSelect(idParte);
-                  }),
+                      await unidadesSelect(idParte);
+                    }),
+              ),
             ),
           ),
         ),
         const SizedBox(
           height: 15,
         ),
-        DecoratedBox(
-          decoration: const ShapeDecoration(
-            color: Colors.cyan,
-            shape: RoundedRectangleBorder(
-              side: BorderSide(
-                  width: 1.0, style: BorderStyle.solid, color: Colors.cyan),
-              borderRadius: BorderRadius.all(Radius.circular(25.0)),
+        RowCentralizada(
+          componente: DecoratedBox(
+            decoration: const ShapeDecoration(
+              color: Color(0xff23c423),
+              shape: RoundedRectangleBorder(
+                side: BorderSide(
+                    width: 1.0,
+                    style: BorderStyle.solid,
+                    color: Color(0xff23c423)),
+                borderRadius: BorderRadius.all(Radius.circular(25.0)),
+              ),
             ),
-          ),
-          child: DropdownButtonHideUnderline(
-            child: Center(
-              child: DropdownButton(
-                  alignment: Alignment.center,
-                  hint: const Text('Escolha a Unidade'),
-                  value: unidadeCapitulo,
-                  items: mapUnidades['NumUnidade']!
-                      .toList()
-                      .map((String valor) => buildMenuItem(
-                          valor,
-                          mapUnidades['NomeUnidade']![
-                              mapUnidades['NumUnidade']!.indexOf(valor)]))
-                      .toList(),
-                  onChanged: (value) async {
-                    setState(() {
-                      capitulo = null;
-                      unidadeCapitulo = value;
-                      mapCapitulos.updateAll((key, value) => value = []);
-                    });
-                    int index = mapUnidades['NumUnidade']!
-                        .indexOf(unidadeCapitulo.toString().split(' ')[0]);
-                    int idUnidade = int.parse(mapUnidades['IdUnidade']![index]);
-                    await capitulosSelect(idUnidade);
-                  }),
+            child: DropdownButtonHideUnderline(
+              child: Center(
+                child: DropdownButton(
+                    isExpanded: true,
+                    alignment: Alignment.center,
+                    hint: const Text('Escolha a Unidade'),
+                    value: unidadeCapitulo,
+                    items: mapUnidades['NumUnidade']!
+                        .toList()
+                        .map((String valor) => buildMenuItem(
+                            valor,
+                            mapUnidades['NomeUnidade']![
+                                mapUnidades['NumUnidade']!.indexOf(valor)]))
+                        .toList(),
+                    onChanged: (value) async {
+                      setState(() {
+                        capitulo = null;
+                        unidadeCapitulo = value;
+                        mapCapitulos.updateAll((key, value) => value = []);
+                      });
+                      int index = mapUnidades['NumUnidade']!
+                          .indexOf(unidadeCapitulo.toString().split(' ')[0]);
+                      int idUnidade =
+                          int.parse(mapUnidades['IdUnidade']![index]);
+                      await capitulosSelect(idUnidade);
+                    }),
+              ),
             ),
           ),
         ),
         const SizedBox(
           height: 15,
         ),
-        DecoratedBox(
-          decoration: const ShapeDecoration(
-            color: Colors.cyan,
-            shape: RoundedRectangleBorder(
-              side: BorderSide(
-                  width: 1.0, style: BorderStyle.solid, color: Colors.cyan),
-              borderRadius: BorderRadius.all(Radius.circular(25.0)),
+        RowCentralizada(
+          componente: DecoratedBox(
+            decoration: const ShapeDecoration(
+              color: Color(0xff23c423),
+              shape: RoundedRectangleBorder(
+                side: BorderSide(
+                    width: 1.0,
+                    style: BorderStyle.solid,
+                    color: Color(0xff23c423)),
+                borderRadius: BorderRadius.all(Radius.circular(25.0)),
+              ),
             ),
-          ),
-          child: DropdownButtonHideUnderline(
-            child: Center(
-              child: DropdownButton(
-                  alignment: Alignment.center,
-                  hint: const Text('Escolha a Capitulo'),
-                  value: capitulo,
-                  items: mapCapitulos['NumCapitulo']!
-                      .toList()
-                      .map((String valor) => buildMenuItem(
-                          valor,
-                          mapCapitulos['NomeCapitulo']![
-                              mapCapitulos['NumCapitulo']!.indexOf(valor)]))
-                      .toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      capitulo = value;
-                      int index = mapCapitulos['NumCapitulo']!
-                          .indexOf(capitulo.toString().split(' ')[0]);
-                      String nomeCapitulo =
-                          mapCapitulos['NomeCapitulo']![index];
-                      nomeCapituloController.text = nomeCapitulo;
-                    });
-                  }),
+            child: DropdownButtonHideUnderline(
+              child: Center(
+                child: DropdownButton(
+                    isExpanded: true,
+                    alignment: Alignment.center,
+                    hint: const Text('Escolha a Capitulo'),
+                    value: capitulo,
+                    items: mapCapitulos['NumCapitulo']!
+                        .toList()
+                        .map((String valor) => buildMenuItem(
+                            valor,
+                            mapCapitulos['NomeCapitulo']![
+                                mapCapitulos['NumCapitulo']!.indexOf(valor)]))
+                        .toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        capitulo = value;
+                        int index = mapCapitulos['NumCapitulo']!
+                            .indexOf(capitulo.toString().split(' ')[0]);
+                        String nomeCapitulo =
+                            mapCapitulos['NomeCapitulo']![index];
+                        nomeCapituloController.text = nomeCapitulo;
+                      });
+                    }),
+              ),
             ),
           ),
         ),
@@ -417,12 +454,8 @@ class _AtualizaSumarioState extends State<AtualizaSumario> {
           height: 15,
         ),
         ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: Color(0xff23c423)),
             onPressed: () async {
-              print(unidadeCapitulo);
-              print(mapCapitulos['IdCapitulo']);
-              print(capitulo.toString().split(' ')[0]);
-              print(mapCapitulos['NumCapitulo']);
-
               int index = mapCapitulos['NumCapitulo']!
                   .indexOf(capitulo.toString().split(' ')[0]);
               int idCapitulo = int.parse(mapCapitulos['IdCapitulo']![index]);
@@ -439,6 +472,8 @@ class _AtualizaSumarioState extends State<AtualizaSumario> {
               });
               await mensagem.mensagem(context, 'Atualização feita com sucesso',
                   'O capítulo foi atulizada com sucesso', null);
+
+              await ProxyIndices.instance.findFull(true);
             },
             child: const Text('Atualizar Capítulo'))
       ],
@@ -463,24 +498,39 @@ class _AtualizaSumarioState extends State<AtualizaSumario> {
         length: 3,
         child: Scaffold(
             appBar: AppBar(
-              title: const Text('Atualizar Sumário'),
+              title: const Text('Atualizar de Sumario'),
               leading: IconButton(
                   onPressed: () {
                     Navigator.of(context).pushNamed('/home');
                   },
                   icon: const Icon(Icons.arrow_back)),
+              shadowColor: Colors.transparent,
+              flexibleSpace: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Color(0xff1a4d34),
+                      Color(0xff386e41),
+                      Colors.white,
+                      Colors.white
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                ),
+              ),
               bottom: const TabBar(tabs: [
                 Text(
                   'Atualizar Parte',
-                  style: TextStyle(fontSize: 15),
+                  style: TextStyle(fontSize: 15, color: Colors.black),
                 ),
                 Text(
                   'Atualizar Unidade',
-                  style: TextStyle(fontSize: 15),
+                  style: TextStyle(fontSize: 15, color: Colors.black),
                 ),
                 Text(
                   'Atualizar Capítulo',
-                  style: TextStyle(fontSize: 15),
+                  style: TextStyle(fontSize: 15, color: Colors.black),
                 )
               ]),
             ),

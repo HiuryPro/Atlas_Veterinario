@@ -33,12 +33,19 @@ class FlutterPainterExampleState extends State<CadastrarImagem> {
 
   int tamanhoFonte = 30;
   bool rodaUndo = false;
+  String? erro;
 
   TextEditingController fontController = TextEditingController();
   TextEditingController numeroImagemController = TextEditingController();
   TextEditingController legendaImagemController = TextEditingController();
   TextEditingController nomeImagemController = TextEditingController();
 
+  List<double> listRotation = [
+    0.0,
+    4.71238898038469,
+    3.141592653589793,
+    1.5707963267948966
+  ];
   List<Color> cores = [
     Colors.green,
     Colors.blue,
@@ -77,7 +84,7 @@ class FlutterPainterExampleState extends State<CadastrarImagem> {
     ..color = Colors.red
     ..style = PaintingStyle.stroke
     ..strokeCap = StrokeCap.round;
-  ProxyImagens imagemProxy = ProxyImagens().getInterface();
+  ProxyImagens imagemProxy = ProxyImagens.instance;
 
   @override
   void initState() {
@@ -156,11 +163,12 @@ class FlutterPainterExampleState extends State<CadastrarImagem> {
                   tooltip: 'Clique para adicionar uma imagem',
                   onPressed: () {
                     initBackground();
+                    nomeImagemController.text = '';
                     for (var drawable in controller.drawables) {
                       controller.removeDrawable(drawable);
                     }
                   },
-                  icon: ImageIcon(
+                  icon: const ImageIcon(
                       size: 80, AssetImage('assets/images/imageattach.png'))),
             ]),
             builder: (context, _, child) {
@@ -199,13 +207,19 @@ class FlutterPainterExampleState extends State<CadastrarImagem> {
       body: SizedBox(
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
-        child: Column(
-          children: [
-            if (controller.value.background != null) ...[
+        child: Builder(builder: (context) {
+          if (controller.value.background != null) {
+            return Column(children: [
               TextField(
+                  onChanged: (value) {
+                    setState(() {
+                      erro = null;
+                    });
+                  },
                   controller: nomeImagemController,
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
+                  decoration: InputDecoration(
+                    errorText: erro,
+                    border: const OutlineInputBorder(),
                     labelText: 'Nome Imagem',
                   )),
               Expanded(
@@ -296,46 +310,58 @@ class FlutterPainterExampleState extends State<CadastrarImagem> {
                           var render = controller.painterKey.currentContext!
                               .findRenderObject() as RenderBox;
                           var insertedIT;
+                          if (nomeImagemController.text != '') {
+                            var inserted = await cadImagem.cadastraImagem(
+                                logoBase64!,
+                                nomeImagemController.text,
+                                render.size.width,
+                                render.size.height,
+                                rotation);
 
-                          var inserted = await cadImagem.cadastraImagem(
-                              logoBase64!,
-                              nomeImagemController.text,
-                              render.size.width,
-                              render.size.height,
-                              rotation);
-                          int idImagem = inserted[0]['IdImagem'];
+                            int idImagem = inserted[0]['IdImagem'];
 
-                          for (var drawables in controller.drawables) {
-                            if (drawables.runtimeType == TextDrawable) {
-                              int index =
-                                  controller.drawables.indexOf(drawables);
-                              insertedIT = await cadImagem.cadastrarImagemTexto(
-                                  idImagem,
-                                  legendas[index],
-                                  coresDestaque[index],
-                                  coresBorda[index],
-                                  drawables as TextDrawable);
-                              print(insertedIT);
+                            for (var drawables in controller.drawables) {
+                              if (drawables.runtimeType == TextDrawable) {
+                                int index =
+                                    controller.drawables.indexOf(drawables);
+                                insertedIT =
+                                    await cadImagem.cadastrarImagemTexto(
+                                        idImagem,
+                                        legendas[index],
+                                        coresDestaque[index],
+                                        coresBorda[index],
+                                        drawables as TextDrawable);
+                                print(insertedIT);
+                              }
                             }
+
+                            await mensagem.mensagem(
+                                context,
+                                'Cadastrado com Sucesso',
+                                'Imagem cadastrada com sucesso',
+                                null);
+
+                            print(idImagem);
+                            controller.background = null;
+                            controller.clearDrawables();
+                            nomeImagemController.text = '';
+                            setState(() {});
+                          } else {
+                            setState(() {
+                              erro = 'Preencha o nome da Imagem';
+                            });
                           }
-
-                          print(idImagem);
-                          controller.background = null;
-                          controller.clearDrawables();
-                          nomeImagemController.text = '';
-                          setState(() {});
-
-                          mensagem.mensagem(context, 'Cadastrado com Sucesso',
-                              'Imagem cadastrada com sucesso', null);
                         },
                       ),
                     )
                   ],
                 ),
               )
-            ]
-          ],
-        ),
+            ]);
+          }
+
+          return const SizedBox();
+        }),
       ),
     );
   }
@@ -410,6 +436,8 @@ class FlutterPainterExampleState extends State<CadastrarImagem> {
               }),
         ]),
       ),
+      const Text('Cor de destaque do número'),
+      const SizedBox(height: 5),
       SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Row(
@@ -438,6 +466,7 @@ class FlutterPainterExampleState extends State<CadastrarImagem> {
                 )
                 .toList()),
       ),
+      const Text('Cor da borda do número'),
       const SizedBox(
         height: 5,
       ),
@@ -566,6 +595,7 @@ class FlutterPainterExampleState extends State<CadastrarImagem> {
     controller.addDrawables([
       TextDrawable(
           text: textoImagem['numero'],
+          rotation: listRotation[rotation],
           position: Offset(render.size.width / 2, render.size.height / 2),
           style: TextStyle(
             shadows: [

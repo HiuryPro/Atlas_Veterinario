@@ -4,18 +4,11 @@ import 'package:atlas_veterinario/Proxy/introducao.dart';
 import 'package:atlas_veterinario/Proxy/proxyinteface.dart';
 
 class ProxyIntroducao implements ProxyInterface {
-  static ProxyIntroducao? instance;
+  static ProxyIntroducao instance = ProxyIntroducao();
   late IntroducaoP introducao;
 
   ProxyIntroducao() {
     introducao = IntroducaoP();
-  }
-
-  ProxyIntroducao getInterface() {
-    if (instance == null) {
-      instance = ProxyIntroducao();
-    }
-    return instance!;
   }
 
   @override
