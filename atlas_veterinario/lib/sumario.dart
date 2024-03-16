@@ -1,4 +1,3 @@
-import 'package:atlas_veterinario/Proxy/proxypagina.dart';
 import 'package:atlas_veterinario/Proxy/sumarioP.dart';
 import 'package:atlas_veterinario/home.dart';
 import 'package:auto_size_text/auto_size_text.dart';
@@ -12,30 +11,13 @@ class Sumario extends StatefulWidget {
 }
 
 class _SumarioState extends State<Sumario> {
-  List<Map<String, dynamic>> listaSumario = [];
+  Future<dynamic>? listaSumario;
   var myGroup = AutoSizeGroup();
 
   @override
   void initState() {
     super.initState();
-    Future.delayed(Duration.zero, () async {
-      listaSumario = await SumarioP.instance.findFull();
-      print(listaSumario);
-      setState(() {});
-    });
-  }
-
-  Future<Map?> buscaTelaConteudo() async {
-    ProxyPagina instance = ProxyPagina.instance;
-    Map<int, Map>? resultado = await instance.findFull(false);
-    print(resultado);
-    if (resultado != null) {
-      resultado.forEach((key, value) {
-        value.removeWhere((key, value) => value == null);
-      });
-    }
-
-    return resultado;
+    listaSumario = SumarioP.instance.findFull();
   }
 
   Widget body() {
@@ -44,53 +26,104 @@ class _SumarioState extends State<Sumario> {
         height: MediaQuery.of(context).size.height,
         child: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: ListView(
-            shrinkWrap: true,
-            children: listaSumario.map((e) {
-              switch (e['Tipo']) {
-                case 'Imagem':
-                  return retornaLinhaSumario(
-                      e['NomeImagem'], e['pagina'], Colors.yellow);
+          child: FutureBuilder(
+              future: listaSumario,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState != ConnectionState.done) {
+                  return const SizedBox(
+                    height: 50,
+                    child: Center(child: CircularProgressIndicator.adaptive()),
+                  );
+                }
+                if (!snapshot.hasData || snapshot.data == null) {
+                  return const SizedBox(
+                      child: Column(
+                    children: [
+                      Expanded(child: SizedBox()),
+                      Text(
+                          'Essa página não possui conteudo, entrar em contato com o professor'),
+                      Expanded(child: SizedBox()),
+                    ],
+                  ));
+                }
+                return ListView(
+                  shrinkWrap: true,
+                  children: snapshot.data!.map<Widget>((e) {
+                    switch (e['Tipo']) {
+                      case 'Imagem':
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 8.0),
+                          child:
+                              retornaLinhaSumario(e['NomeImagem'], e['pagina']),
+                        );
 
-                case 'Parte':
-                  return retornaLinhaSumario(
-                      'Parte ${'I' * e['Parte']}', e['pagina'], Colors.green);
+                      case 'Parte':
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 8.0),
+                          child: retornaLinhaSumario(
+                              'PARTE ${'I' * e['Parte']}', e['pagina']),
+                        );
 
-                case 'Unidade':
-                  return retornaLinhaSumario(
-                      e['NomeUnidade'], e['pagina'], Colors.purple);
+                      case 'Unidade':
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 8.0),
+                          child: retornaLinhaSumario(
+                              "UNIDADE ${e['NumUnidade']} - ${e['NomeUnidade']}",
+                              e['pagina']),
+                        );
 
-                case 'Capitulo':
-                  return retornaLinhaSumario(
-                      e['NomeCapitulo'], e['pagina'], Colors.red);
-                case 'Vazio':
-                  return retornaLinhaSumario(
-                      'Não possuiu conteúdo', e['pagina'], Colors.yellow);
-              }
-              return Text(e['Tipo']);
-            }).toList(),
-          ),
+                      case 'Capitulo':
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 8.0),
+                          child: retornaLinhaSumario(
+                              "Capitulo ${e['NumCapitulo']} - ${e['NomeCapitulo']}",
+                              e['pagina']),
+                        );
+                      case 'Vazio':
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 8.0),
+                          child: retornaLinhaSumario(
+                              'Não possuiu conteúdo', e['pagina']),
+                        );
+                    }
+                    return Text(e['Tipo']);
+                  }).toList(),
+                );
+              }),
         ));
   }
 
   AutoSizeText formataTexto(String texto) {
     return AutoSizeText(texto,
-        style: TextStyle(fontSize: 40),
-        maxFontSize: 40,
+        style: const TextStyle(
+            fontSize: 20,
+            decoration: TextDecoration.underline,
+            color: Colors.black),
+        maxFontSize: 20,
         minFontSize: 9,
+        textAlign: TextAlign.start,
         maxLines: 2);
   }
 
-  ListTile retornaLinhaSumario(String texto, int pagina, Color cor) {
-    return ListTile(
-      onTap: () {
-        Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => Home(pagina: pagina),
-        ));
-      },
-      title: formataTexto(texto),
-      tileColor: cor,
-      trailing: formataTexto(pagina.toString()),
+  Align retornaLinhaSumario(String texto, int pagina) {
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: TextButton(
+        onPressed: () {
+          Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => Home(pagina: pagina),
+          ));
+        },
+        child: Row(
+          children: [
+            Expanded(child: formataTexto(texto)),
+            const SizedBox(
+              width: 5,
+            ),
+            formataTexto(pagina.toString())
+          ],
+        ),
+      ),
     );
   }
 
@@ -110,8 +143,8 @@ class _SumarioState extends State<Sumario> {
             decoration: const BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  Color(0xff1a4d34),
-                  Color(0xff386e41),
+                  Color(0xff1a4683),
+                  Color(0xff3574cc),
                   Colors.white,
                   Colors.white
                 ],

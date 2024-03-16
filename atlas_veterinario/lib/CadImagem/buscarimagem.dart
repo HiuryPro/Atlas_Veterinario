@@ -276,6 +276,8 @@ class BuscarImagemPainterState extends State<BuscarImagemPainter> {
                     padding: const EdgeInsets.all(2.0),
                     child: Wrap(
                       direction: Axis.vertical,
+                      alignment: WrapAlignment.center,
+                      crossAxisAlignment: WrapCrossAlignment.center,
                       children: [
                         Container(
                             decoration: const BoxDecoration(
@@ -326,9 +328,10 @@ class BuscarImagemPainterState extends State<BuscarImagemPainter> {
   Text textoFormatado(String texto) {
     return Text(
       texto,
+      textAlign: TextAlign.center,
       style: const TextStyle(
           fontSize: 20.0,
-          color: Color(0xff006600),
+          color: Color(0xff1a4683),
           fontWeight: FontWeight.bold),
     );
   }
@@ -378,16 +381,16 @@ class BuscarImagemPainterState extends State<BuscarImagemPainter> {
   DecoratedBox testeDrop() {
     return DecoratedBox(
       decoration: const ShapeDecoration(
-        color: Color(0xff23c423),
+        color: Color(0xff3574cc),
         shape: RoundedRectangleBorder(
           side: BorderSide(
-              width: 1.0, style: BorderStyle.solid, color: Color(0xff386e41)),
+              width: 1.0, style: BorderStyle.solid, color: Color(0xff1a4683)),
           borderRadius: BorderRadius.all(Radius.circular(25.0)),
         ),
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton(
-            dropdownColor: const Color(0xff23c423),
+            dropdownColor: const Color(0xff3574cc),
             borderRadius: const BorderRadius.all(Radius.circular(40)),
             focusColor: Colors.transparent,
             alignment: Alignment.center,

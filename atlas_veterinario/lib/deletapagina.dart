@@ -6,18 +6,17 @@ import 'package:atlas_veterinario/Proxy/proxyindices.dart';
 import 'package:atlas_veterinario/Proxy/proxypagina.dart';
 import 'package:atlas_veterinario/Utils/mensagens.dart';
 import 'package:flutter/material.dart';
-import 'package:supabase/supabase.dart';
 
 import 'CadImagem/burcarsoimagem.dart';
 
-class AtualizaPagina extends StatefulWidget {
-  const AtualizaPagina({super.key});
+class DeletarPagina extends StatefulWidget {
+  const DeletarPagina({super.key});
 
   @override
-  State<AtualizaPagina> createState() => _AtualizaPaginaState();
+  State<DeletarPagina> createState() => _DeletarPaginaState();
 }
 
-class _AtualizaPaginaState extends State<AtualizaPagina> {
+class _DeletarPaginaState extends State<DeletarPagina> {
   Mensagem mensagem = Mensagem();
   Map partes = {};
   Map? paginas;
@@ -36,7 +35,7 @@ class _AtualizaPaginaState extends State<AtualizaPagina> {
   int? capituloAtual;
   int? imagemAtual;
   BuscarImagem? imagem;
-  bool atualizar = false;
+  bool deletar = false;
 
   List imagens = [];
 
@@ -49,9 +48,6 @@ class _AtualizaPaginaState extends State<AtualizaPagina> {
       paginas = await ProxyPagina.instance.findFull(true);
 
       setState(() {});
-
-      print(partes.values.toList());
-      print(paginas);
     });
   }
 
@@ -86,30 +82,35 @@ class _AtualizaPaginaState extends State<AtualizaPagina> {
                 items: paginas!.keys
                     .map((e) => buildMenuItem(e.toString(), null))
                     .toList(),
-                onChanged: (value) async {
+                onChanged: (item) async {
                   reseta();
                   int idParte;
                   int idUnidade;
                   int idCapitulo;
 
                   setState(() {
-                    paginaAtual = value;
+                    paginaAtual = item;
                   });
                   Map conteudos;
                   Map unidadeMap;
                   Map capituloMap;
                   Map paginaEscolhida = paginas![int.parse(paginaAtual!)];
 
+                  print(paginaEscolhida);
+
                   if (paginaEscolhida['IdImagem'] != null) {
+                    print('Entrou');
                     conteudos = await ProxyImagens.instance
                         .find(paginaEscolhida['IdImagem'], false);
                     print(conteudos);
                     setState(() {
-                      this.value = 'Imagem';
+                      value = 'Imagem';
+                      print(value);
                       valueImagem =
                           '${paginaEscolhida['IdImagem']}  ${conteudos['NomeImagem']}';
                       imagemAtual = paginaEscolhida['IdImagem'];
                     });
+                    print(value);
                     imagens = await SupaDB.instance.clienteSupaBase
                         .from('Imagem')
                         .select('IdImagem, NomeImagem');
@@ -135,7 +136,7 @@ class _AtualizaPaginaState extends State<AtualizaPagina> {
                     capituloMap = unidadeMap['Capitulo'][idCapitulo];
 
                     setState(() {
-                      this.value = 'Capitulo';
+                      value = 'Capitulo';
 
                       valueParte = 'PARTE ${'I' * idParte}';
                       parteAtual = idParte;
@@ -156,7 +157,7 @@ class _AtualizaPaginaState extends State<AtualizaPagina> {
                     unidadeMap = conteudos['Unidade'][idUnidade];
 
                     setState(() {
-                      this.value = 'Unidade';
+                      value = 'Unidade';
                       print(value);
                       valueParte = 'PARTE ${'I' * idParte}';
                       parteAtual = idParte;
@@ -181,45 +182,17 @@ class _AtualizaPaginaState extends State<AtualizaPagina> {
         const SizedBox(height: 10),
         Builder(builder: (context) {
           if (paginaAtual != null) {
-            return DropdownButton(
-                value: value,
-                items: itemsParte.map((e) => buildMenuItem(e, null)).toList(),
-                onChanged: (value) async {
-                  setState(() {
-                    this.value = value;
-                    reseta();
-                  });
-                  if (value == 'Imagem' && imagens.isEmpty) {
-                    imagens = await SupaDB.instance.clienteSupaBase
-                        .from('Imagem')
-                        .select('IdImagem, NomeImagem');
-                    print(imagens);
-                  }
-                  setState(() {});
-                });
+            return Text(
+                style: TextStyle(fontSize: 20), value == null ? '' : value!);
           }
           return const SizedBox();
         }),
         const SizedBox(height: 10),
         Builder(builder: (context) {
           if (value != 'Imagem' && value != null) {
-            return DropdownButton(
-                value: valueParte,
-                items: partes.values
-                    .toList()
-                    .map(
-                        (e) => buildMenuItem('PARTE ${'I' * e['Parte']}', null))
-                    .toList(),
-                onChanged: (value) {
-                  setState(() {
-                    valueParte = value;
-                    parteAtual = 'I'.allMatches(valueParte!).length;
-                    valueUnidade = null;
-                    valueCapitulo = null;
-                    unidadeAtual = null;
-                    capituloAtual = null;
-                  });
-                });
+            return Text(
+                style: TextStyle(fontSize: 20),
+                valueParte == null ? '' : valueParte!);
           }
 
           return const SizedBox();
@@ -229,69 +202,24 @@ class _AtualizaPaginaState extends State<AtualizaPagina> {
           if (parteAtual != null &&
               (value == 'Unidade' || value == 'Capitulo')) {
             print('Teste');
-            return DropdownButton(
-                value: valueUnidade,
-                items: partes[parteAtual]['Unidade']
-                    .values
-                    .toList()
-                    .map<DropdownMenuItem<String>>((e) {
-                  return buildMenuItem(
-                      '${e['NumUnidade']}  ${e['NomeUnidade']}', null);
-                }).toList(),
-                onChanged: (value) {
-                  setState(() {
-                    valueUnidade = value;
-                    unidadeAtual = int.parse(value!.split(" ")[0]);
-                    print(unidadeAtual);
-                    valueCapitulo = null;
-                    capituloAtual = null;
-                  });
-                });
+            return Text(
+                style: TextStyle(fontSize: 20),
+                valueUnidade == null ? '' : valueUnidade!);
           }
 
           if (value == 'Imagem' && imagens.isNotEmpty) {
-            return DropdownButton(
-                value: valueImagem,
-                items: imagens.map<DropdownMenuItem<String>>((e) {
-                  return buildMenuItem(
-                      '${e['IdImagem']}  ${e['NomeImagem']}', null);
-                }).toList(),
-                onChanged: (value) async {
-                  setState(() {
-                    imagem = null;
-                  });
-                  await Future.delayed(const Duration(milliseconds: 1));
-                  setState(() {
-                    valueImagem = value;
-                    imagemAtual = int.parse(valueImagem!.split(" ")[0]);
-                    imagem = BuscarImagem(
-                      id: imagemAtual!,
-                    );
-                  });
-                });
+            return Text(
+                style: TextStyle(fontSize: 20),
+                valueImagem == null ? '' : valueImagem!);
           }
 
           return const SizedBox();
         }),
         Builder(builder: (context) {
           if (unidadeAtual != null && value == 'Capitulo') {
-            return DropdownButton(
-                value: valueCapitulo,
-                items: partes[parteAtual]['Unidade'][unidadeAtual]['Capitulo']
-                    .values
-                    .toList()
-                    .map<DropdownMenuItem<String>>((e) {
-                  return buildMenuItem(
-                      '${e['NumCapitulo']}  ${e['NomeCapitulo']}', null);
-                }).toList(),
-                onChanged: (value) {
-                  setState(() {
-                    valueCapitulo = value;
-                    capituloAtual = int.parse(value!.split(" ")[0]);
-                    print(capituloAtual);
-                    print(unidadeAtual);
-                  });
-                });
+            return Text(
+                style: TextStyle(fontSize: 20),
+                valueCapitulo == null ? '' : valueCapitulo!);
           }
 
           if (imagem != null) {
@@ -307,84 +235,43 @@ class _AtualizaPaginaState extends State<AtualizaPagina> {
           alignment: Alignment.bottomCenter,
           child: ElevatedButton(
               onPressed: () async {
-                //SupaDB.instance.insert('Pagina_Partes', insert)
-
                 if (paginaAtual != null) {
-                  if (value != null) {
-                    await mensagemUpdate(context, int.parse(paginaAtual!));
-                    print(atualizar);
-                    if (atualizar) {
-                      try {
-                        bool sucess = await fazUpdate(int.parse(paginaAtual!));
+                  int pagina = int.parse(paginaAtual!);
+                  await mensagemDelete(context, pagina);
+                  if (deletar) {
+                    await fazDelete(pagina);
 
-                        if (sucess) {
-                          mensagem.mensagem(
-                              context,
-                              'Atualizaçao feita com sucesso',
-                              'Página atualizada com sucesso',
-                              null);
-                        } else {
-                          mensagem.mensagem(context, 'Erro na atualização',
-                              'Há campos sem preenchimento', null);
-                        }
-                      } on PostgrestException catch (e) {
-                        print(e);
-                      }
+                    int maxPagina = await SupaDB.instance.clienteSupaBase
+                        .rpc('max_value_pagina');
+                    while (maxPagina >= pagina) {
+                      await SupaDB.instance.clienteSupaBase
+                          .from('Pagina')
+                          .update({'IdPagina': pagina}).match(
+                              {'IdPagina': pagina + 1});
+                      pagina += 1;
                     }
-                    setState(() {
-                      atualizar = false;
-                    });
-                    paginas = await ProxyPagina.instance.findFull(true);
-
-                    setState(() {});
                   }
+                  setState(() {
+                    deletar = false;
+                    paginaAtual = null;
+                  });
+                  reseta();
+                  paginas = await ProxyPagina.instance.findFull(true);
+
+                  setState(() {});
                 }
               },
-              child: const Text('Atualizar Página')),
+              child: const Text('Deletar Página')),
         )
       ],
     );
   }
 
-  fazUpdate(int pagina) async {
-    print(capituloAtual.runtimeType);
-    print(capituloAtual);
-    print(capituloAtual);
-    print('opa2');
-    print(value);
-    if (value == 'Parte' && parteAtual != null) {
-      await SupaDB.instance.clienteSupaBase.from('Pagina').update({
-        'Parte': parteAtual,
-        'Unidade': null,
-        'Capitulo': null,
-        'IdImagem': null
-      }).match({'IdPagina': pagina});
-    } else if (value == 'Unidade' && unidadeAtual != null) {
-      await SupaDB.instance.clienteSupaBase.from('Pagina').update({
-        'Parte': parteAtual,
-        'Unidade': unidadeAtual,
-        'Capitulo': null,
-        'IdImagem': null,
-      }).match({'IdPagina': pagina});
-    } else if (value == 'Capitulo' && capituloAtual != null) {
-      print('Entrei viado');
-      await SupaDB.instance.clienteSupaBase.from('Pagina').update({
-        'Parte': parteAtual,
-        'Unidade': unidadeAtual,
-        'Capitulo': capituloAtual,
-        'IdImagem': null
-      }).match({'IdPagina': pagina});
-    } else if (value == 'Imagem' && imagemAtual != null) {
-      await SupaDB.instance.clienteSupaBase.from('Pagina').update({
-        'Parte': null,
-        'Unidade': null,
-        'Capitulo': null,
-        'IdImagem': imagemAtual
-      }).match({'IdPagina': pagina});
-    } else {
-      return false;
-    }
-    return true;
+  fazDelete(int pagina) async {
+    await SupaDB.instance.clienteSupaBase
+        .from('Pagina')
+        .delete()
+        .match({'IdPagina': pagina});
   }
 
   DropdownMenuItem<String> buildMenuItem(String item, var map) =>
@@ -400,17 +287,17 @@ class _AtualizaPaginaState extends State<AtualizaPagina> {
 
   Widget alert(BuildContext context, int pagina) {
     return AlertDialog(
-      title: Text('Atualizar a página $pagina?'),
-      content: const Text('Deseja atualizar está página?'),
+      title: Text('Deletar a página $pagina?'),
+      content: const Text('Deseja deletar está página?'),
       actions: [
         TextButton(
             onPressed: () async {
               setState(() {
-                atualizar = true;
+                deletar = true;
               });
               Navigator.of(context).pop();
             },
-            child: const Text('Atualizar')),
+            child: const Text('Deletar')),
         TextButton(
             onPressed: () {
               Navigator.of(context).pop();
@@ -420,7 +307,7 @@ class _AtualizaPaginaState extends State<AtualizaPagina> {
     );
   }
 
-  Future<dynamic> mensagemUpdate(BuildContext context, int pagina) async {
+  Future<dynamic> mensagemDelete(BuildContext context, int pagina) async {
     return await showDialog(
       context: context,
       builder: (_) => alert(context, pagina),

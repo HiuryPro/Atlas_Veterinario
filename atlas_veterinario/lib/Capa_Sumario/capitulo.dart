@@ -33,13 +33,13 @@ class _CapituloState extends State<Capitulo> {
   Widget body() {
     return SizedBox(
       child: Padding(
-        padding: const EdgeInsets.only(left: 30.0),
+        padding: const EdgeInsets.only(left: 40.0),
         child: Container(
           decoration: const BoxDecoration(
             border: Border(left: BorderSide(width: 6, color: Colors.black)),
           ),
           child: Padding(
-            padding: const EdgeInsets.only(left: 30.0),
+            padding: const EdgeInsets.only(left: 40.0),
             child: Center(
               child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -65,7 +65,7 @@ class _CapituloState extends State<Capitulo> {
               border: Border(top: BorderSide(width: 4, color: Colors.black))),
           child: Center(
             child: AutoSizeText(
-              'Cap${capitulo['NumCapitulo']}- ${capitulo['NomeCapitulo']}',
+              'Capitulo${capitulo['NumCapitulo']} - ${capitulo['NomeCapitulo']}',
               textAlign: TextAlign.center,
               style: const TextStyle(fontSize: 35, fontWeight: FontWeight.bold),
               maxLines: 2,

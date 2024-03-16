@@ -7,6 +7,7 @@ import 'package:atlas_veterinario/Capa_Sumario/capitulo.dart';
 import 'package:atlas_veterinario/Capa_Sumario/folharosto.dart';
 import 'package:atlas_veterinario/Capa_Sumario/introducao.dart';
 import 'package:atlas_veterinario/Capa_Sumario/parte.dart';
+import 'package:atlas_veterinario/Capa_Sumario/sumario_indice.dart';
 import 'package:atlas_veterinario/Capa_Sumario/vazio.dart';
 import 'package:atlas_veterinario/Fala/textoprafala.dart';
 import 'package:atlas_veterinario/Proxy/proxycapa.dart';
@@ -19,7 +20,6 @@ import 'package:turn_page_transition/src/turn_direction.dart';
 import 'package:flutter/material.dart';
 import 'package:turn_page_transition/turn_page_transition.dart';
 
-import 'Capa_Sumario/indice.dart';
 import 'Capa_Sumario/unidade.dart';
 import 'Proxy/proxypagina.dart';
 import 'Utils/app_controller.dart';
@@ -43,7 +43,7 @@ class _HomeState extends State<Home> {
   bool isImage = false;
   Map<int, Widget> parteInicial = {
     2: const FolhaRosto(),
-    3: const Indices(),
+    3: const SumarioInd(),
     4: const Introducao()
   };
   bool legendas = false;
@@ -65,16 +65,13 @@ class _HomeState extends State<Home> {
 
     Future.delayed(Duration.zero, () async {
       var resultados = await ProxyCapa.instance.find(1, false);
-      print(resultados);
       imagem = resultados['Capa'];
-      print(imagem);
       imagemWiget = Image.memory(base64.decode(imagem!), fit: BoxFit.contain);
 
       setState(() {});
     });
     setState(() {
       pagina = widget.pagina;
-      print(pagina);
       paginaAntes = pagina;
       fontController.text =
           AppController.instance.tamanhoFonte.toInt().toString();
@@ -95,8 +92,8 @@ class _HomeState extends State<Home> {
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    Color(0xff1a4d34),
-                    Color(0xff386e41),
+                    Color(0xff1a4683),
+                    Color(0xff3574cc),
                     Colors.white,
                     Colors.white
                   ],
@@ -112,25 +109,43 @@ class _HomeState extends State<Home> {
                         tooltip: 'Abre opções do Aplicativo',
                         onPressed: () => _keyS.currentState!.openDrawer(),
                         icon: const Icon(Icons.menu)),
-                    const IconButtonVoice(
-                      fala: 'Clique para abrir opções do app',
-                      cor: Colors.white,
+                    Container(
+                      decoration: const BoxDecoration(
+                          border: Border(
+                              right:
+                                  BorderSide(color: Colors.black, width: 2.5))),
+                      child: const Padding(
+                        padding: EdgeInsets.only(right: 3.0),
+                        child: IconButtonVoice(
+                          fala: 'Clique para abrir opções do app',
+                          cor: Colors.white,
+                        ),
+                      ),
                     ),
                     const SizedBox(
-                      width: 5,
+                      width: 10,
                     ),
                     Container(
                       decoration: const BoxDecoration(
-                          color: Color(0xff386e41), shape: BoxShape.circle),
+                          color: Color(0xff3574cc), shape: BoxShape.circle),
                       child: IconButton(
                           onPressed: () {
                             AppController.instance.mudaTutorial1();
                           },
                           icon: const Icon(Icons.question_mark)),
                     ),
-                    const IconButtonVoice(
-                      fala: 'Clique para Ajuda',
-                      cor: Colors.white,
+                    Container(
+                      decoration: const BoxDecoration(
+                          border: Border(
+                              right:
+                                  BorderSide(color: Colors.black, width: 2.5))),
+                      child: const Padding(
+                        padding: EdgeInsets.only(right: 3.0),
+                        child: IconButtonVoice(
+                          fala: 'Clique para Ajuda',
+                          cor: Colors.white,
+                        ),
+                      ),
                     ),
                     const SizedBox(
                       width: 5,
@@ -139,8 +154,18 @@ class _HomeState extends State<Home> {
                     const SizedBox(
                       width: 5,
                     ),
-                    const IconButtonVoice(
-                        cor: Colors.black, fala: 'Clique para Opções de texto'),
+                    Container(
+                      decoration: const BoxDecoration(
+                          border: Border(
+                              left:
+                                  BorderSide(color: Colors.black, width: 2.5))),
+                      child: const Padding(
+                        padding: EdgeInsets.only(left: 3.0),
+                        child: IconButtonVoice(
+                            cor: Colors.black,
+                            fala: 'Clique para Opções de texto'),
+                      ),
+                    ),
                     opcoesdaPagina()
                   ]),
             ),
@@ -151,8 +176,8 @@ class _HomeState extends State<Home> {
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    Color(0xff1a4d34),
-                    Color(0xff386e41),
+                    Color(0xff1a4683),
+                    Color(0xff3574cc),
                     Colors.white,
                     Colors.white
                   ],
@@ -194,7 +219,7 @@ class _HomeState extends State<Home> {
   Widget buscaTela() {
     if (widget.pagina == 1) {
       return imagemWiget == null
-          ? SizedBox()
+          ? const SizedBox()
           : SizedBox(
               width: MediaQuery.of(context).size.width,
               child: InteractiveViewer(maxScale: 10, child: imagemWiget!));
@@ -235,7 +260,6 @@ class _HomeState extends State<Home> {
   }
 
   Widget criaTela(Map<String, dynamic> conteudo) {
-    print(conteudo);
     int paginaParte = conteudo['Pagina'];
     if (!conteudo.containsKey('IdImagem')) {
       int parteId;
@@ -410,9 +434,9 @@ class _HomeState extends State<Home> {
       textAlign: TextAlign.center,
       controller: paginaController,
       decoration: InputDecoration(
-          prefixIconColor: Colors.green,
+          prefixIconColor: Colors.black,
           focusedBorder: const OutlineInputBorder(
-              borderSide: BorderSide(width: 3, color: Colors.greenAccent),
+              borderSide: BorderSide(width: 3, color: Colors.blueAccent),
               borderRadius: BorderRadius.all(Radius.circular(30)),
               gapPadding: 4 //<-- SEE HERE
               ),
@@ -519,7 +543,7 @@ class _HomeState extends State<Home> {
                 height: 40,
                 decoration: BoxDecoration(
                   border: Border.all(width: 2),
-                  color: Colors.green,
+                  color: Colors.blue,
                   shape: BoxShape.circle,
                 ),
               ),
@@ -556,8 +580,8 @@ class _HomeState extends State<Home> {
       decoration: const BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            Color(0xff1a4d34),
-            Color(0xff386e41),
+            Color(0xff1a4683),
+            Color(0xff3574cc),
             Colors.white,
             Colors.white
           ],
@@ -571,7 +595,7 @@ class _HomeState extends State<Home> {
                 color: AppController.instance.theme2,
                 image: const DecorationImage(
                     fit: BoxFit.fill,
-                    image: AssetImage('assets/images/PatoUlt.png'))),
+                    image: AssetImage('assets/images/logo_vet.png'))),
             accountName: Padding(
                 padding: const EdgeInsets.only(left: 10),
                 child: Text(AppController.instance.email)),
@@ -602,7 +626,7 @@ class _HomeState extends State<Home> {
                 ),
               ),
             ),
-            if (AppController.instance.isAdmin) ...optionsAdmin()
+            if (AppController.instance.isAdmin /* || true*/) ...optionsAdmin()
           ]),
         ),
         Tooltip(
@@ -686,6 +710,18 @@ class _HomeState extends State<Home> {
         ),
       ),
       Tooltip(
+        message: 'Clique para Deletar as Imagens',
+        child: ListTile(
+          onTap: () {
+            Navigator.of(context).pushNamed('/deletarimagem');
+          },
+          leading: const Icon(Icons.delete),
+          title: const Text('Deletar Imagens'),
+          trailing: const IconButtonVoice(
+              cor: Colors.black, fala: 'Clique para deletar as Imagens'),
+        ),
+      ),
+      Tooltip(
         message: 'Clique para Cadastrar as Páginas',
         child: ListTile(
           onTap: () {
@@ -707,6 +743,18 @@ class _HomeState extends State<Home> {
           title: const Text('Atualizar Páginas'),
           trailing: const IconButtonVoice(
               cor: Colors.black, fala: 'Clique para atualizar as Páginas'),
+        ),
+      ),
+      Tooltip(
+        message: 'Clique para Deletar as Páginas',
+        child: ListTile(
+          onTap: () {
+            Navigator.of(context).pushNamed('/deletarpaginas');
+          },
+          leading: const Icon(Icons.delete_forever),
+          title: const Text('Deletar Páginas'),
+          trailing: const IconButtonVoice(
+              cor: Colors.black, fala: 'Clique para deletar as Páginas'),
         ),
       ),
     ];

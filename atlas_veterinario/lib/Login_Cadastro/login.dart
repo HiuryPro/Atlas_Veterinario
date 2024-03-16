@@ -31,9 +31,7 @@ class _LoginState extends State<Login> {
     super.initState();
     Future.delayed(Duration.zero, () async {
       var resultados = await ProxyCapa.instance.find(1, false);
-      print(resultados);
       imagem = resultados['Capa'];
-      print(imagem);
       imagemWiget = Image.memory(
         base64.decode(imagem!),
         fit: BoxFit.fill,
@@ -65,7 +63,8 @@ class _LoginState extends State<Login> {
                         SizedBox(
                             height: 200,
                             width: 200,
-                            child: Image.asset('assets/images/AtlasLogo.png')),
+                            child: Image.asset(
+                                'assets/images/logo_vet_login.png')),
                         const SizedBox(height: 10),
                         TextField(
                             controller: emailController,

@@ -49,7 +49,7 @@ class _CadastroState extends State<Cadastro> {
             SizedBox(
                 height: 200,
                 width: 200,
-                child: Image.asset('assets/images/AtlasLogo.png')),
+                child: Image.asset('assets/images/logo_vet_login.png')),
             const SizedBox(height: 10),
             TextField(
                 controller: nomeController,

@@ -15,50 +15,54 @@ class SumarioP {
     print(resultados!.keys);
     print('Teset');
     for (int i = 5; i <= AppController.instance.totalPaginas; i++) {
+      print(i);
       Map<String, dynamic> sumarioItem = {'pagina': i};
-      if (!resultados[i]!.containsKey('IdImagem') &&
-          resultados[i]!.isNotEmpty) {
-        Map<String, dynamic> parte;
-        Map<String, dynamic> unidade;
-        Map<String, dynamic> capitulo;
 
-        if (resultados[i]!['Capitulo'] != null) {
-          parte = partes[resultados[i]!['Parte']];
-          unidade = parte['Unidade'][resultados[i]!['Unidade']];
-          capitulo = unidade['Capitulo'][resultados[i]!['Capitulo']];
+      if (resultados.containsKey(i)) {
+        if (!resultados[i]!.containsKey('IdImagem') &&
+            resultados[i]!.isNotEmpty) {
+          Map<String, dynamic> parte;
+          Map<String, dynamic> unidade;
+          Map<String, dynamic> capitulo;
 
-          sumarioItem.addAll({'Tipo': 'Capitulo'});
-          sumarioItem.addAll(capitulo);
+          if (resultados[i]!['Capitulo'] != null) {
+            parte = partes[resultados[i]!['Parte']];
+            unidade = parte['Unidade'][resultados[i]!['Unidade']];
+            capitulo = unidade['Capitulo'][resultados[i]!['Capitulo']];
 
-          sumarioLista.add(sumarioItem);
-        } else if (resultados[i]!['Unidade'] != null) {
-          parte = partes[resultados[i]!['Parte']];
-          unidade = parte['Unidade'][resultados[i]!['Unidade']];
+            sumarioItem.addAll({'Tipo': 'Capitulo'});
+            sumarioItem.addAll(capitulo);
 
-          sumarioItem.addAll({'Tipo': 'Unidade'});
-          sumarioItem.addAll(unidade);
-          sumarioItem.remove('Capitulo');
+            sumarioLista.add(sumarioItem);
+          } else if (resultados[i]!['Unidade'] != null) {
+            parte = partes[resultados[i]!['Parte']];
+            unidade = parte['Unidade'][resultados[i]!['Unidade']];
 
-          sumarioLista.add(sumarioItem);
-        } else if (resultados[i]!['Parte'] != null) {
-          parte = partes[resultados[i]!['Parte']];
+            sumarioItem.addAll({'Tipo': 'Unidade'});
+            sumarioItem.addAll(unidade);
+            sumarioItem.remove('Capitulo');
 
-          sumarioItem.addAll({'Tipo': 'Parte'});
-          sumarioItem.addAll(parte);
+            sumarioLista.add(sumarioItem);
+          } else if (resultados[i]!['Parte'] != null) {
+            parte = partes[resultados[i]!['Parte']];
 
-          sumarioItem.remove('Unidade');
+            sumarioItem.addAll({'Tipo': 'Parte'});
+            sumarioItem.addAll(parte);
+
+            sumarioItem.remove('Unidade');
+            sumarioLista.add(sumarioItem);
+          }
+        } else {
+          int idImagem = resultados[i]!['IdImagem'];
+          List imagens = await SupaDB.instance.select(
+              'Imagem', 'NomeImagem', {'IdImagem': idImagem}, 'IdImagem', true);
+          (imagens[0]);
+          sumarioItem.addAll({'Tipo': 'Imagem'});
+          sumarioItem.addAll(imagens[0]);
           sumarioLista.add(sumarioItem);
         }
-      } else if (resultados[i]!.isEmpty) {
-        sumarioItem.addAll({'Tipo': 'Vazio'});
-        sumarioLista.add(sumarioItem);
       } else {
-        int idImagem = resultados[i]!['IdImagem'];
-        List imagens = await SupaDB.instance.select(
-            'Imagem', 'NomeImagem', {'IdImagem': idImagem}, 'IdImagem', true);
-        (imagens[0]);
-        sumarioItem.addAll({'Tipo': 'Imagem'});
-        sumarioItem.addAll(imagens[0]);
+        sumarioItem.addAll({'Tipo': 'Vazio'});
         sumarioLista.add(sumarioItem);
       }
     }

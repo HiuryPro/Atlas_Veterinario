@@ -230,24 +230,33 @@ class _CadPaginaState extends State<CadPagina> {
                           '');
                     } else {
                       try {
-                        await fazInsert(pagina);
-                        List paginas = await SupaDB.instance.clienteSupaBase
-                            .from('Pagina')
-                            .select(
-                              '*',
-                            )
-                            .order('IdPagina', ascending: false);
-                        print(paginas[0]['IdPagina']);
+                        bool sucess = await fazInsert(pagina);
 
-                        AppController.instance.totalPaginas =
-                            paginas[0]['IdPagina'];
+                        if (sucess) {
+                          List paginas = await SupaDB.instance.clienteSupaBase
+                              .from('Pagina')
+                              .select(
+                                '*',
+                              )
+                              .order('IdPagina', ascending: false);
+                          print(paginas[0]['IdPagina']);
 
-                        ProxyPagina.instance.pagina.paginas.clear();
-                        SumarioP.instance.sumarioLista.clear();
+                          AppController.instance.totalPaginas =
+                              paginas[0]['IdPagina'];
 
-                        setState(() {});
-                        mensagem.mensagem(context, 'Cadastro feito com sucesso',
-                            'Página cadastrada com sucesso', null);
+                          ProxyPagina.instance.pagina.paginas.clear();
+                          SumarioP.instance.sumarioLista.clear();
+
+                          setState(() {});
+                          mensagem.mensagem(
+                              context,
+                              'Cadastro feito com sucesso',
+                              'Página cadastrada com sucesso',
+                              null);
+                        } else {
+                          mensagem.mensagem(context, 'Cadastro com erro',
+                              'Há campos sem preecher', null);
+                        }
                       } on PostgrestException catch (e) {
                         print(e);
                         mensagemInsert(context, pagina);
@@ -271,6 +280,8 @@ class _CadPaginaState extends State<CadPagina> {
       await SupaDB.instance.clienteSupaBase.from('Pagina').insert(
           {'IdPagina': pagina, 'Parte': parteAtual, 'Unidade': unidadeAtual});
     } else if (value == 'Capitulo' && capituloAtual != null) {
+      print(capituloAtual);
+      print('opa');
       await SupaDB.instance.clienteSupaBase.from('Pagina').insert({
         'IdPagina': pagina,
         'Parte': parteAtual,
@@ -281,6 +292,8 @@ class _CadPaginaState extends State<CadPagina> {
       await SupaDB.instance.clienteSupaBase
           .from('Pagina')
           .insert({"IdPagina": pagina, 'IdImagem': imagemAtual});
+    } else {
+      return false;
     }
 
     int completar = AppController.instance.totalPaginas + 1;
@@ -291,6 +304,7 @@ class _CadPaginaState extends State<CadPagina> {
     }
 
     ProxyPagina.instance.findFull(true);
+    return true;
   }
 
   DropdownMenuItem<String> buildMenuItem(String item, var map) =>
@@ -355,11 +369,11 @@ class _CadPaginaState extends State<CadPagina> {
               icon: const Icon(Icons.arrow_back)),
           shadowColor: Colors.transparent,
           flexibleSpace: Container(
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  Color(0xff1a4d34),
-                  Color(0xff386e41),
+                  Color(0xff1a4683),
+                  Color(0xff3574cc),
                   Colors.white,
                   Colors.white
                 ],

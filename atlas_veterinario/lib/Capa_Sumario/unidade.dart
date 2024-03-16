@@ -31,13 +31,13 @@ class _UnidadeState extends State<Unidade> {
   Widget body() {
     return SizedBox(
       child: Padding(
-        padding: const EdgeInsets.only(left: 30.0, right: 15),
+        padding: const EdgeInsets.only(left: 40.0, right: 15),
         child: Container(
           decoration: const BoxDecoration(
             border: Border(left: BorderSide(width: 6, color: Colors.black)),
           ),
           child: Padding(
-            padding: const EdgeInsets.only(left: 30.0),
+            padding: const EdgeInsets.only(left: 40.0),
             child: Center(
               child: ListView(shrinkWrap: true, children: testes),
             ),
@@ -63,8 +63,8 @@ class _UnidadeState extends State<Unidade> {
                 height: 100,
                 decoration: const BoxDecoration(
                     border: Border(
-                        left: BorderSide(width: 4, color: Color(0xff2a4c09)),
-                        top: BorderSide(width: 4, color: Color(0xff2a4c09)))),
+                        left: BorderSide(width: 4, color: Color(0xff1a4683)),
+                        top: BorderSide(width: 4, color: Color(0xff1a4683)))),
               ),
             ),
           ),
@@ -72,7 +72,7 @@ class _UnidadeState extends State<Unidade> {
             flex: 4,
             child: Center(
                 child: AutoSizeText(
-              'Unidade ${unidade['NumUnidade']}',
+              'UNIDADE ${unidade['NumUnidade']}',
               textAlign: TextAlign.center,
               style: const TextStyle(fontSize: 35, fontWeight: FontWeight.bold),
               maxLines: 2,
@@ -114,8 +114,8 @@ class _UnidadeState extends State<Unidade> {
                 height: 100,
                 decoration: const BoxDecoration(
                     border: Border(
-                        bottom: BorderSide(width: 4, color: Color(0xff2a4c09)),
-                        right: BorderSide(width: 4, color: Color(0xff2a4c09)))),
+                        bottom: BorderSide(width: 4, color: Color(0xff1a4683)),
+                        right: BorderSide(width: 4, color: Color(0xff1a4683)))),
               ),
             ),
           ),

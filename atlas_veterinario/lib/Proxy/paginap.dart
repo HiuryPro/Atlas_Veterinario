@@ -15,10 +15,22 @@ class PaginaP implements ProxyInterface {
     if (resultados.isNotEmpty) {
       paginas[resultados[0]['IdPagina']] = resultados[0];
       paginas[resultados[0]['IdPagina']]!.remove('IdPagina');
+
+      int cap = 1;
+
+      paginas[id].removeWhere((key, value) => value == null);
+      if (paginas[id].containsKey('Capitulo')) {
+        cap = paginas[id]['Capitulo'];
+      } else if (paginas[id].containsKey('IdImagem')) {
+        Map<String, int> map = {'Capitulo': cap};
+        paginas[id].addAll(map);
+      }
+      paginas[id].addAll({'Pagina': id});
     }
   }
 
   buscadoBancoFull() async {
+    paginas.clear();
     List resultados = await SupaDB.instance.select('Pagina',
         'IdPagina, Parte, Unidade, Capitulo,IdImagem', {}, 'IdPagina', true);
 

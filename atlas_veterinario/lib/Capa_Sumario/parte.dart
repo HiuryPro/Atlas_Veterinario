@@ -29,13 +29,13 @@ class _ParteState extends State<Parte> {
   Widget body() {
     return SizedBox(
       child: Padding(
-        padding: const EdgeInsets.only(left: 30.0),
+        padding: const EdgeInsets.only(left: 40.0),
         child: Container(
           decoration: const BoxDecoration(
             border: Border(left: BorderSide(width: 6, color: Colors.black)),
           ),
           child: Padding(
-            padding: const EdgeInsets.only(left: 30.0),
+            padding: const EdgeInsets.only(left: 40.0),
             child: Center(
               child: ListView(
                 shrinkWrap: true,

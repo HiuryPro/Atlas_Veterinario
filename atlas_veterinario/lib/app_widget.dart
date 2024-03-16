@@ -7,6 +7,8 @@ import 'package:atlas_veterinario/cadastrarcapa.dart';
 import 'package:atlas_veterinario/cadastrarintroducao.dart';
 import 'package:atlas_veterinario/cadastrarpagina.dart';
 import 'package:atlas_veterinario/cadastrasumario.dart';
+import 'package:atlas_veterinario/deletapagina.dart';
+import 'package:atlas_veterinario/deletarimagem.dart';
 import 'package:atlas_veterinario/sumario.dart';
 import 'package:atlas_veterinario/CadImagem/testeputimage.dart';
 import 'package:atlas_veterinario/testefuture.dart';
@@ -73,6 +75,8 @@ class AppWidget extends StatelessWidget {
                 '/atualizasumario': (context) => const AtualizaSumario(),
                 '/cadastrarpaginas': (context) => const CadPagina(),
                 '/atualizarpaginas': (context) => const AtualizaPagina(),
+                '/deletarpaginas': (context) => const DeletarPagina(),
+                '/deletarimagem': (context) => const DeletarImagem(),
                 '/teste': (context) => const TesteGeral(),
                 '/cadastrarimagem': (context) => const CadastrarImagem(),
                 '/capa': (context) => const CapaTela(),

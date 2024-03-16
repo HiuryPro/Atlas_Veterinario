@@ -93,7 +93,7 @@ class Utils {
       texto,
       style: const TextStyle(
           fontSize: 20.0,
-          color: Color(0xff006600),
+          color: Color(0xff1a4683),
           fontWeight: FontWeight.bold),
     );
   }
